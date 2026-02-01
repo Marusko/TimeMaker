@@ -5,7 +5,7 @@ namespace TimeMaker.Windows
     /// <summary>
     /// Interaction logic for CreateSerialSourceWindow.xaml
     /// </summary>
-    public partial class CreateSerialSourceWindow : Window
+    public partial class CreateSerialSourceWindow
     {
         public CreateSerialSourceWindow()
         {

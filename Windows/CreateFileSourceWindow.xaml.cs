@@ -5,7 +5,7 @@ namespace TimeMaker.Windows
     /// <summary>
     /// Interaction logic for CreateFileSourceWindow.xaml
     /// </summary>
-    public partial class CreateFileSourceWindow : Window
+    public partial class CreateFileSourceWindow
     {
         public CreateFileSourceWindow()
         {

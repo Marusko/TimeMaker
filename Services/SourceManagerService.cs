@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TimeMaker.Services
+﻿namespace TimeMaker.Services
 {
     public class SourceManagerService : IDisposable
     {

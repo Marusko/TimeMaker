@@ -5,7 +5,7 @@ namespace TimeMaker.Windows
     /// <summary>
     /// Interaction logic for RaceResultSettingsWindow.xaml
     /// </summary>
-    public partial class RaceResultSettingsWindow : Window
+    public partial class RaceResultSettingsWindow
     {
         public RaceResultSettingsWindow()
         {

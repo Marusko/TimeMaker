@@ -5,19 +5,16 @@ namespace TimeMaker.Services
 {
     public class AppLoggerService
     {
-        private readonly string _logFolder;
         private readonly string _logFilePath;
 
         public AppLoggerService(string logFolder)
         {
-            _logFolder = logFolder;
-
             // Create a log file with timestamp in name
             string timestamp = DateTime.Now.ToString("yyyyMMdd");
-            _logFilePath = Path.Combine(_logFolder, $"Log_{timestamp}.txt");
+            _logFilePath = Path.Combine(logFolder, $"Log_{timestamp}.txt");
 
             // Ensure the directory exists
-            Directory.CreateDirectory(_logFolder);
+            Directory.CreateDirectory(logFolder);
 
             if (!File.Exists(_logFilePath))
             {

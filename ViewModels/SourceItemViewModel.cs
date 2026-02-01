@@ -4,12 +4,12 @@ namespace TimeMaker.ViewModels
 {
     public class SourceItemViewModel : INotifyPropertyChanged
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Source { get; set; }
-        public string Target { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Source { get; set; } = string.Empty;
+        public string Target { get; set; } = string.Empty;
 
-        private string _progress;
+        private string _progress = string.Empty;
         public string Progress
         {
             get => _progress;

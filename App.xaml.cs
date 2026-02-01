@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-using System.Data;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using TimeMaker.Services;
 
@@ -9,13 +7,13 @@ namespace TimeMaker
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         private static string AppDataFolder { get; set; } = string.Empty;
         private static string LogFolder { get; set; } = string.Empty;
-        public static AppLoggerService Logger { get; private set; }
-        public static RaceResultService RaceResult { get; private set; }
-        public static SourceManagerService SourceManager { get; private set; }
+        public static AppLoggerService Logger { get; private set; } = null!;
+        public static RaceResultService RaceResult { get; private set; } = null!;
+        public static SourceManagerService SourceManager { get; private set; } = null!;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -43,7 +41,7 @@ namespace TimeMaker
             SourceManager = new SourceManagerService();
 
             // Handle unhandled exceptions
-            AppDomain.CurrentDomain.UnhandledException += (s, args) =>
+            AppDomain.CurrentDomain.UnhandledException += (_, args) =>
             {
                 var ex = args.ExceptionObject as Exception;
                 Logger.LogError("Unhandled exception", ex);
