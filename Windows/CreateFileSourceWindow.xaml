@@ -1,0 +1,53 @@
+﻿<Window x:Class="TimeMaker.Windows.CreateFileSourceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TimeMaker.Windows"
+        mc:Ignorable="d"
+        Title="Nový CSV súbor" Height="230" Width="350" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
+    <GroupBox Header="Nový CSV súbor">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Row="0" Header="Nastavenia">
+                <StackPanel Orientation="Horizontal">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="Rozdeľovač CSV: "/>
+                        <RadioButton Grid.Column="1" x:Name="SemiColonRadio" Content=";" Checked="DelimiterChecked" GroupName="delimiter" Margin="0 0 10 0" VerticalAlignment="Center"/>
+                        <RadioButton Grid.Column="2" x:Name="ColonRadio" Content="," Checked="DelimiterChecked" GroupName="delimiter" Margin="0 0 10 0" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="Šablóna: "/>
+                        <CheckBox Grid.Column="1" x:Name="TemplateCheckBox" Margin="10 0 0 0" VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Grid.Row="1" Header="Zdrojový súbor">
+                <StackPanel Orientation="Horizontal">
+                    <Button Click="LoadFile" Content="Vybrať súbor" Padding="10 5" Margin="5" Width="93"/>
+                    <Label x:Name="FileNameLabel" Content="Nie je vybraný žiadny súbor" Margin="5"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Grid.Row="2" Header="Cieľový merací bod">
+                <ComboBox x:Name="TimingPointsCombo" HorizontalAlignment="Left" Margin="5" Width="120"/>
+            </GroupBox>
+            <Grid Grid.Row="3">
+                <Button Content="Uložiť" Click="Save" HorizontalAlignment="Right" Margin="0,10,10,0" Padding="10 5" Width="93"/>
+            </Grid>
+        </Grid>
+    </GroupBox>
+</Window>

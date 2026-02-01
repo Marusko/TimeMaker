@@ -6,11 +6,20 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	<ApplicationIcon>Icons/favicon.ico</ApplicationIcon>
   </PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Icons\favicon.ico" />
+	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.IO.Ports" Version="10.0.2" />
   </ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Icons\favicon.ico" />
+	</ItemGroup>
 
 </Project>

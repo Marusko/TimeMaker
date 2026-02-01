@@ -1,16 +1,7 @@
 ﻿using System.Diagnostics;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace TimeMaker
+namespace TimeMaker.Windows
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -24,17 +15,20 @@ namespace TimeMaker
 
         private void BtnAddFile_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var window = new CreateFileSourceWindow();
+            window.Show();
         }
 
         private void BtnAddTimy_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var window = new CreateSerialSourceWindow();
+            window.Show();
         }
 
         private void BtnRaceSettings_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var window = new RaceResultSettingsWindow();
+            window.Show();
         }
 
         private void StartSource(object sender, RoutedEventArgs e)
@@ -52,6 +46,11 @@ namespace TimeMaker
             throw new NotImplementedException();
         }
 
+        private void RemoveSource(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void OpenJson(object sender, RoutedEventArgs e)
         {
             const string url = "https://www.newtonsoft.com/json";
@@ -62,11 +61,6 @@ namespace TimeMaker
         {
             const string url = "https://www.nuget.org/packages/system.io.ports/";
             Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-        }
-
-        private void RemoveSource(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿<Window x:Class="TimeMaker.MainWindow"
+﻿<Window x:Class="TimeMaker.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TimeMaker"
         xmlns:viewModels="clr-namespace:TimeMaker.ViewModels"
         mc:Ignorable="d"
-        Title="Time Maker" Height="450" Width="800">
+        Title="Time Maker" Height="450" Width="800" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -16,10 +16,10 @@
 
         <!-- Top toolbar -->
         <ToolBar Grid.Row="0">
-            <Button x:Name="btnAddFile" Content="Pridať CSV" Click="BtnAddFile_Click" Padding="10,5"/>
-            <Button x:Name="btnAddTimy" Content="Pridať Timy" Click="BtnAddTimy_Click" Padding="10,5"/>
+            <Button x:Name="BtnAddFile" Content="Pridať CSV" Click="BtnAddFile_Click" Padding="10,5"/>
+            <Button x:Name="BtnAddTimy" Content="Pridať Timy" Click="BtnAddTimy_Click" Padding="10,5"/>
             <Separator/>
-            <Button x:Name="btnRaceSettings" Content="Nastavenia RR" Click="BtnRaceSettings_Click" Padding="10,5"/>
+            <Button x:Name="BtnRaceSettings" Content="Nastavenia RR" Click="BtnRaceSettings_Click" Padding="10,5"/>
         </ToolBar>
 
         <!-- Main content -->
@@ -29,9 +29,9 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="Aktívne zdroje" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Grid.Row="0" Text="Aktívne zdroje" FontSize="16" FontWeight="Bold"/>
 
-            <ListView Grid.Row="1" x:Name="listViewSources" Margin="0,10">
+            <ListView Grid.Row="1" x:Name="ListViewSources" Margin="0,10">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Názov" DisplayMemberBinding="{Binding Name}" Width="120"/>
@@ -98,7 +98,7 @@
                 </TextBlock>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock x:Name="statusText" Text="Ready"/>
+                <TextBlock x:Name="StatusText" Text="Ready"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

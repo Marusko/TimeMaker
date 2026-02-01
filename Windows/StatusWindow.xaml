@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimeMaker.Windows"
         mc:Ignorable="d"
-        Title="StatusWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Dáta zo zdroja" Height="450" Width="800" ResizeMode="NoResize" Icon="../Icons/favicon.ico">
+    <GroupBox Header="Dáta zo zdroja">
+        <TextBlock Text="Tu budú zobrazené dáta zo zdroja."/>
+    </GroupBox>
 </Window>
