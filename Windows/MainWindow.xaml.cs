@@ -63,5 +63,10 @@ namespace TimeMaker
             const string url = "https://www.nuget.org/packages/system.io.ports/";
             Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
+
+        private void RemoveSource(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

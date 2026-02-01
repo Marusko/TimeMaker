@@ -2,7 +2,7 @@
 
 namespace TimeMaker.ViewModels
 {
-    public class SourceItemViewModel : System.ComponentModel.INotifyPropertyChanged
+    public class SourceItemViewModel : INotifyPropertyChanged
     {
         public string Name { get; set; }
         public string Type { get; set; }

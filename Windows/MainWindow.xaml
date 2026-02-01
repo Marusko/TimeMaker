@@ -54,6 +54,11 @@
                                             </Hyperlink>
                                         </Label>
                                         <Label VerticalAlignment="Center">
+                                            <Hyperlink Click="RemoveSource" IsEnabled="{Binding IsRunning}">
+                                                <Run Text="Odstrániť"/>
+                                            </Hyperlink>
+                                        </Label>
+                                        <Label VerticalAlignment="Center">
                                             <Hyperlink Click="ViewRawSource" IsEnabled="{Binding IsRunning}">
                                                 <Run Text="Zobraziť"/>
                                             </Hyperlink>
