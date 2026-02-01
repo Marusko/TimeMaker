@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Windows;
 
 namespace TimeMaker.Services
 {
@@ -61,7 +62,7 @@ namespace TimeMaker.Services
             catch
             {
                 // If we can't write to the log file, there's not much we can do
-                // Maybe in a production app, we could show a notification or try an alternative logging method
+                MessageBox.Show("Failed to write to log file.", "Logging Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
