@@ -12,14 +12,17 @@ namespace TimeMaker.Services
             _logFolder = logFolder;
 
             // Create a log file with timestamp in name
-            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string timestamp = DateTime.Now.ToString("yyyyMMdd");
             _logFilePath = Path.Combine(_logFolder, $"Log_{timestamp}.txt");
 
             // Ensure the directory exists
             Directory.CreateDirectory(_logFolder);
 
-            // Create the log file with header
-            File.WriteAllText(_logFilePath, $"=== Ad Display App Log - Started at {DateTime.Now} ===\n\n");
+            if (!File.Exists(_logFilePath))
+            {
+                // Create the log file with header
+                File.WriteAllText(_logFilePath, "=== Ad Display App Log ===\n\n");
+            }
         }
 
         public void Log(string message)
