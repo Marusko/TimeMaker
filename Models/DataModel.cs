@@ -6,7 +6,7 @@
         public string SourceId { get; set; } = string.Empty;
         public string Bib { get; set; } = string.Empty;
         public TimeOnly Time { get; set; }
-        public string TimingPoint { get; set; } = string.Empty;
+        public ApiTimingPoint TimingPoint { get; set; } = new();
         public string RawData { get; set; } = string.Empty;
         public bool Compare(DataModel d)
         {
