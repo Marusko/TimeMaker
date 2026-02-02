@@ -46,7 +46,7 @@ namespace TimeMaker.Windows
                 op.Title = "Vyberte súbor";
                 op.Filter = "CSV súbor|*.csv";
                 var res = op.ShowDialog();
-                if (res == null)
+                if (res == null || string.IsNullOrEmpty(op.FileName))
                 {
                     MessageBox.Show("CSV súbor je potrebný", "CSV súbor", MessageBoxButton.OK, MessageBoxImage.Warning);
                     FileNameLabel.Content = "Nie je vybraný žiadny súbor";
@@ -60,6 +60,7 @@ namespace TimeMaker.Windows
             catch (Exception ex)
             {
                 MessageBox.Show($"Nastala chyba pri načítavaní súboru: {ex.Message}", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                App.Logger.LogError("[CF] Error loading file", ex);
                 FileNameLabel.Content = "Nie je vybraný žiadny súbor";
                 _path = string.Empty;
             }

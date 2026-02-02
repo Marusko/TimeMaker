@@ -345,13 +345,13 @@ namespace TimeMaker.Services
 
         public void Dispose()
         {
+            App.Logger.Log("[RR] Stopping and disposing resources");
             _timer?.Stop();
             _bibTimer?.Stop();
             _collectTimer?.Stop();
             _bibList.Clear();
             _unsentData.Clear();
             _httpClient.Dispose();
-            App.Logger.Log("[RR] Stopping and disposing resources");
         }
     }
 }

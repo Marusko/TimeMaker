@@ -20,12 +20,14 @@ namespace TimeMaker.Services
             {
                 var fileService = new FileService();
                 fileService.Init(initModel);
+                App.Logger.Log($"[SM] FileService added: {fileService.Id}");
                 return Sources.TryAdd(fileService.Id, fileService);
             }
             else if (sourceType == typeof(SerialPortService))
             {
                 var serialPortService = new SerialPortService();
                 serialPortService.Init(initModel);
+                App.Logger.Log($"[SM] SerialPortService added: {serialPortService.Id}");
                 return Sources.TryAdd(serialPortService.Id, serialPortService);
             }
 
@@ -37,6 +39,7 @@ namespace TimeMaker.Services
             var res = Sources.TryRemove(id, out var source);
             if (res)
             {
+                App.Logger.Log($"[SM] Source removed: {source?.Id}");
                 source?.Stop();
             }
 
@@ -45,6 +48,7 @@ namespace TimeMaker.Services
 
         private void StopAllSources()
         {
+            App.Logger.Log("[SM] Stopping all sources");
             foreach (var source in Sources)
             {
                 source.Value.Stop();
@@ -54,6 +58,7 @@ namespace TimeMaker.Services
 
         public bool AddWindow(string id, StatusWindow window)
         {
+            App.Logger.Log($"[SM] Adding window for source: {id}");
             if (!_statusWindows.TryGetValue(id, out List<StatusWindow>? value))
             {
                 value = new List<StatusWindow>();
@@ -66,6 +71,7 @@ namespace TimeMaker.Services
 
         public bool RemoveWindow(string id, StatusWindow window)
         {
+            App.Logger.Log($"[SM] Removing window for source: {id}");
             if (_statusWindows.TryGetValue(id, out List<StatusWindow>? value))
             {
                 value.Remove(window);
@@ -76,6 +82,7 @@ namespace TimeMaker.Services
 
         private void CloseAllStatusWindows()
         {
+            App.Logger.Log("[SM] Closing all status windows");
             foreach (var sw in _statusWindows)
             {
                 foreach (var window in sw.Value)
@@ -89,6 +96,7 @@ namespace TimeMaker.Services
 
         public void Dispose()
         {
+            App.Logger.Log("[SM] Stopping and disposing resources");
             StopAllSources();
             CloseAllStatusWindows();
         }

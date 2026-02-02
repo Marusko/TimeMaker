@@ -49,6 +49,7 @@ namespace TimeMaker.Services
 
         public static List<string> GetAvailablePorts()
         {
+            App.Logger.Log("[SS] Getting available ports");
             return SerialPort.GetPortNames().ToList();
         }
 
@@ -56,6 +57,7 @@ namespace TimeMaker.Services
         {
             try
             {
+                App.Logger.Log($"[SS] Testing connection on port: {port}");
                 Connect(port);
                 Thread.Sleep(500);
             }
@@ -69,14 +71,17 @@ namespace TimeMaker.Services
         {
             try
             {
+                App.Logger.Log($"[SS] Connecting to port: {port}");
                 _port.PortName = port;
                 _port.BaudRate = 9600;
                 _port.Parity = Parity.None;
                 _port.StopBits = StopBits.One;
                 _port.Open();
+                App.Logger.Log($"[SS] Connected to port: {port}");
             }
             catch (Exception e)
             {
+                App.Logger.LogError($"[SS] Error connecting to port: {port}", e);
                 MessageBox.Show(e.Message, "Varovanie - pripojenie", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -88,11 +93,13 @@ namespace TimeMaker.Services
             {
                 if (_port.IsOpen)
                 {
+                    App.Logger.Log($"[SS] Disconnecting from port: {_port.PortName}");
                     _port.Close();
                 }
             }
             catch (Exception e)
             {
+                App.Logger.LogError($"[SS] Error disconnecting from port: {_port.PortName}", e);
                 MessageBox.Show(e.Message, "Varovanie - odpojenie", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
