@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Nový CSV súbor" Height="230" Width="350" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
+        Title="Nový CSV súbor" Height="280" Width="350" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
     <GroupBox Header="Nový CSV súbor">
         <Grid>
             <Grid.RowDefinitions>
@@ -12,8 +12,12 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Nastavenia">
+            <GroupBox Grid.Row="0" Header="Názov">
+                <TextBox x:Name="NameText" HorizontalAlignment="Stretch" Margin="5" Text="" />
+            </GroupBox>
+            <GroupBox Grid.Row="1" Header="Nastavenia">
                 <StackPanel Orientation="Horizontal">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -35,16 +39,16 @@
                     </Grid>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="Zdrojový súbor">
+            <GroupBox Grid.Row="2" Header="Zdrojový súbor">
                 <StackPanel Orientation="Horizontal">
                     <Button Click="LoadFile" Content="Vybrať súbor" Padding="10 5" Margin="5" Width="93"/>
                     <Label x:Name="FileNameLabel" Content="Nie je vybraný žiadny súbor" Margin="5"/>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Grid.Row="2" Header="Cieľový merací bod">
+            <GroupBox Grid.Row="3" Header="Cieľový merací bod">
                 <ComboBox x:Name="TimingPointsCombo" HorizontalAlignment="Left" Margin="5" Width="120"/>
             </GroupBox>
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="4">
                 <Button Content="Uložiť" Click="Save" HorizontalAlignment="Right" Margin="0,10,10,0" Padding="10 5" Width="93"/>
             </Grid>
         </Grid>

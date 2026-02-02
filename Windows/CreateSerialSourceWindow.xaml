@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Nový COM port" Height="300" Width="350" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
+        Title="Nový COM port" Height="350" Width="350" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
     <GroupBox Header="Nový COM port">
         <Grid>
             <Grid.RowDefinitions>
@@ -12,8 +12,12 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Timy mód">
+            <GroupBox Grid.Row="0" Header="Názov">
+                <TextBox x:Name="NameText" HorizontalAlignment="Stretch" Margin="5" Text="" />
+            </GroupBox>
+            <GroupBox Grid.Row="1" Header="Timy mód">
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -23,13 +27,13 @@
                     <RadioButton Grid.Column="1" x:Name="BackupRadio" Content="Backup" Checked="ModeChecked" GroupName="mode" Margin="0 0 10 0" VerticalAlignment="Center"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="Zdrojový port">
+            <GroupBox Grid.Row="2" Header="Zdrojový port">
                 <Grid>
                     <ComboBox x:Name="ComPortBox" HorizontalAlignment="Left" Margin="5" Width="120"></ComboBox>
                     <Button Click="Test" Content="Test" HorizontalAlignment="Right" Margin="5" Padding="5 2" Width="93"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="2" Header="Cieľové meracie body">
+            <GroupBox Grid.Row="3" Header="Cieľové meracie body">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -44,7 +48,7 @@
                     <ComboBox Grid.Row="2" x:Name="RunTimePoint" Margin="138,6,5,5" Width="120"/>
                 </Grid>
             </GroupBox>
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="4">
                 <Button Content="Obnoviť" Click="Refresh" HorizontalAlignment="Left" Margin="10,10,0,0" Padding="10 5" Width="93"/>
                 <Button Content="Uložiť" Click="Save" HorizontalAlignment="Right" Margin="0,10,10,0" Padding="10 5" Width="93"/>
             </Grid>
