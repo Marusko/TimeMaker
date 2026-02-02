@@ -6,14 +6,16 @@ namespace TimeMaker.Services
 {
     public abstract class SourceService
     {
-        public abstract string Id { get; set; }
-        public abstract Type InternalType { get; set; }
-        public abstract string Name { get; set; }
-        public abstract string Type { get; set; }
-        public abstract string Source { get; set; }
-        public abstract string Target { get; set; }
-        public abstract ConcurrentQueue<DataModel> DataQueue { get; set; }
-        public abstract SourceItemViewModel SourceItemViewModel { get; set; }
+        public abstract string Id { get; protected set; }
+        public abstract Type InternalType { get; protected set; }
+        public abstract string Name { get; protected set; }
+        public abstract string Type { get; protected set; }
+        public abstract string Source { get; protected set; }
+        public abstract string Target { get; protected set; }
+        public abstract int SentOk { get; protected set; }
+        public abstract int SentError { get; protected set; }
+        public abstract ConcurrentQueue<DataModel> DataQueue { get; protected set; }
+        public abstract SourceItemViewModel SourceItemViewModel { get; protected set; }
 
         public abstract void Init(SourceInitModel initModel);
 
