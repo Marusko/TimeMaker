@@ -30,7 +30,7 @@ namespace TimeMaker.Services
                     Type = "CSV",
                     Source = model.Source,
                     Target = model.FirstTarget.Name,
-                    Progress = "Pripravené",
+                    Status = "Pripravené",
                     IsRunning = false
                 };
                 Id = SourceItemViewModel.Id;

@@ -38,7 +38,7 @@
                         <GridViewColumn Header="Typ" DisplayMemberBinding="{Binding Type}" Width="80"/>
                         <GridViewColumn Header="Zdroj" DisplayMemberBinding="{Binding Source}" Width="100"/>
                         <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding Target}" Width="100"/>
-                        <GridViewColumn Header="Priebeh" DisplayMemberBinding="{Binding Progress}" Width="100"/>
+                        <GridViewColumn Header="Stav" DisplayMemberBinding="{Binding Status}" Width="100"/>
                         <GridViewColumn Header="Akcie" Width="230">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate DataType="viewModels:SourceItemViewModel">

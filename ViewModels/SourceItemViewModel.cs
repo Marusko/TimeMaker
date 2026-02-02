@@ -10,16 +10,16 @@ namespace TimeMaker.ViewModels
         public string Source { get; set; } = string.Empty;
         public string Target { get; set; } = string.Empty;
 
-        private string _progress = string.Empty;
-        public string Progress
+        private string _status = string.Empty;
+        public string Status
         {
-            get => _progress;
+            get => _status;
             set
             {
-                if (_progress != value)
+                if (_status != value)
                 {
-                    _progress = value;
-                    OnPropertyChanged(nameof(Progress));
+                    _status = value;
+                    OnPropertyChanged(nameof(Status));
                 }
             }
         }
@@ -48,9 +48,9 @@ namespace TimeMaker.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void UpdateProgress(string progress)
+        public void UpdateStatus(string status)
         {
-            Progress = progress;
+            Status = status;
         }
     }
 }

@@ -37,7 +37,7 @@ namespace TimeMaker.Services
                     Type = "Timy" + (model.Mode == TimyMode.Stopwatch ? " stopwatch" : " backup"),
                     Source = model.Source,
                     Target = model.FirstTarget.Name,
-                    Progress = "Pripravené",
+                    Status = "Pripravené",
                     IsRunning = false
                 };
                 Id = SourceItemViewModel.Id;
