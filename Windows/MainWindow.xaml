@@ -15,8 +15,8 @@
 
         <!-- Top toolbar -->
         <ToolBar Grid.Row="0">
-            <Button x:Name="BtnAddFile" Content="Pridať CSV" Click="BtnAddFile_Click" Padding="10,5"/>
-            <Button x:Name="BtnAddTimy" Content="Pridať Timy" Click="BtnAddTimy_Click" Padding="10,5"/>
+            <Button x:Name="BtnAddFile" Content="Pridať CSV" Click="BtnAddFile_Click" Padding="10,5" IsEnabled="False"/>
+            <Button x:Name="BtnAddTimy" Content="Pridať Timy" Click="BtnAddTimy_Click" Padding="10,5" IsEnabled="False"/>
             <Separator/>
             <Button x:Name="BtnRaceSettings" Content="Nastavenia RR" Click="BtnRaceSettings_Click" Padding="10,5"/>
         </ToolBar>
