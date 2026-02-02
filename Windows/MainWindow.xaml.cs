@@ -1,9 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Documents;
 using TimeMaker.Models;
-using TimeMaker.Services;
+using TimeMaker.ViewModels;
 
 namespace TimeMaker.Windows
 {
@@ -12,10 +13,14 @@ namespace TimeMaker.Windows
     /// </summary>
     public partial class MainWindow
     {
+        private ObservableCollection<SourceItemViewModel> _sources = new();
         public MainWindow()
         {
             InitializeComponent();
+            ListViewSources.ItemsSource = _sources;
             App.RaceResult.RaceResultApiLoaded += OnApiLoaded;
+            App.SourceManager.SourceAdded += OnSourceAdded;
+            App.SourceManager.SourceRemoved += OnSourceRemoved;
         }
 
         private void BtnAddFile_Click(object sender, RoutedEventArgs e)
@@ -39,43 +44,74 @@ namespace TimeMaker.Windows
         private void StartSource(object sender, RoutedEventArgs e)
         {
             var link = sender as Hyperlink;
-            var source = link?.DataContext as SourceService;
-            source?.Start();
+            if (link?.DataContext is SourceItemViewModel sourceVm)
+            {
+                App.SourceManager.GetSource(sourceVm.Id)?.Start();
+            }
         }
 
         private void StopSource(object sender, RoutedEventArgs e)
         {
             var link = sender as Hyperlink;
-            var source = link?.DataContext as SourceService;
-            source?.Stop();
+            if (link?.DataContext is SourceItemViewModel sourceVm)
+            {
+                App.SourceManager.GetSource(sourceVm.Id)?.Stop();
+            }
         }
 
         private void ViewRawSource(object sender, RoutedEventArgs e)
         {
             var link = sender as Hyperlink;
-            if (link?.DataContext is SourceService source)
+            if (link?.DataContext is SourceItemViewModel sourceVm)
             {
                 var statusWindow = new StatusWindow();
                 //statusWindow.SetSourceService(source);
                 statusWindow.Show();
-                App.SourceManager.AddWindow(source.Id, statusWindow);
+                //App.SourceManager.AddWindow(source.Id, statusWindow);
             }
         }
 
         private void RemoveSource(object sender, RoutedEventArgs e)
         {
             var link = sender as Hyperlink;
-            if (link?.DataContext is SourceService source)
+            if (link?.DataContext is SourceItemViewModel sourceVm)
             {
-                App.SourceManager.RemoveSource(source.Id);
+                App.SourceManager.RemoveSource(sourceVm.Id);
             }
         }
 
         private void OnApiLoaded(object? sender, RaceResultApiLoadedEventArgs e)
         {
-            BtnAddFile.IsEnabled = true;
-            BtnAddTimy.IsEnabled = true;
-            BtnRaceSettings.IsEnabled = false;
+            Dispatcher.Invoke(() =>
+            {
+                BtnAddFile.IsEnabled = true;
+                BtnAddTimy.IsEnabled = true;
+                BtnRaceSettings.IsEnabled = false;
+            });
+        }
+
+        private void OnSourceRemoved(object? sender, SourceEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var source = e.SourceService;
+                if (source != null)
+                {
+                    _sources.Remove(source.SourceItemViewModel);
+                }
+            });
+        }
+
+        private void OnSourceAdded(object? sender, SourceEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var source = e.SourceService;
+                if (source != null)
+                {
+                    _sources.Add(source.SourceItemViewModel);
+                }
+            });
         }
 
         private void OpenJson(object sender, RoutedEventArgs e)
@@ -93,6 +129,9 @@ namespace TimeMaker.Windows
         private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
         {
             App.RaceResult.RaceResultApiLoaded -= OnApiLoaded;
+            App.SourceManager.SourceAdded -= OnSourceAdded;
+            App.SourceManager.SourceRemoved -= OnSourceRemoved;
+            _sources.Clear();
         }
     }
 }

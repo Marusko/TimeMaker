@@ -8,6 +8,8 @@ namespace TimeMaker.Services
     {
         public ConcurrentDictionary<string, SourceService> Sources { get; private set; } = new();
         private ConcurrentDictionary<string, List<StatusWindow>> _statusWindows = new();
+        public event EventHandler<SourceEventArgs>? SourceAdded;
+        public event EventHandler<SourceEventArgs>? SourceRemoved;
 
         public SourceService? GetSource(string key)
         {
@@ -21,6 +23,7 @@ namespace TimeMaker.Services
                 var fileService = new FileService();
                 fileService.Init(initModel);
                 App.Logger.Log($"[SM] FileService added: {fileService.Id}");
+                SourceAdded?.Invoke(this, new SourceEventArgs { SourceId = fileService.Id, SourceService = fileService, Type = typeof(FileService) });
                 return Sources.TryAdd(fileService.Id, fileService);
             }
             else if (sourceType == typeof(SerialPortService))
@@ -28,6 +31,7 @@ namespace TimeMaker.Services
                 var serialPortService = new SerialPortService();
                 serialPortService.Init(initModel);
                 App.Logger.Log($"[SM] SerialPortService added: {serialPortService.Id}");
+                SourceAdded?.Invoke(this, new SourceEventArgs { SourceId = serialPortService.Id, SourceService = serialPortService, Type = typeof(SerialPortService) });
                 return Sources.TryAdd(serialPortService.Id, serialPortService);
             }
 
@@ -40,6 +44,8 @@ namespace TimeMaker.Services
             if (res)
             {
                 App.Logger.Log($"[SM] Source removed: {source?.Id}");
+                SourceRemoved?.Invoke(this, new SourceEventArgs { SourceId = source?.Id ?? "", SourceService = source, Type = source?.GetType() ?? typeof(SourceService) });
+                RemoveAllSourceWindows(source?.Id ?? "");
                 source?.Stop();
             }
 
@@ -69,11 +75,25 @@ namespace TimeMaker.Services
             return true;
         }
 
+        private void RemoveAllSourceWindows(string id)
+        {
+            App.Logger.Log($"[SM] Removing all windows for source: {id}");
+            if (_statusWindows.TryRemove(id, out List<StatusWindow>? value))
+            {
+                foreach (var window in value)
+                {
+                    window.Close();
+                }
+                value.Clear();
+            }
+        }
+
         public bool RemoveWindow(string id, StatusWindow window)
         {
             App.Logger.Log($"[SM] Removing window for source: {id}");
             if (_statusWindows.TryGetValue(id, out List<StatusWindow>? value))
             {
+                window.Close();
                 value.Remove(window);
                 return true;
             }
@@ -97,8 +117,8 @@ namespace TimeMaker.Services
         public void Dispose()
         {
             App.Logger.Log("[SM] Stopping and disposing resources");
-            StopAllSources();
             CloseAllStatusWindows();
+            StopAllSources();
         }
     }
 }

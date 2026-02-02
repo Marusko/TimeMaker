@@ -39,7 +39,7 @@
                         <GridViewColumn Header="Zdroj" DisplayMemberBinding="{Binding Source}" Width="100"/>
                         <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding Target}" Width="100"/>
                         <GridViewColumn Header="Priebeh" DisplayMemberBinding="{Binding Progress}" Width="100"/>
-                        <GridViewColumn Header="Akcie" Width="180">
+                        <GridViewColumn Header="Akcie" Width="230">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate DataType="viewModels:SourceItemViewModel">
                                     <StackPanel Orientation="Horizontal">
@@ -54,7 +54,7 @@
                                             </Hyperlink>
                                         </Label>
                                         <Label VerticalAlignment="Center">
-                                            <Hyperlink Click="RemoveSource" IsEnabled="{Binding IsRunning}">
+                                            <Hyperlink Click="RemoveSource" IsEnabled="{Binding IsNotRunning}">
                                                 <Run Text="Odstrániť"/>
                                             </Hyperlink>
                                         </Label>

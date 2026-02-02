@@ -1,4 +1,6 @@
-﻿namespace TimeMaker.Models
+﻿using TimeMaker.Services;
+
+namespace TimeMaker.Models
 {
     public class RaceResultApiLoadedEventArgs : EventArgs
     {
@@ -16,5 +18,12 @@
     {
         public string Id { get; set; } = string.Empty;
         public UploadStatus Status { get; set; } = UploadStatus.Pending;
+    }
+
+    public class SourceEventArgs : EventArgs
+    {
+        public string SourceId { get; set; } = string.Empty;
+        public SourceService? SourceService { get; set; }
+        public Type Type { get; set; } = typeof(SourceService);
     }
 }
