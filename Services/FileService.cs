@@ -14,13 +14,31 @@ namespace TimeMaker.Services
         public override string Target { get; protected set; } = string.Empty;
         public override int SentOk { get; protected set; }
         public override int SentError { get; protected set; }
+        public override bool Running { get; protected set; }
         public override ConcurrentQueue<DataModel> DataQueue { get; protected set; } = new();
         public override ConcurrentQueue<DataModel> SentData { get; protected set; } = new();
         public override SourceItemViewModel SourceItemViewModel { get; protected set; } = new();
 
         public override void Init(SourceInitModel initModel)
         {
-            throw new NotImplementedException();
+            if (initModel is FileSourceInitModel model)
+            {
+                SourceItemViewModel = new SourceItemViewModel()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = model.Name,
+                    Type = "CSV",
+                    Source = model.Source,
+                    Target = model.FirstTarget.Name,
+                    Progress = "Pripravené",
+                    IsRunning = false
+                };
+                Id = SourceItemViewModel.Id;
+                Name = model.Name;
+                Type = "CSV";
+                Source = model.Source;
+                Target = model.FirstTarget.Name;
+            }
         }
 
         public override void Start()

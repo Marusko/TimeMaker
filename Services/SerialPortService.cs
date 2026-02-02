@@ -14,8 +14,12 @@ namespace TimeMaker.Services
         public override string Type { get; protected set; } = string.Empty;
         public override string Source { get; protected set; } = string.Empty;
         public override string Target { get; protected set; } = string.Empty;
+        public string TargetFinish { get; protected set; } = string.Empty;
+        public string TargetRunTime { get; protected set; } = string.Empty;
+        public TimyMode Mode { get; set; } = TimyMode.Stopwatch;
         public override int SentOk { get; protected set; }
         public override int SentError { get; protected set; }
+        public override bool Running { get; protected set; }
         public override ConcurrentQueue<DataModel> DataQueue { get; protected set; } = new();
         public override ConcurrentQueue<DataModel> SentData { get; protected set; } = new();
         public override SourceItemViewModel SourceItemViewModel { get; protected set; } = new();
@@ -24,7 +28,27 @@ namespace TimeMaker.Services
 
         public override void Init(SourceInitModel initModel)
         {
-            throw new NotImplementedException();
+            if (initModel is SerialSourceInitModel model)
+            {
+                SourceItemViewModel = new SourceItemViewModel()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = model.Name,
+                    Type = "Timy" + (model.Mode == TimyMode.Stopwatch ? " stopwatch" : " backup"),
+                    Source = model.Source,
+                    Target = model.FirstTarget.Name,
+                    Progress = "Pripravené",
+                    IsRunning = false
+                };
+                Id = SourceItemViewModel.Id;
+                Name = model.Name;
+                Type = "Timy" + (model.Mode == TimyMode.Stopwatch ? " stopwatch" : " backup");
+                Source = model.Source;
+                Target = model.FirstTarget.Name;
+                TargetFinish = model.SecondTarget.Name;
+                TargetRunTime = model.ThirdTarget.Name;
+                Mode = model.Mode;
+            }
         }
 
         public override void Start()

@@ -14,6 +14,7 @@ namespace TimeMaker.Services
         public abstract string Target { get; protected set; }
         public abstract int SentOk { get; protected set; }
         public abstract int SentError { get; protected set; }
+        public abstract bool Running { get; protected set; }
         public abstract ConcurrentQueue<DataModel> DataQueue { get; protected set; }
         public abstract ConcurrentQueue<DataModel> SentData { get; protected set; }
         public abstract SourceItemViewModel SourceItemViewModel { get; protected set; }
