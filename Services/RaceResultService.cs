@@ -9,7 +9,9 @@ namespace TimeMaker.Services
 {
     public class RaceResultService : IDisposable
     {
-        public List<ApiTimingPoint> Points = new();
+        public List<ApiTimingPoint> Points { get; set; } = new();
+        public bool TemplateEnabled { get; set; }
+
         private HttpClient _httpClient;
         private DispatcherTimer? _timer;
         private DispatcherTimer? _bibTimer;
@@ -18,11 +20,11 @@ namespace TimeMaker.Services
         private string _pointsUrl = "";
         private string _bibListUrl = "";
         private List<string> _bibList = new();
-        private List<string> _defined = new();
-        private List<string> _undefined = new();
         private ConcurrentQueue<DataModel> _unsentData = new();
-        public bool TemplateEnabled { get; set; }
+        
         public event EventHandler<RaceResultApiLoadedEventArgs>? RaceResultApiLoaded;
+        public event EventHandler<RaceResultBibsLoadedEventArgs>? RaceResultBibsLoaded;
+        public event EventHandler<RaceResultTimeSentEventArgs>? RaceResultTimeSent;
 
         public RaceResultService()
         {
@@ -34,8 +36,6 @@ namespace TimeMaker.Services
             App.Logger.Log("[RR] Clearing data");
             Points.Clear();
             _bibList.Clear();
-            _defined.Clear();
-            _undefined.Clear();
             _manualUrl = "";
             _pointsUrl = "";
             _bibListUrl = "";
@@ -44,7 +44,22 @@ namespace TimeMaker.Services
         public async Task Start()
         {
             App.Logger.Log("[RR] Starting...");
-
+            _timer = new();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += SendDataToRr;
+            _bibTimer = new();
+            _bibTimer.Interval = TimeSpan.FromSeconds(30);
+            _bibTimer.Tick += LoadBibsAuto;
+            _collectTimer = new();
+            _collectTimer.Interval = TimeSpan.FromSeconds(15);
+            _collectTimer.Tick += CollectData;
+            if (TemplateEnabled)
+            {
+                await LoadBibs(_bibListUrl);
+                RaceResultBibsLoaded?.Invoke(this, new RaceResultBibsLoadedEventArgs { Bibs = _bibList });
+                _bibTimer.Start();
+            }
+            _collectTimer.Start();
             App.Logger.Log("[RR] Started");
         }
 
@@ -195,26 +210,21 @@ namespace TimeMaker.Services
         private async void LoadBibsAuto(object? sender, EventArgs e)
         {
             App.Logger.Log("[RR] AUTO bibs reload");
-            await LoadBibs(_bibListUrl);
-            List<string> newData = new();
-            foreach (var i in _bibList)
+            try
             {
-                var def = _defined.FindIndex(x => x.Equals(i));
-                var undef = _undefined.FindIndex(x => x.Equals(i));
-                if (def < 0 && undef >= 0)
+                await LoadBibs(_bibListUrl);
+                RaceResultBibsLoaded?.Invoke(this, new RaceResultBibsLoadedEventArgs { Bibs = _bibList });
+                if (!_unsentData.IsEmpty)
                 {
-                    _defined.Add(i);
-                    newData.Add(i);
-                    _undefined.RemoveAt(undef);
+                    if (_timer is { IsEnabled: false })
+                    {
+                        _timer.Start();
+                    }
                 }
             }
-
-            if (newData.Count > 0)
+            catch (Exception ex)
             {
-                if (_timer is { IsEnabled: false })
-                {
-                    _timer.Start();
-                }
+                App.Logger.LogError("[RR] AUTO bibs reload failed", ex);
             }
         }
 
@@ -249,7 +259,6 @@ namespace TimeMaker.Services
                 if (points != null)
                 {
                     Points = points;
-                    App.Logger.Log("[RR] Successfully loaded Points from API");
                 }
                 else
                 {
@@ -267,13 +276,66 @@ namespace TimeMaker.Services
         private void CollectData(object? sender, EventArgs e)
         {
             App.Logger.Log("[RR] AUTO collecting data...");
-
+            foreach (var source in App.SourceManager.Sources)
+            {
+                if (!source.Value.DataQueue.IsEmpty)
+                {
+                    var count = source.Value.DataQueue.Count;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var data = source.Value.DataQueue.TryDequeue(out var item) ? item : null;
+                        if (data != null)
+                        {
+                            _unsentData.Enqueue(data);
+                        }
+                    }
+                }
+            }
+            if (!_unsentData.IsEmpty)
+            {
+                if (_timer is { IsEnabled: false })
+                {
+                    _timer.Start();
+                }
+            }
             App.Logger.Log("[RR] AUTO data collected");
         }
 
         private async void SendDataToRr(object? sender, EventArgs e)
         {
             App.Logger.Log("[RR] AUTO sending data...");
+            if (!_unsentData.IsEmpty)
+            {
+                var data = _unsentData.TryDequeue(out var item) ? item : null;
+                try
+                {
+                    if (data != null)
+                    {
+                        var resp = await SendData(data);
+                        RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
+                        {
+                            Id = data.Id,
+                            Status = resp.IsSuccessStatusCode ? UploadStatus.Completed : UploadStatus.Failed
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (data != null)
+                    {
+                        RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
+                        {
+                            Id = data.Id,
+                            Status = UploadStatus.Failed
+                        });
+                    }
+                    App.Logger.LogError("[RR] AUTO sending data failed", ex);
+                }
+            }
+            else
+            {
+                _timer?.Stop();
+            }
         }
 
         private async Task<HttpResponseMessage> SendData(DataModel d)
@@ -291,8 +353,6 @@ namespace TimeMaker.Services
             _bibTimer?.Stop();
             _collectTimer?.Stop();
             _bibList.Clear();
-            _defined.Clear();
-            _undefined.Clear();
             _httpClient.Dispose();
             App.Logger.Log("[RR] Stopping and disposing resources");
         }

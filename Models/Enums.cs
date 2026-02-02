@@ -4,7 +4,8 @@
     {
         Pending,
         Completed,
-        Failed  
+        Failed,
+        Ignored
     }
 
     public enum TimyMode
