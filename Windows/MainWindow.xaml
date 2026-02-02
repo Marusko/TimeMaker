@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:TimeMaker.ViewModels"
         mc:Ignorable="d"
+        Closing="MainWindow_OnClosing"
         Title="Time Maker" Height="450" Width="800" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
     <Grid>
         <Grid.RowDefinitions>
