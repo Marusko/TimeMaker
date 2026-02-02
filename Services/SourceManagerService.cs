@@ -43,7 +43,7 @@ namespace TimeMaker.Services
             return res;
         }
 
-        public void StopAllSources()
+        private void StopAllSources()
         {
             foreach (var source in Sources)
             {
@@ -74,7 +74,7 @@ namespace TimeMaker.Services
             return false;
         }
 
-        public void CloseAllStatusWindows()
+        private void CloseAllStatusWindows()
         {
             foreach (var sw in _statusWindows)
             {
@@ -84,14 +84,13 @@ namespace TimeMaker.Services
                 }
                 sw.Value.Clear();
             }
+            _statusWindows.Clear();
         }
 
         public void Dispose()
         {
-            foreach (var ss in Sources)
-            {
-                ss.Value.Stop();
-            }
+            StopAllSources();
+            CloseAllStatusWindows();
         }
     }
 }

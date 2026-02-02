@@ -93,8 +93,6 @@ namespace TimeMaker.Windows
         private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
         {
             App.RaceResult.RaceResultApiLoaded -= OnApiLoaded;
-            App.SourceManager.StopAllSources();
-            App.SourceManager.CloseAllStatusWindows();
         }
     }
 }
