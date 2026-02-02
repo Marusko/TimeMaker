@@ -280,14 +280,10 @@ namespace TimeMaker.Services
             {
                 if (!source.Value.DataQueue.IsEmpty)
                 {
-                    var count = source.Value.DataQueue.Count;
-                    for (int i = 0; i < count; i++)
+                    var unsent = source.Value.GetUnsentData();
+                    foreach (var data in unsent)
                     {
-                        var data = source.Value.DataQueue.TryDequeue(out var item) ? item : null;
-                        if (data != null)
-                        {
-                            _unsentData.Enqueue(data);
-                        }
+                        _unsentData.Enqueue(data);
                     }
                 }
             }

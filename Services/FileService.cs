@@ -15,6 +15,7 @@ namespace TimeMaker.Services
         public override int SentOk { get; protected set; }
         public override int SentError { get; protected set; }
         public override ConcurrentQueue<DataModel> DataQueue { get; protected set; } = new();
+        public override ConcurrentQueue<DataModel> SentData { get; protected set; } = new();
         public override SourceItemViewModel SourceItemViewModel { get; protected set; } = new();
 
         public override void Init(SourceInitModel initModel)
@@ -23,6 +24,16 @@ namespace TimeMaker.Services
         }
 
         public override void Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<DataModel> GetAllData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<DataModel> GetUnsentData()
         {
             throw new NotImplementedException();
         }
