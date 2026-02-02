@@ -14,7 +14,7 @@ namespace TimeMaker.Windows
 
         private void Load(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void Save(object sender, RoutedEventArgs e)

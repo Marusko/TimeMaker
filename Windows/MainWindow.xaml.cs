@@ -33,22 +33,22 @@ namespace TimeMaker.Windows
 
         private void StartSource(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void StopSource(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void ViewRawSource(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void RemoveSource(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void OpenJson(object sender, RoutedEventArgs e)

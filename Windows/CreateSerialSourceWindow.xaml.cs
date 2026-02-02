@@ -14,17 +14,17 @@ namespace TimeMaker.Windows
 
         private void ModeChecked(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void Test(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void Refresh(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+
         }
 
         private void Save(object sender, RoutedEventArgs e)
