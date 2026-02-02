@@ -6,4 +6,10 @@
         Completed,
         Failed  
     }
+
+    public enum TimyMode
+    {
+        Stopwatch,
+        Backup
+    }
 }

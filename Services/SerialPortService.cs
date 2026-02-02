@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using TimeMaker.Models;
+using TimeMaker.ViewModels;
 
 namespace TimeMaker.Services
 {
@@ -12,5 +13,21 @@ namespace TimeMaker.Services
         public override string Source { get; set; } = string.Empty;
         public override string Target { get; set; } = string.Empty;
         public override ConcurrentQueue<DataModel> DataQueue { get; set; } = new();
+        public override SourceItemViewModel SourceItemViewModel { get; set; } = new();
+
+        public override void Init(SourceInitModel initModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Stop()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
