@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using TimeMaker.Models;
 
 namespace TimeMaker.ViewModels
@@ -23,6 +24,7 @@ namespace TimeMaker.ViewModels
                 {
                     _status = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(ErrorVisibility));
                 }
             }
         }
@@ -37,9 +39,15 @@ namespace TimeMaker.ViewModels
                 {
                     _isClear = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(ClearVisibility));
+                    OnPropertyChanged(nameof(ClearLabel));
                 }
             }
         }
+
+        public Visibility ClearVisibility => IsClear ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility ErrorVisibility => Status == UploadStatus.Failed ? Visibility.Visible : Visibility.Collapsed;
+        public string ClearLabel => IsClear ? "Áno" : "";
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

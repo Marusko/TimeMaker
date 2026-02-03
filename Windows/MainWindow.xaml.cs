@@ -78,10 +78,13 @@ namespace TimeMaker.Windows
             var link = sender as Hyperlink;
             if (link?.DataContext is SourceItemViewModel sourceVm)
             {
-                var statusWindow = new StatusWindow();
-                //statusWindow.SetSourceService(source);
-                statusWindow.Show();
-                //App.SourceManager.AddWindow(source.Id, statusWindow);
+                var source = App.SourceManager.GetSource(sourceVm.Id);
+                if (source != null)
+                {
+                    var statusWindow = new StatusWindow(source);
+                    statusWindow.Show();
+                    App.SourceManager.AddWindow(source.Id, statusWindow);
+                }
             }
         }
 

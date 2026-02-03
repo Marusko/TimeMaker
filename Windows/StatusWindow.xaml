@@ -3,9 +3,62 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:TimeMaker.ViewModels"
+        xmlns:models="clr-namespace:TimeMaker.Models"
         mc:Ignorable="d"
-        Title="Dáta zo zdroja" Height="450" Width="800" ResizeMode="NoResize" Icon="../Icons/favicon.ico">
-    <GroupBox Header="Dáta zo zdroja">
-        <TextBlock Text="Tu budú zobrazené dáta zo zdroja."/>
+        Title="Dáta zo zdroja" Height="450" Width="550" ResizeMode="NoResize" Icon="../Icons/favicon.ico"
+        Closing="StatusWindow_OnClosing">
+    <GroupBox x:Name="GroupBox" Header="Dáta zo zdroja">
+        <ListView x:Name="ListViewData" Margin="5">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Background" Value="White"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static models:UploadStatus.Pending}">
+                            <Setter Property="Background" Value="White"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static models:UploadStatus.Completed}">
+                            <Setter Property="Background" Value="LightGreen"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static models:UploadStatus.Failed}">
+                            <Setter Property="Background" Value="LightCoral"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="{x:Static models:UploadStatus.Ignored}">
+                            <Setter Property="Background" Value="LightGray"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Vymazanie" DisplayMemberBinding="{Binding ClearLabel}" Width="70"/>
+                    <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="150"/>
+                    <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding TimingPoint.Name}" Width="80"/>
+                    <GridViewColumn Header="Akcie" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:DataLogViewModel}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label VerticalAlignment="Center" Visibility="{Binding ErrorVisibility}">
+                                        <Hyperlink Click="Upload">
+                                            <Run Text="Nahrať"/>
+                                        </Hyperlink>
+                                    </Label>
+                                    <Label VerticalAlignment="Center" Visibility="{Binding ErrorVisibility}">
+                                        <Hyperlink Click="ShowError">
+                                            <Run Text="Chyba"/>
+                                        </Hyperlink>
+                                    </Label>
+                                    <Label VerticalAlignment="Center" Visibility="{Binding ClearVisibility}">
+                                        <Hyperlink Click="Invalidate">
+                                            <Run Text="Zneplatniť"/>
+                                        </Hyperlink>
+                                    </Label>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </GroupBox>
 </Window>
