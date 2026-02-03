@@ -93,7 +93,6 @@ namespace TimeMaker.Services
             App.Logger.Log($"[SM] Removing window for source: {id}");
             if (_statusWindows.TryGetValue(id, out List<StatusWindow>? value))
             {
-                window.Close();
                 value.Remove(window);
                 return true;
             }

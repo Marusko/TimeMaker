@@ -39,13 +39,11 @@ namespace TimeMaker.ViewModels
                 {
                     _isClear = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(ClearVisibility));
                     OnPropertyChanged(nameof(ClearLabel));
                 }
             }
         }
 
-        public Visibility ClearVisibility => IsClear ? Visibility.Visible : Visibility.Collapsed;
         public Visibility ErrorVisibility => Status == UploadStatus.Failed ? Visibility.Visible : Visibility.Collapsed;
         public string ClearLabel => IsClear ? "Áno" : "";
 
