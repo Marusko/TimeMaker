@@ -27,6 +27,20 @@ namespace TimeMaker.ViewModels
             }
         }
 
+        private bool _isClear;
+        public bool IsClear
+        {
+            get => _isClear;
+            set
+            {
+                if (_isClear != value)
+                {
+                    _isClear = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.Net;
 using System.Net.Http;
 using System.Windows.Threading;
 using TimeMaker.Models;
@@ -310,7 +311,8 @@ namespace TimeMaker.Services
                 {
                     if (data != null)
                     {
-                        var resp = await SendData(data);
+                        HttpResponseMessage resp;
+                        resp = data.IsClear ? new HttpResponseMessage(HttpStatusCode.BadRequest) : await SendData(data);
                         RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
                         {
                             Id = data.Id,

@@ -8,6 +8,7 @@
         public TimeOnly Time { get; set; }
         public ApiTimingPoint TimingPoint { get; set; } = new();
         public string RawData { get; set; } = string.Empty;
+        public bool IsClear { get; set; }
         public bool CompareBib(DataModel d)
         {
             return (!string.IsNullOrEmpty(Bib) && !string.IsNullOrEmpty(d.Bib) && Bib.Equals(d.Bib)) &&

@@ -68,7 +68,7 @@ namespace TimeMaker.Services
                 {
                     SentError++;
                 }
-                SourceItemViewModel.UpdateStatus($"OK: {SentOk}, Chyba: {SentError}, Všetky: {_count}");
+                SourceItemViewModel.UpdateStatus($"Aktívne - OK: {SentOk}, Chyba: {SentError}, Všetky: {_count}");
                 if (SentError + SentOk == _count)
                 {
                     App.Logger.Log($"[FS] All data sent for FileSource: {Id}");
@@ -171,7 +171,8 @@ namespace TimeMaker.Services
                         Bib = split[0].Trim(),
                         Time = StringToDateTime(split[1].Trim()),
                         TimingPoint = new ApiTimingPoint() { Name = Target },
-                        RawData = line.Trim()
+                        RawData = line.Trim(),
+                        IsClear = false
                     };
                     var vm = new DataLogViewModel()
                     {
@@ -180,7 +181,8 @@ namespace TimeMaker.Services
                         Bib = data.Bib,
                         Time = data.Time,
                         TimingPoint = data.TimingPoint,
-                        Status = UploadStatus.Pending
+                        Status = UploadStatus.Pending,
+                        IsClear = false
                     };
                     if (_undefined.Add(data.Bib))
                     {
