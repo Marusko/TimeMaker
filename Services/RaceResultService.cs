@@ -278,12 +278,15 @@ namespace TimeMaker.Services
             App.Logger.Log("[RR] AUTO collecting data...");
             foreach (var source in App.SourceManager.Sources)
             {
-                if (!source.Value.DataQueue.IsEmpty)
+                if (source.Value.Running)
                 {
-                    var unsent = source.Value.GetUnsentData();
-                    foreach (var data in unsent)
+                    if (!source.Value.DataDictionary.IsEmpty)
                     {
-                        _unsentData.Enqueue(data);
+                        var unsent = source.Value.GetUnsentData();
+                        foreach (var data in unsent)
+                        {
+                            _unsentData.Enqueue(data);
+                        }
                     }
                 }
             }
@@ -340,7 +343,7 @@ namespace TimeMaker.Services
         {
             string time = d.Time.ToTimeSpan().TotalSeconds.ToString(CultureInfo.InvariantCulture)
                 .Replace(',', '.');
-            var conn = $"{_manualUrl}?&timingpoint={d.TimingPoint}&bib={d.Bib}&time={time}";
+            var conn = $"{_manualUrl}?&timingpoint={d.TimingPoint.Name}&bib={d.Bib}&time={time}";
             var resp = await _httpClient.GetAsync(conn);
             return resp;
         }
