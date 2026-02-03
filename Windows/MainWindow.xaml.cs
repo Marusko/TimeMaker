@@ -46,7 +46,14 @@ namespace TimeMaker.Windows
             var link = sender as Hyperlink;
             if (link?.DataContext is SourceItemViewModel sourceVm)
             {
-                App.SourceManager.GetSource(sourceVm.Id)?.Start();
+                try
+                {
+                    App.SourceManager.GetSource(sourceVm.Id)?.Start();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Nepodarilo sa spustiť zdroj. Chyba: [{ex.Message}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -55,7 +62,14 @@ namespace TimeMaker.Windows
             var link = sender as Hyperlink;
             if (link?.DataContext is SourceItemViewModel sourceVm)
             {
-                App.SourceManager.GetSource(sourceVm.Id)?.Stop();
+                try
+                {
+                    App.SourceManager.GetSource(sourceVm.Id)?.Stop();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Nepodarilo sa zastaviť zdroj. Chyba: [{ex.Message}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -76,7 +90,14 @@ namespace TimeMaker.Windows
             var link = sender as Hyperlink;
             if (link?.DataContext is SourceItemViewModel sourceVm)
             {
-                App.SourceManager.RemoveSource(sourceVm.Id);
+                try
+                {
+                    App.SourceManager.RemoveSource(sourceVm.Id);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Nepodarilo sa odstrániť zdroj. Chyba: [{ex.Message}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
