@@ -20,6 +20,8 @@ namespace TimeMaker.Windows
                 PointsApiLabel.Content = e.PointsApiStatus;
                 RawDataApiLabel.Content = e.ManualApiStatus;
                 BibListApiLabel.Content = e.BibsApiStatus;
+                InvalidApiLabel.Content = e.InvalidApiStatus;
+                RawSearchApiLabel.Content = e.RawSearchApiStatus;
             });
         }
 

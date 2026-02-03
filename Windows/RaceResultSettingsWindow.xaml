@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="RaceResult nastavenia" Height="250" Width="350" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
+        Title="RaceResult nastavenia" Height="320" Width="350" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
     <GroupBox Header="RaceResult nastavenia">
         <Grid>
             <Grid.RowDefinitions>
@@ -22,6 +22,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -33,6 +34,10 @@
                     <Label Grid.Row="1" Grid.Column="1" Content="Nenačítané" x:Name="RawDataApiLabel" Margin="5"/>
                     <Label Grid.Row="2" Grid.Column="0" Content="Zoznam čísel:" Margin="5"/>
                     <Label Grid.Row="2" Grid.Column="1" Content="Nenačítané" x:Name="BibListApiLabel" Margin="5"/>
+                    <Label Grid.Row="3" Grid.Column="0" Content="Zoznam časov pretekára:" Margin="5"/>
+                    <Label Grid.Row="3" Grid.Column="1" Content="Nenačítané" x:Name="RawSearchApiLabel" Margin="5"/>
+                    <Label Grid.Row="4" Grid.Column="0" Content="Zneplatnenie impulzu:" Margin="5"/>
+                    <Label Grid.Row="4" Grid.Column="1" Content="Nenačítané" x:Name="InvalidApiLabel" Margin="5"/>
                 </Grid>
             </GroupBox>
             <Grid Grid.Row="2">

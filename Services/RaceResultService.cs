@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
+using System.Windows;
 using System.Windows.Threading;
 using TimeMaker.Models;
 
@@ -12,6 +13,7 @@ namespace TimeMaker.Services
     {
         public List<ApiTimingPoint> Points { get; set; } = new();
         public bool TemplateEnabled { get; set; }
+        public bool ClearEnabled { get; set; }
 
         private HttpClient _httpClient;
         private DispatcherTimer? _timer;
@@ -20,6 +22,8 @@ namespace TimeMaker.Services
         private string _manualUrl = "";
         private string _pointsUrl = "";
         private string _bibListUrl = "";
+        private string _rawSearchUrl = "";
+        private string _invalidateUrl = "";
         private List<string> _bibList = new();
         private ConcurrentQueue<DataModel> _unsentData = new();
         
@@ -69,6 +73,8 @@ namespace TimeMaker.Services
             Clear();
             App.Logger.Log("[RR] Loading API...");
             HttpResponseMessage response;
+            bool hasFirstPart = false;
+            bool hasSecondPart = false;
             var evArgs = new RaceResultApiLoadedEventArgs();
             try
             {
@@ -151,9 +157,46 @@ namespace TimeMaker.Services
                             evArgs.BibsApiStatus = "Vypnuté";
                         }
                     }
+                    else if (api.Label != null && api.Label.ToLower().Trim().Equals("invalid"))
+                    {
+                        if (api.Disabled != null && !(bool)api.Disabled)
+                        {
+                            _invalidateUrl = link + api.Key;
+                            hasFirstPart = true;
+                            App.Logger.Log("[RR] Successfully loaded Invalid API");
+                            evArgs.InvalidApiStatus = "Načítané";
+                        }
+                        else
+                        {
+                            hasFirstPart = false;
+                            App.Logger.LogWarning("[RR] Invalid API is off");
+                            evArgs.InvalidApiStatus = "Vypnuté";
+                        }
+                    }
+                    else if (api.Label != null && api.Label.ToLower().Trim().Equals("search"))
+                    {
+                        if (api.Disabled != null && !(bool)api.Disabled)
+                        {
+                            _rawSearchUrl = link + api.Key;
+                            hasSecondPart = true;
+                            App.Logger.Log("[RR] Successfully loaded Raw Search API");
+                            evArgs.RawSearchApiStatus = "Načítané";
+                        }
+                        else
+                        {
+                            hasSecondPart = false;
+                            App.Logger.LogWarning("[RR] Raw Search API is off");
+                            evArgs.RawSearchApiStatus = "Vypnuté";
+                        }
+                    }
                 }
+                ClearEnabled = hasFirstPart && hasSecondPart;
                 RaceResultApiLoaded?.Invoke(this, evArgs);
                 App.Logger.Log("[RR] Successfully loaded APIs");
+                if (!ClearEnabled)
+                {
+                    MessageBox.Show("Automatické / ručné zneplatnenie je vypnuté", "Zneplatnenie", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
             else
             {
@@ -312,7 +355,7 @@ namespace TimeMaker.Services
                     if (data != null)
                     {
                         HttpResponseMessage resp;
-                        resp = data.IsClear ? new HttpResponseMessage(HttpStatusCode.BadRequest) : await SendData(data);
+                        resp = ClearEnabled ? (data.IsClear ? await SendClearData(data) : await SendData(data)) : (data.IsClear ? new HttpResponseMessage(HttpStatusCode.BadRequest) : await SendData(data));
                         RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
                         {
                             Id = data.Id,
@@ -349,10 +392,47 @@ namespace TimeMaker.Services
 
         private async Task<HttpResponseMessage> SendData(DataModel d)
         {
-            string time = d.Time.ToTimeSpan().TotalSeconds.ToString(CultureInfo.InvariantCulture)
-                .Replace(',', '.');
+            string time = d.Time.ToTimeSpan().TotalSeconds.ToString(CultureInfo.InvariantCulture).Replace(',', '.');
             var conn = $"{_manualUrl}?&timingpoint={d.TimingPoint.Name}&bib={d.Bib}&time={time}";
             var resp = await _httpClient.GetAsync(conn);
+            return resp;
+        }
+
+        private async Task<HttpResponseMessage> SendClearData(DataModel d)
+        {
+            string time = d.Time.ToTimeSpan().TotalSeconds.ToString(CultureInfo.InvariantCulture).Replace(',', '.');
+            var conn = $"{_rawSearchUrl}?&bib={d.Bib}";
+            var resp = await _httpClient.GetAsync(conn);
+            if (resp.IsSuccessStatusCode)
+            {
+                var responseString = await resp.Content.ReadAsStringAsync();
+                List<TimingResult>? results;
+                try
+                {
+                    results = JsonConvert.DeserializeObject<List<TimingResult>>(responseString);
+                }
+                catch (Exception e)
+                {
+                    App.Logger.LogError("[RR] Cannot load timing data from API - cannot deserialize data", e);
+                    throw new HttpRequestException("Neúspešné načítanie časových dát\nChyba: \n[Nemôžem deserializovať dáta]");
+                }
+
+                if (results != null)
+                {
+                    var single = (from r in results where r.TimingPoint == d.TimingPoint.Name && r.Time.Equals(time) select r).FirstOrDefault();
+                    if (single != null)
+                    {
+                        var invConn = $"{_invalidateUrl}?&id={single.Id}&invalid=true";
+                        var invResp = await _httpClient.GetAsync(invConn);
+                        return invResp;
+                    }
+                }
+                else
+                {
+                    App.Logger.LogError("[RR] Cannot load timing data from API - results list is null");
+                    throw new HttpRequestException("Neúspešné načítanie časových dát\nChyba: \n[Body sú null]");
+                }
+            }
             return resp;
         }
 
