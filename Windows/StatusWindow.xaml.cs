@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Documents;
 using TimeMaker.Services;
@@ -16,8 +17,9 @@ namespace TimeMaker.Windows
         {
             InitializeComponent();
             _sourceService = sourceService;
+            _sourceService.LogData.CollectionChanged += Items_CollectionChanged;
             ListViewData.ItemsSource = _sourceService.LogData;
-            GroupBox.Header = _sourceService.Source;
+            Title = _sourceService.Source;
         }
 
         private void Upload(object sender, RoutedEventArgs e)
@@ -38,17 +40,17 @@ namespace TimeMaker.Windows
             }
         }
 
-        private void Invalidate(object sender, RoutedEventArgs e)
+        private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            var link = sender as Hyperlink;
-            if (link?.DataContext is DataLogViewModel dataVm)
+            if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                // Invalidate time
+                ListViewData.ScrollIntoView(ListViewData.Items[0] ?? throw new InvalidOperationException());
             }
         }
 
         private void StatusWindow_OnClosing(object? sender, CancelEventArgs e)
         {
+            _sourceService.LogData.CollectionChanged -= Items_CollectionChanged;
             App.SourceManager.RemoveWindow(_sourceService.Id, this);
         }
     }

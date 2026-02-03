@@ -6,9 +6,9 @@
         xmlns:viewModels="clr-namespace:TimeMaker.ViewModels"
         xmlns:models="clr-namespace:TimeMaker.Models"
         mc:Ignorable="d"
-        Title="Dáta zo zdroja" Height="450" Width="550" ResizeMode="NoResize" Icon="../Icons/favicon.ico"
+        Title="Dáta zo zdroja" Height="450" Width="580" ResizeMode="NoResize" Icon="../Icons/favicon.ico"
         Closing="StatusWindow_OnClosing">
-    <GroupBox x:Name="GroupBox" Header="Dáta zo zdroja">
+    <GroupBox Header="Dáta zo zdroja">
         <ListView x:Name="ListViewData" Margin="5">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -31,10 +31,10 @@
             </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Vymazanie" DisplayMemberBinding="{Binding ClearLabel}" Width="70"/>
-                    <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="150"/>
+                    <GridViewColumn Header="CLR" DisplayMemberBinding="{Binding ClearLabel}" Width="35"/>
+                    <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="170"/>
                     <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding TimingPoint.Name}" Width="80"/>
-                    <GridViewColumn Header="Akcie" Width="200">
+                    <GridViewColumn Header="Akcie" Width="180">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate DataType="{x:Type viewModels:DataLogViewModel}">
                                 <StackPanel Orientation="Horizontal">
@@ -46,11 +46,6 @@
                                     <Label VerticalAlignment="Center" Visibility="{Binding ErrorVisibility}">
                                         <Hyperlink Click="ShowError">
                                             <Run Text="Chyba"/>
-                                        </Hyperlink>
-                                    </Label>
-                                    <Label VerticalAlignment="Center" Visibility="{Binding ClearVisibility}">
-                                        <Hyperlink Click="Invalidate">
-                                            <Run Text="Zneplatniť"/>
                                         </Hyperlink>
                                     </Label>
                                 </StackPanel>
