@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Windows;
 using TimeMaker.Models;
@@ -21,7 +22,7 @@ namespace TimeMaker.Services
         public override int SentError { get; protected set; }
         public override bool Running { get; protected set; }
         public override ConcurrentQueue<DataModel> DataQueue { get; protected set; } = new();
-        public override ConcurrentQueue<DataModel> SentData { get; protected set; } = new();
+        public override ObservableCollection<DataLogViewModel> LogData { get; protected set; } = new();
         public override SourceItemViewModel SourceItemViewModel { get; protected set; } = new();
 
         private SerialPort _port = new();

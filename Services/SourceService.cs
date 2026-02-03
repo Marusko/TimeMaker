@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using TimeMaker.Models;
 using TimeMaker.ViewModels;
 
@@ -16,7 +17,7 @@ namespace TimeMaker.Services
         public abstract int SentError { get; protected set; }
         public abstract bool Running { get; protected set; }
         public abstract ConcurrentQueue<DataModel> DataQueue { get; protected set; }
-        public abstract ConcurrentQueue<DataModel> SentData { get; protected set; }
+        public abstract ObservableCollection<DataLogViewModel> LogData { get; protected set; }
         public abstract SourceItemViewModel SourceItemViewModel { get; protected set; }
 
         public abstract void Init(SourceInitModel initModel);

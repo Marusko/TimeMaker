@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using TimeMaker.Models;
 using TimeMaker.ViewModels;
 
@@ -15,8 +16,9 @@ namespace TimeMaker.Services
         public override int SentOk { get; protected set; }
         public override int SentError { get; protected set; }
         public override bool Running { get; protected set; }
+        public bool Template { get; protected set; }
         public override ConcurrentQueue<DataModel> DataQueue { get; protected set; } = new();
-        public override ConcurrentQueue<DataModel> SentData { get; protected set; } = new();
+        public override ObservableCollection<DataLogViewModel> LogData { get; protected set; } = new();
         public override SourceItemViewModel SourceItemViewModel { get; protected set; } = new();
 
         public override void Init(SourceInitModel initModel)
@@ -27,7 +29,7 @@ namespace TimeMaker.Services
                 {
                     Id = Guid.NewGuid().ToString(),
                     Name = model.Name,
-                    Type = "CSV",
+                    Type = "CSV" + (model.Template ? " šablóna" : ""),
                     Source = model.Source,
                     Target = model.FirstTarget.Name,
                     Status = "Pripravené",
@@ -35,9 +37,10 @@ namespace TimeMaker.Services
                 };
                 Id = SourceItemViewModel.Id;
                 Name = model.Name;
-                Type = "CSV";
+                Type = "CSV" + (model.Template ? " šablóna" : "");
                 Source = model.Source;
                 Target = model.FirstTarget.Name;
+                Template = model.Template;
             }
         }
 
