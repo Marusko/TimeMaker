@@ -8,10 +8,14 @@
         public TimeOnly Time { get; set; }
         public ApiTimingPoint TimingPoint { get; set; } = new();
         public string RawData { get; set; } = string.Empty;
+        public bool CompareBib(DataModel d)
+        {
+            return (!string.IsNullOrEmpty(Bib) && !string.IsNullOrEmpty(d.Bib) && Bib.Equals(d.Bib)) &&
+                   (Time.ToString("hhmmsstt").Equals(d.Time.ToString("hhmmsstt")));
+        }
         public bool Compare(DataModel d)
         {
-            return (!string.IsNullOrEmpty(Bib) && !string.IsNullOrEmpty(d.Id) && Id.Equals(d.Id)) &&
-                   (Time.ToString("hhmmsstt").Equals(d.Time.ToString("hhmmsstt")));
+            return !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(d.Id) && Id.Equals(d.Id);
         }
     }
 }

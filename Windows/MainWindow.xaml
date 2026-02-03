@@ -59,7 +59,7 @@
                                             </Hyperlink>
                                         </Label>
                                         <Label VerticalAlignment="Center">
-                                            <Hyperlink Click="ViewRawSource" IsEnabled="{Binding IsRunning}">
+                                            <Hyperlink Click="ViewRawSource">
                                                 <Run Text="Zobraziť"/>
                                             </Hyperlink>
                                         </Label>

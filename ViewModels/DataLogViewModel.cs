@@ -8,6 +8,9 @@ namespace TimeMaker.ViewModels
     {
         public string Id { get; set; } = string.Empty;
         public string Raw { get; set; } = string.Empty;
+        public string Bib { get; set; } = string.Empty;
+        public TimeOnly Time { get; set; }
+        public ApiTimingPoint TimingPoint { get; set; } = new();
 
         private UploadStatus _status = UploadStatus.Pending;
         public UploadStatus Status

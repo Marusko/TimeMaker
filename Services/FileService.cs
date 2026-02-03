@@ -17,8 +17,9 @@ namespace TimeMaker.Services
         public override int SentError { get; protected set; }
         public override bool Running { get; protected set; }
         public bool Template { get; protected set; }
-        public override ConcurrentQueue<DataModel> DataQueue { get; protected set; } = new();
+        public override ConcurrentDictionary<string, DataModel> DataDictionary { get; protected set; } = new();
         public override ObservableCollection<DataLogViewModel> LogData { get; protected set; } = new();
+        protected override ConcurrentDictionary<string, DataLogViewModel> LogDataLookup { get; set; } = new();
         public override SourceItemViewModel SourceItemViewModel { get; protected set; } = new();
 
         public override void Init(SourceInitModel initModel)

@@ -16,15 +16,14 @@ namespace TimeMaker.Services
         public abstract int SentOk { get; protected set; }
         public abstract int SentError { get; protected set; }
         public abstract bool Running { get; protected set; }
-        public abstract ConcurrentQueue<DataModel> DataQueue { get; protected set; }
+        public abstract ConcurrentDictionary<string, DataModel> DataDictionary { get; protected set; }
         public abstract ObservableCollection<DataLogViewModel> LogData { get; protected set; }
+        protected abstract ConcurrentDictionary<string, DataLogViewModel> LogDataLookup { get; set; }
         public abstract SourceItemViewModel SourceItemViewModel { get; protected set; }
 
         public abstract void Init(SourceInitModel initModel);
 
         public abstract void Start();
-
-        public abstract List<DataModel> GetAllData();
 
         public abstract List<DataModel> GetUnsentData();
 
