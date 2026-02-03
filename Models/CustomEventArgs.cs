@@ -19,6 +19,7 @@ namespace TimeMaker.Models
         public string Id { get; set; } = string.Empty;
         public string SourceId { get; set; } = string.Empty;
         public UploadStatus Status { get; set; } = UploadStatus.Pending;
+        public string StatusCode { get; set; } = string.Empty;
     }
 
     public class SourceEventArgs : EventArgs

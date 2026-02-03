@@ -58,7 +58,7 @@ namespace TimeMaker.Services
             {
                 if (LogDataLookup.TryGetValue(e.Id, out var item))
                 {
-                    item.ChangeStatus(e.Status);
+                    item.ChangeStatus(e.Status, e.StatusCode);
                 }
                 if (e.Status == UploadStatus.Completed)
                 {

@@ -11,6 +11,7 @@ namespace TimeMaker.ViewModels
         public string Bib { get; set; } = string.Empty;
         public TimeOnly Time { get; set; }
         public ApiTimingPoint TimingPoint { get; set; } = new();
+        public string StatusCode { get; set; } = string.Empty;
 
         private UploadStatus _status = UploadStatus.Pending;
         public UploadStatus Status
@@ -33,8 +34,9 @@ namespace TimeMaker.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void ChangeStatus(UploadStatus status)
+        public void ChangeStatus(UploadStatus status, string statusCode)
         {
+            StatusCode = statusCode;
             Status = status;
         }
     }

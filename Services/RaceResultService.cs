@@ -315,8 +315,13 @@ namespace TimeMaker.Services
                         {
                             Id = data.Id,
                             SourceId = data.SourceId,
-                            Status = resp.IsSuccessStatusCode ? UploadStatus.Completed : UploadStatus.Failed
+                            Status = resp.IsSuccessStatusCode ? UploadStatus.Completed : UploadStatus.Failed,
+                            StatusCode = resp.StatusCode.ToString()
                         });
+                        if (!resp.IsSuccessStatusCode)
+                        {
+                            App.Logger.LogError($"[RR] AUTO sending data failed - {resp.StatusCode}");
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -327,7 +332,8 @@ namespace TimeMaker.Services
                         {
                             Id = data.Id,
                             SourceId = data.SourceId,
-                            Status = UploadStatus.Failed
+                            Status = UploadStatus.Failed,
+                            StatusCode = ex.Message
                         });
                     }
                     App.Logger.LogError("[RR] AUTO sending data failed", ex);
