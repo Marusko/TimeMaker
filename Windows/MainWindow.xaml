@@ -97,9 +97,6 @@
                     </Hyperlink>
                 </TextBlock>
             </StatusBarItem>
-            <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock x:Name="StatusText" Text="Ready"/>
-            </StatusBarItem>
         </StatusBar>
     </Grid>
 </Window>
