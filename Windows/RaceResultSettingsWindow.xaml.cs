@@ -40,9 +40,18 @@ namespace TimeMaker.Windows
 
         private async void Save(object sender, RoutedEventArgs e)
         {
-            await App.RaceResult.Start();
-            App.RaceResult.RaceResultApiLoaded -= OnRaceResultApiLoaded;
-            Close();
+            try
+            {
+                await App.RaceResult.Start();
+                App.RaceResult.RaceResultApiLoaded -= OnRaceResultApiLoaded;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBoxImage icon = MessageBoxImage.Error;
+                MessageBox.Show($"Nastala chyba pri spustení API služby: {ex.Message}", "Chyba", button, icon, MessageBoxResult.OK);
+            }
         }
     }
 }
