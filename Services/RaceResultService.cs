@@ -311,6 +311,7 @@ namespace TimeMaker.Services
                         RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
                         {
                             Id = data.Id,
+                            SourceId = data.SourceId,
                             Status = resp.IsSuccessStatusCode ? UploadStatus.Completed : UploadStatus.Failed
                         });
                     }
@@ -322,6 +323,7 @@ namespace TimeMaker.Services
                         RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
                         {
                             Id = data.Id,
+                            SourceId = data.SourceId,
                             Status = UploadStatus.Failed
                         });
                     }

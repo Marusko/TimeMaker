@@ -17,6 +17,7 @@ namespace TimeMaker.Models
     public class RaceResultTimeSentEventArgs : EventArgs
     {
         public string Id { get; set; } = string.Empty;
+        public string SourceId { get; set; } = string.Empty;
         public UploadStatus Status { get; set; } = UploadStatus.Pending;
     }
 
