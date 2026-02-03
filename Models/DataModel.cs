@@ -10,7 +10,8 @@
         public string RawData { get; set; } = string.Empty;
         public bool Compare(DataModel d)
         {
-            return !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(d.Id) && Id.Equals(d.Id);
+            return (!string.IsNullOrEmpty(Bib) && !string.IsNullOrEmpty(d.Id) && Id.Equals(d.Id)) &&
+                   (Time.ToString("hhmmsstt").Equals(d.Time.ToString("hhmmsstt")));
         }
     }
 }
