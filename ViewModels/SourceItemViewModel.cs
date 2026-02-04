@@ -4,11 +4,11 @@ namespace TimeMaker.ViewModels
 {
     public class SourceItemViewModel : INotifyPropertyChanged
     {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Type { get; set; } = string.Empty;
-        public string Source { get; set; } = string.Empty;
-        public string Target { get; set; } = string.Empty;
+        public string Id { get; init; } = string.Empty;
+        public string Name { get; init; } = string.Empty;
+        public string Type { get; init; } = string.Empty;
+        public string Source { get; init; } = string.Empty;
+        public string Target { get; init; } = string.Empty;
 
         private string _status = string.Empty;
         public string Status
@@ -43,7 +43,7 @@ namespace TimeMaker.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

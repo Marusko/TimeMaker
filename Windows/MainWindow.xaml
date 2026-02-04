@@ -57,7 +57,7 @@
                         <GridViewColumn Header="Stav" DisplayMemberBinding="{Binding Status}" Width="100"/>
                         <GridViewColumn Header="Akcie" Width="230">
                             <GridViewColumn.CellTemplate>
-                                <DataTemplate DataType="viewModels:SourceItemViewModel">
+                                <DataTemplate DataType="{x:Type viewModels:SourceItemViewModel}">
                                     <StackPanel Orientation="Horizontal">
                                         <Label VerticalAlignment="Center">
                                             <Hyperlink Click="StartSource" IsEnabled="{Binding IsNotRunning}">

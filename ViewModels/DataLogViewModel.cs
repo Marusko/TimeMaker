@@ -7,12 +7,12 @@ namespace TimeMaker.ViewModels
 {
     public class DataLogViewModel : INotifyPropertyChanged
     {
-        public string Id { get; set; } = string.Empty;
-        public string Raw { get; set; } = string.Empty;
-        public string Bib { get; set; } = string.Empty;
-        public TimeOnly Time { get; set; }
-        public ApiTimingPoint TimingPoint { get; set; } = new();
-        public string StatusCode { get; set; } = string.Empty;
+        public string Id { get; init; } = string.Empty;
+        public string Raw { get; init; } = string.Empty;
+        public string Bib { get; init; } = string.Empty;
+        public TimeOnly Time { get; init; }
+        public ApiTimingPoint TimingPoint { get; init; } = new();
+        public string StatusCode { get; private set; } = string.Empty;
 
         private UploadStatus _status = UploadStatus.Pending;
         public UploadStatus Status

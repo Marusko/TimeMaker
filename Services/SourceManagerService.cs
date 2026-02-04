@@ -23,7 +23,7 @@ namespace TimeMaker.Services
                 var fileService = new FileService();
                 fileService.Init(initModel);
                 App.Logger.Log($"[SM] FileService added: {fileService.Id}");
-                SourceAdded?.Invoke(this, new SourceEventArgs { SourceId = fileService.Id, SourceService = fileService, Type = typeof(FileService) });
+                SourceAdded?.Invoke(this, new SourceEventArgs { SourceService = fileService });
                 return Sources.TryAdd(fileService.Id, fileService);
             }
             else if (sourceType == typeof(SerialPortService))
@@ -31,7 +31,7 @@ namespace TimeMaker.Services
                 var serialPortService = new SerialPortService();
                 serialPortService.Init(initModel);
                 App.Logger.Log($"[SM] SerialPortService added: {serialPortService.Id}");
-                SourceAdded?.Invoke(this, new SourceEventArgs { SourceId = serialPortService.Id, SourceService = serialPortService, Type = typeof(SerialPortService) });
+                SourceAdded?.Invoke(this, new SourceEventArgs { SourceService = serialPortService });
                 return Sources.TryAdd(serialPortService.Id, serialPortService);
             }
 
@@ -44,7 +44,7 @@ namespace TimeMaker.Services
             if (res)
             {
                 App.Logger.Log($"[SM] Source removed: {source?.Id}");
-                SourceRemoved?.Invoke(this, new SourceEventArgs { SourceId = source?.Id ?? "", SourceService = source, Type = source?.GetType() ?? typeof(SourceService) });
+                SourceRemoved?.Invoke(this, new SourceEventArgs { SourceService = source });
                 RemoveAllSourceWindows(source?.Id ?? "");
                 source?.Stop();
             }

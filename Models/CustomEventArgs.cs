@@ -13,21 +13,19 @@ namespace TimeMaker.Models
 
     public class RaceResultBibsLoadedEventArgs : EventArgs
     {
-        public List<string> Bibs { get; set; } = new();
+        public List<string> Bibs { get; init; } = new();
     }
 
     public class RaceResultTimeSentEventArgs : EventArgs
     {
-        public string Id { get; set; } = string.Empty;
-        public string SourceId { get; set; } = string.Empty;
-        public UploadStatus Status { get; set; } = UploadStatus.Pending;
-        public string StatusCode { get; set; } = string.Empty;
+        public string Id { get; init; } = string.Empty;
+        public string SourceId { get; init; } = string.Empty;
+        public UploadStatus Status { get; init; } = UploadStatus.Pending;
+        public string StatusCode { get; init; } = string.Empty;
     }
 
     public class SourceEventArgs : EventArgs
     {
-        public string SourceId { get; set; } = string.Empty;
-        public SourceService? SourceService { get; set; }
-        public Type Type { get; set; } = typeof(SourceService);
+        public SourceService? SourceService { get; init; }
     }
 }

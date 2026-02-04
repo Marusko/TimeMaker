@@ -10,7 +10,7 @@ namespace TimeMaker.Models
 
     public class ApiTimingPoint
     {
-        public string Name { get; set; } = "";
+        public string Name { get; init; } = "";
     }
 
     public class TimingResult
