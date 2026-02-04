@@ -7,50 +7,66 @@
         mc:Ignorable="d"
         Title="Dáta zo zdroja" Height="450" Width="500" ResizeMode="NoResize" Icon="../Icons/favicon.ico"
         Closing="StatusWindow_OnClosing">
-    <GroupBox Header="Dáta zo zdroja">
-        <ListView x:Name="ListViewData" Margin="5" ScrollViewer.CanContentScroll="False">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="Focusable" Value="False"/>
-                    <Setter Property="Background" Value="{Binding ItemBackground}"/>
-                    <Setter Property="BorderBrush" Value="Transparent"/>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{Binding ItemBackground}"/>
-                            <Setter Property="BorderBrush" Value="Transparent"/>
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="{Binding ItemBackground}"/>
-                            <Setter Property="BorderBrush" Value="Transparent"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="CLR" DisplayMemberBinding="{Binding ClearLabel}" Width="35"/>
-                    <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="180"/>
-                    <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding TimingPoint.Name}" Width="80"/>
-                    <GridViewColumn Header="Akcie" Width="130">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate DataType="{x:Type viewModels:DataLogViewModel}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Label VerticalAlignment="Center" Visibility="{Binding RetryVisibility}">
-                                        <Hyperlink Click="Upload">
-                                            <Run Text="Nahrať"/>
-                                        </Hyperlink>
-                                    </Label>
-                                    <Label VerticalAlignment="Center" Visibility="{Binding ErrorVisibility}">
-                                        <Hyperlink Click="ShowError">
-                                            <Run Text="Chyba"/>
-                                        </Hyperlink>
-                                    </Label>
-                                </StackPanel>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-    </GroupBox>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0" Header="Filter">
+            <ComboBox x:Name="ComboBox" Margin="5">
+                <ComboBoxItem Tag="0">Všetky</ComboBoxItem>
+                <ComboBoxItem Tag="1">Čakajúce</ComboBoxItem>
+                <ComboBoxItem Tag="2">Nahraté</ComboBoxItem>
+                <ComboBoxItem Tag="3">Ignorované</ComboBoxItem>
+                <ComboBoxItem Tag="4">Mazania</ComboBoxItem>
+                <ComboBoxItem Tag="5">Chybné</ComboBoxItem>
+            </ComboBox>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Header="Dáta zo zdroja">
+            <ListView x:Name="ListViewData" Margin="5" ScrollViewer.CanContentScroll="False">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Focusable" Value="False"/>
+                        <Setter Property="Background" Value="{Binding ItemBackground}"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{Binding ItemBackground}"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{Binding ItemBackground}"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="CLR" DisplayMemberBinding="{Binding ClearLabel}" Width="35"/>
+                        <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="180"/>
+                        <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding TimingPoint.Name}" Width="80"/>
+                        <GridViewColumn Header="Akcie" Width="130">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate DataType="{x:Type viewModels:DataLogViewModel}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label VerticalAlignment="Center" Visibility="{Binding RetryVisibility}">
+                                            <Hyperlink Click="Upload">
+                                                <Run Text="Nahrať"/>
+                                            </Hyperlink>
+                                        </Label>
+                                        <Label VerticalAlignment="Center" Visibility="{Binding ErrorVisibility}">
+                                            <Hyperlink Click="ShowError">
+                                                <Run Text="Chyba"/>
+                                            </Hyperlink>
+                                        </Label>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </GroupBox>
+    </Grid>
 </Window>
