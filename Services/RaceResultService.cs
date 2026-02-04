@@ -44,6 +44,8 @@ namespace TimeMaker.Services
             _manualUrl = "";
             _pointsUrl = "";
             _bibListUrl = "";
+            _rawSearchUrl = "";
+            _invalidateUrl = "";
         }
 
         public async Task Start()
@@ -333,28 +335,37 @@ namespace TimeMaker.Services
         private void CollectData(object? sender, EventArgs e)
         {
             App.Logger.Log("[RR] AUTO collecting data...");
-            foreach (var source in App.SourceManager.Sources)
+            try
             {
-                if (source.Value.Running)
+                foreach (var source in App.SourceManager.Sources)
                 {
-                    if (!source.Value.DataDictionary.IsEmpty)
+                    if (source.Value.Running)
                     {
-                        var unsent = source.Value.GetUnsentData();
-                        foreach (var data in unsent)
+                        if (!source.Value.DataDictionary.IsEmpty)
                         {
-                            _unsentData.Enqueue(data);
+                            var unsent = source.Value.GetUnsentData();
+                            foreach (var data in unsent)
+                            {
+                                _unsentData.Enqueue(data);
+                            }
                         }
                     }
                 }
-            }
-            if (!_unsentData.IsEmpty)
-            {
-                if (_timer is { IsEnabled: false })
+
+                if (!_unsentData.IsEmpty)
                 {
-                    _timer.Start();
+                    if (_timer is { IsEnabled: false })
+                    {
+                        _timer.Start();
+                    }
                 }
+
+                App.Logger.Log("[RR] AUTO data collected");
             }
-            App.Logger.Log("[RR] AUTO data collected");
+            catch (Exception ex)
+            {
+                App.Logger.LogError("[RR] AUTO data collection failed", ex);
+            }
         }
 
         private async void SendDataToRr(object? sender, EventArgs e)

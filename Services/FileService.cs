@@ -196,7 +196,7 @@ namespace TimeMaker.Services
             catch (Exception ex)
             {
                 App.Logger.LogError($"[FS] Error loading data for FileSource: {Id}", ex);
-                throw new Exception(ex.Message);
+                throw;
             }
         }
 

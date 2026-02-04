@@ -163,43 +163,67 @@ namespace TimeMaker.Services
 
         private void SetStopwatchPoints(string startPoint, string finishPoint, string runTimePoint)
         {
-            App.Logger.Log($"[SS] Setting stopwatch points for SerialPortSource: {Id}");
-            _algePoints.Clear();
-            _algePoints.TryAdd("Start", (CreateCompiledRegex("[n] C0M [t] 00"), CreateCompiledRegex("[n] C0 [t] 00"), startPoint));
-            _algePoints.TryAdd("Finish", (CreateCompiledRegex("[n] C1M [t] 00"), CreateCompiledRegex("[n] C1 [t] 00"), finishPoint));
-            if (!string.IsNullOrEmpty(runTimePoint))
+            try
             {
-                _algePoints.TryAdd("RunTime", (CreateCompiledRegex("[n] RTM [t] 00"), CreateCompiledRegex("[n] RT [t] 00"), runTimePoint));
-            }
+                App.Logger.Log($"[SS] Setting stopwatch points for SerialPortSource: {Id}");
+                _algePoints.Clear();
+                _algePoints.TryAdd("Start", (CreateCompiledRegex("[n] C0M [t] 00"), CreateCompiledRegex("[n] C0 [t] 00"), startPoint));
+                _algePoints.TryAdd("Finish", (CreateCompiledRegex("[n] C1M [t] 00"), CreateCompiledRegex("[n] C1 [t] 00"), finishPoint));
+                if (!string.IsNullOrEmpty(runTimePoint))
+                {
+                    _algePoints.TryAdd("RunTime", (CreateCompiledRegex("[n] RTM [t] 00"), CreateCompiledRegex("[n] RT [t] 00"), runTimePoint));
+                }
 
-            _regStart = "";
+                _regStart = "";
+            }
+            catch (Exception e)
+            {
+                App.Logger.LogError("[SS] Error setting stopwatch points", e);
+                MessageBox.Show($"Nepodarilo sa nastaviť pravidlá pre impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", "Chyba impulzov", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void SetBackupPoints(string startPoint, string finishPoint, string runTimePoint)
         {
-            App.Logger.Log($"[SS] Setting backup points for SerialPortSource: {Id}");
-            _algePoints.Clear();
-            _algePoints.TryAdd("Start", (CreateCompiledRegex("*[n] C0M [t] 00"), CreateCompiledRegex("*[n] C0 [t] 00"), startPoint));
-            _algePoints.TryAdd("Finish", (CreateCompiledRegex("*[n] C1M [t] 00"), CreateCompiledRegex("*[n] C1 [t] 00"), finishPoint));
-            if (!string.IsNullOrEmpty(runTimePoint))
+            try
             {
-                _algePoints.TryAdd("RunTime", (CreateCompiledRegex("*[n] RTM [t] 00"), CreateCompiledRegex("*[n] RT [t] 00"), runTimePoint));
-            }
+                App.Logger.Log($"[SS] Setting backup points for SerialPortSource: {Id}");
+                _algePoints.Clear();
+                _algePoints.TryAdd("Start", (CreateCompiledRegex("*[n] C0M [t] 00"), CreateCompiledRegex("*[n] C0 [t] 00"), startPoint));
+                _algePoints.TryAdd("Finish", (CreateCompiledRegex("*[n] C1M [t] 00"), CreateCompiledRegex("*[n] C1 [t] 00"), finishPoint));
+                if (!string.IsNullOrEmpty(runTimePoint))
+                {
+                    _algePoints.TryAdd("RunTime", (CreateCompiledRegex("*[n] RTM [t] 00"), CreateCompiledRegex("*[n] RT [t] 00"), runTimePoint));
+                }
 
-            _regStart = "*";
+                _regStart = "*";
+            }
+            catch (Exception e)
+            {
+                App.Logger.LogError("[SS] Error setting backup points", e);
+                MessageBox.Show($"Nepodarilo sa nastaviť pravidlá pre impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", "Chyba impulzov", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void SetClearPoints(string startPoint, string finishPoint, string runTimePoint)
         {
-            App.Logger.Log($"[SS] Setting clear points for SerialPortSource: {Id}");
-            _algeClearPoints.TryAdd("StartClear", (CreateCompiledRegex("c[n] C0M [t] 00"), CreateCompiledRegex("c[n] C0 [t] 00"), startPoint));
-            _algeClearPoints.TryAdd("FinishClear", (CreateCompiledRegex("c[n] C1M [t] 00"), CreateCompiledRegex("c[n] C1 [t] 00"), finishPoint));
-            _algeClearPoints.TryAdd("StartBigClear", (CreateCompiledRegex("C[n] C0M [t] 00"), CreateCompiledRegex("C[n] C0 [t] 00"), startPoint));
-            _algeClearPoints.TryAdd("FinishBigClear", (CreateCompiledRegex("C[n] C1M [t] 00"), CreateCompiledRegex("C[n] C1 [t] 00"), finishPoint));
-            if (!string.IsNullOrEmpty(runTimePoint))
+            try
             {
-                _algeClearPoints.TryAdd("RunTimeClear", (CreateCompiledRegex("c[n] RTM [t] 00"), CreateCompiledRegex("c[n] RT [t] 00"), runTimePoint));
-                _algeClearPoints.TryAdd("RunTimeBigClear", (CreateCompiledRegex("C[n] RTM [t] 00"), CreateCompiledRegex("C[n] RT [t] 00"), runTimePoint));
+                App.Logger.Log($"[SS] Setting clear points for SerialPortSource: {Id}");
+                _algeClearPoints.TryAdd("StartClear", (CreateCompiledRegex("c[n] C0M [t] 00"), CreateCompiledRegex("c[n] C0 [t] 00"), startPoint));
+                _algeClearPoints.TryAdd("FinishClear", (CreateCompiledRegex("c[n] C1M [t] 00"), CreateCompiledRegex("c[n] C1 [t] 00"), finishPoint));
+                _algeClearPoints.TryAdd("StartBigClear", (CreateCompiledRegex("C[n] C0M [t] 00"), CreateCompiledRegex("C[n] C0 [t] 00"), startPoint));
+                _algeClearPoints.TryAdd("FinishBigClear", (CreateCompiledRegex("C[n] C1M [t] 00"), CreateCompiledRegex("C[n] C1 [t] 00"), finishPoint));
+                if (!string.IsNullOrEmpty(runTimePoint))
+                {
+                    _algeClearPoints.TryAdd("RunTimeClear", (CreateCompiledRegex("c[n] RTM [t] 00"), CreateCompiledRegex("c[n] RT [t] 00"), runTimePoint));
+                    _algeClearPoints.TryAdd("RunTimeBigClear", (CreateCompiledRegex("C[n] RTM [t] 00"), CreateCompiledRegex("C[n] RT [t] 00"), runTimePoint));
+                }
+            }
+            catch (Exception e)
+            {
+                App.Logger.LogError("[SS] Error setting clear points", e);
+                MessageBox.Show($"Nepodarilo sa nastaviť pravidlá pre mazacie impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", "Chyba mazacích impulzov", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -350,8 +374,17 @@ namespace TimeMaker.Services
 
         public static List<string> GetAvailablePorts()
         {
-            App.Logger.Log("[SS] Getting available ports");
-            return SerialPort.GetPortNames().ToList();
+            try
+            {
+                App.Logger.Log("[SS] Getting available ports");
+                return SerialPort.GetPortNames().ToList();
+            }
+            catch (Exception e)
+            {
+                App.Logger.LogError("[SS] Error getting available ports", e);
+                MessageBox.Show($"Nepodarilo sa načítať dostupné porty: [{e.Message}]", "Chyba dostupných portov", MessageBoxButton.OK, MessageBoxImage.Error);
+                return new List<string>();
+            }
         }
 
         public void TestConnection(string port)
