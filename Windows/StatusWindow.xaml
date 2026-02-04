@@ -8,7 +8,7 @@
         Title="Dáta zo zdroja" Height="450" Width="500" ResizeMode="NoResize" Icon="../Icons/favicon.ico"
         Closing="StatusWindow_OnClosing">
     <GroupBox Header="Dáta zo zdroja">
-        <ListView x:Name="ListViewData" Margin="5">
+        <ListView x:Name="ListViewData" Margin="5" ScrollViewer.CanContentScroll="False">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="Focusable" Value="False"/>

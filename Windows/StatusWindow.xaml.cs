@@ -1,7 +1,10 @@
 ﻿using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Threading;
 using TimeMaker.Models;
 using TimeMaker.Services;
 using TimeMaker.ViewModels;
@@ -14,12 +17,14 @@ namespace TimeMaker.Windows
     public partial class StatusWindow
     {
         private SourceService _sourceService;
+        private ScrollViewer? _scrollViewer;
         public StatusWindow(SourceService sourceService)
         {
             InitializeComponent();
             _sourceService = sourceService;
             _sourceService.LogData.CollectionChanged += Items_CollectionChanged;
             ListViewData.ItemsSource = _sourceService.LogData;
+            ListViewData.Loaded += ListLoaded;
             Title = _sourceService.Source;
         }
 
@@ -56,13 +61,57 @@ namespace TimeMaker.Windows
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                ListViewData.ScrollIntoView(ListViewData.Items[0] ?? throw new InvalidOperationException());
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (IsNearBottom())
+                    {
+                        ListViewData.ScrollIntoView(_sourceService.LogData.Last());
+                    }
+                }), DispatcherPriority.Background);
             }
+        }
+
+        private void ListLoaded(object sender, RoutedEventArgs e)
+        {
+            _scrollViewer = FindVisualChild<ScrollViewer>(ListViewData);
+        }
+
+        private bool IsNearBottom()
+        {
+            if (_scrollViewer == null)
+                return true;
+
+            // Total scrollable content height
+            double extentHeight = _scrollViewer.ExtentHeight;
+
+            // Bottom of currently visible area
+            double visibleBottom = _scrollViewer.VerticalOffset + _scrollViewer.ViewportHeight;
+
+            // Distance from bottom
+            double distanceFromBottom = extentHeight - visibleBottom;
+
+            return distanceFromBottom < 150;
+        }
+
+        private T? FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                if (child is T typedChild)
+                    return typedChild;
+
+                var childOfChild = FindVisualChild<T>(child);
+                if (childOfChild != null)
+                    return childOfChild;
+            }
+            return null;
         }
 
         private void StatusWindow_OnClosing(object? sender, CancelEventArgs e)
         {
             _sourceService.LogData.CollectionChanged -= Items_CollectionChanged;
+            ListViewData.Loaded -= ListLoaded;
             App.SourceManager.RemoveWindow(_sourceService.Id, this);
         }
     }
