@@ -6,10 +6,10 @@
 
 ### V RaceResult je potrebné mať vytvorené tieto API:
 * Typ: `Custom` - Detaily: `rawdata/addmanual` - Label: `manual`
-* Typ: `Custom` - Detaily: `rawdata/setinvalid` - Label: `invalid` - Voliteľné
-* Typ: `Custom` - Detaily: `rawdata/get` - Label: `search` - Voliteľné
+* Typ: `Custom` - Detaily: `rawdata/setinvalid` - Label: `invalid` - Voliteľné pre automatickú invalidáciu
+* Typ: `Custom` - Detaily: `rawdata/get` - Label: `search` - Voliteľné pre automatickú invalidáciu
 * Typ: `Custom` - Detaily: `timingpoints/get` - Label: `points`
-* Typ: `Custom` - Detaily: `data/list?&fields=Bib&listformat=JSON` - Label: `bibs` - Voliteľné
+* Typ: `Custom` - Detaily: `data/list?&fields=Bib&listformat=JSON` - Label: `bibs` - Voliteľné pre CSV šablónu
 * Typ: `Custom` - Detaily: `simpleapi/get` - Label: `api` - Tento link sa kopíruje do Time Maker
 
 Táto aplikácia využíva tieto externé služby:
