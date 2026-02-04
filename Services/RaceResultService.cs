@@ -317,6 +317,19 @@ namespace TimeMaker.Services
             }
         }
 
+        public void AddManual(DataModel model)
+        {
+            App.Logger.Log($"[RR] Adding manual data - {model.Id}");
+            _unsentData.Enqueue(model);
+            if (!_unsentData.IsEmpty)
+            {
+                if (_timer is { IsEnabled: false })
+                {
+                    _timer.Start();
+                }
+            }
+        }
+
         private void CollectData(object? sender, EventArgs e)
         {
             App.Logger.Log("[RR] AUTO collecting data...");
@@ -426,11 +439,15 @@ namespace TimeMaker.Services
                         var invResp = await _httpClient.GetAsync(invConn);
                         return invResp;
                     }
+                    else
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.NotFound);
+                    }
                 }
                 else
                 {
                     App.Logger.LogError("[RR] Cannot load timing data from API - results list is null");
-                    throw new HttpRequestException("Neúspešné načítanie časových dát\nChyba: \n[Body sú null]");
+                    throw new HttpRequestException("Neúspešné načítanie časových dát\nChyba: \n[Impulzy sú null]");
                 }
             }
             return resp;

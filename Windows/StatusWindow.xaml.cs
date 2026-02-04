@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Documents;
+using TimeMaker.Models;
 using TimeMaker.Services;
 using TimeMaker.ViewModels;
 
@@ -27,7 +28,18 @@ namespace TimeMaker.Windows
             var link = sender as Hyperlink;
             if (link?.DataContext is DataLogViewModel dataVm)
             {
-                // Retry upload
+                var data = new DataModel()
+                {
+                    Id = dataVm.Id,
+                    SourceId = _sourceService.Id,
+                    Bib = dataVm.Bib,
+                    Time = dataVm.Time,
+                    TimingPoint = dataVm.TimingPoint,
+                    RawData = dataVm.Raw,
+                    IsClear = dataVm.IsClear
+                };
+                dataVm.Status = UploadStatus.Pending;
+                App.RaceResult.AddManual(data);
             }
         }
 
