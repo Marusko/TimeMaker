@@ -238,6 +238,7 @@ namespace TimeMaker.Services
 
                         foreach (var impulse in impulses)
                         {
+                            bool added = false;
                             if (impulse.StartsWith(_regStart) || impulse.StartsWith(_regClearStart) || impulse.StartsWith(_regBigClearStart))
                             {
                                 var parsed = ParseAlgeImpulse(impulse);
@@ -246,6 +247,7 @@ namespace TimeMaker.Services
                                     var d = StringToData(parsed, impulse);
                                     if (d != null)
                                     {
+                                        added = true;
                                         var vm = new DataLogViewModel()
                                         {
                                             Id = d.Id,
@@ -257,15 +259,27 @@ namespace TimeMaker.Services
                                             IsClear = d.IsClear
                                         };
 
-                                        Application.Current.Dispatcher.Invoke(() =>
-                                        {
-                                            LogData.Add(vm);
-                                        });
+                                        Application.Current.Dispatcher.Invoke(() => { LogData.Add(vm); });
 
                                         DataDictionary.AddOrUpdate(d.Id, d, (_, _) => d);
                                         LogDataLookup.AddOrUpdate(d.Id, vm, (_, _) => vm);
                                     }
                                 }
+                            }
+                            if (!added)
+                            {
+                                var vm = new DataLogViewModel()
+                                {
+                                    Id = Guid.NewGuid().ToString(),
+                                    Raw = impulse,
+                                    Bib = "",
+                                    Time = TimeOnly.MinValue,
+                                    TimingPoint = new ApiTimingPoint() { Name = "" },
+                                    Status = UploadStatus.Ignored,
+                                    IsClear = false
+                                };
+                                Application.Current.Dispatcher.Invoke(() => { LogData.Add(vm); });
+                                LogDataLookup.AddOrUpdate(vm.Id, vm, (_, _) => vm);
                             }
                         }
                     }
