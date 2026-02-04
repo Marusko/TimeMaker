@@ -22,6 +22,8 @@ namespace TimeMaker.Windows
                 BibListApiLabel.Content = e.BibsApiStatus;
                 InvalidApiLabel.Content = e.InvalidApiStatus;
                 RawSearchApiLabel.Content = e.RawSearchApiStatus;
+                LoadButton.IsEnabled = true;
+                SaveButton.IsEnabled = true;
             });
         }
 
@@ -29,8 +31,8 @@ namespace TimeMaker.Windows
         {
             try
             {
+                LoadButton.IsEnabled = false;
                 await App.RaceResult.LoadApi(ApiLinkText.Text);
-                SaveButton.IsEnabled = true;
             }
             catch (Exception ex)
             {
