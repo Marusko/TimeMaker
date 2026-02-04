@@ -25,6 +25,8 @@ namespace TimeMaker.ViewModels
                     _status = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(ErrorVisibility));
+                    OnPropertyChanged(nameof(ItemBackground));
+                    OnPropertyChanged(nameof(RetryVisibility));
                 }
             }
         }
@@ -40,11 +42,30 @@ namespace TimeMaker.ViewModels
                     _isClear = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(ClearLabel));
+                    OnPropertyChanged(nameof(ItemBackground));
+                    OnPropertyChanged(nameof(RetryVisibility));
                 }
             }
         }
 
+        public string ItemBackground => (Status, IsClear) switch
+        {
+            (UploadStatus.Completed, false) => "LightGreen",
+            (UploadStatus.Completed, true) => "LightBlue",
+            (UploadStatus.Failed, _) => "LightCoral",
+            (UploadStatus.Ignored, _) => "LightGray",
+            _ => "White"  // Default/Pending
+        };
+
         public Visibility ErrorVisibility => Status == UploadStatus.Failed ? Visibility.Visible : Visibility.Collapsed;
+
+        public Visibility RetryVisibility => (Status, IsClear, App.RaceResult.ClearEnabled) switch
+        {
+            (UploadStatus.Failed,false ,_) => Visibility.Visible,
+            (UploadStatus.Failed, true, true) => Visibility.Visible,
+            _ => Visibility.Collapsed
+        };
+
         public string ClearLabel => IsClear ? "Áno" : "";
 
         public event PropertyChangedEventHandler? PropertyChanged;
