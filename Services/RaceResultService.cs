@@ -355,7 +355,7 @@ namespace TimeMaker.Services
                     if (data != null)
                     {
                         HttpResponseMessage resp;
-                        resp = ClearEnabled ? (data.IsClear ? await SendClearData(data) : await SendData(data)) : (data.IsClear ? new HttpResponseMessage(HttpStatusCode.BadRequest) : await SendData(data));
+                        resp = ClearEnabled ? (data.IsClear ? await SendClearData(data) : await SendData(data)) : (data.IsClear ? new HttpResponseMessage(HttpStatusCode.FailedDependency) : await SendData(data));
                         RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
                         {
                             Id = data.Id,
