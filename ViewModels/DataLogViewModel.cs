@@ -48,6 +48,21 @@ namespace TimeMaker.ViewModels
             }
         }
 
+        private bool _isQuestion;
+        public bool IsQuestion
+        {
+            get => _isQuestion;
+            set
+            {
+                if (_isQuestion != value)
+                {
+                    _isQuestion = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(ItemFontWeight));
+                }
+            }
+        }
+
         public string ItemBackground => (Status, IsClear) switch
         {
             (UploadStatus.Completed, false) => "LightGreen",
@@ -56,6 +71,8 @@ namespace TimeMaker.ViewModels
             (UploadStatus.Ignored, _) => "LightGray",
             _ => "White"  // Default/Pending
         };
+
+        public FontWeight ItemFontWeight => IsQuestion ? FontWeights.Bold : FontWeights.Normal;
 
         public Visibility ErrorVisibility => Status == UploadStatus.Failed ? Visibility.Visible : Visibility.Collapsed;
 

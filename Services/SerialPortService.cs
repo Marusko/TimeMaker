@@ -30,10 +30,8 @@ namespace TimeMaker.Services
         private SerialPort _port = new();
         private ConcurrentDictionary<string, (Regex RegexManual, Regex RegexAuto, string TimingPoint)> _algePoints = new();
         private ConcurrentDictionary<string, (Regex RegexManual, Regex RegexAuto, string TimingPoint)> _algeClearPoints = new();
-        private string _regStart = string.Empty;
         private readonly string _regEnd = " 00";
-        private string _regClearStart = "c";
-        private string _regBigClearStart = "C";
+        private readonly char[] _impulseModifiers = [' ', '?', 'c', 'C', 'i'];
         private string _tempImpulse = "";
 
         public override void Init(SourceInitModel initModel)
@@ -173,8 +171,7 @@ namespace TimeMaker.Services
                 {
                     _algePoints.TryAdd("RunTime", (CreateCompiledRegex("[n] RTM [t] 00"), CreateCompiledRegex("[n] RT [t] 00"), runTimePoint));
                 }
-
-                _regStart = "";
+                _impulseModifiers[0] = ' ';
             }
             catch (Exception e)
             {
@@ -195,8 +192,7 @@ namespace TimeMaker.Services
                 {
                     _algePoints.TryAdd("RunTime", (CreateCompiledRegex("*[n] RTM [t] 00"), CreateCompiledRegex("*[n] RT [t] 00"), runTimePoint));
                 }
-
-                _regStart = "*";
+                _impulseModifiers[0] = '*';
             }
             catch (Exception e)
             {
@@ -263,7 +259,7 @@ namespace TimeMaker.Services
                         foreach (var impulse in impulses)
                         {
                             bool added = false;
-                            if (impulse.StartsWith(_regStart) || impulse.StartsWith(_regClearStart) || impulse.StartsWith(_regBigClearStart))
+                            if (_impulseModifiers.Contains(impulse[0]))
                             {
                                 var parsed = ParseAlgeImpulse(impulse);
                                 if (!string.IsNullOrEmpty(parsed))
@@ -280,7 +276,8 @@ namespace TimeMaker.Services
                                             Time = d.Time,
                                             TimingPoint = d.TimingPoint,
                                             Status = UploadStatus.Pending,
-                                            IsClear = d.IsClear
+                                            IsClear = d.IsClear,
+                                            IsQuestion = d.IsQuestion
                                         };
 
                                         Application.Current.Dispatcher.Invoke(() => { LogData.Add(vm); });
@@ -321,10 +318,10 @@ namespace TimeMaker.Services
         {
             var str = Regex.Replace(impulse, @"\s+", " ").Trim();
 
-            return TryParseFromCollection(str, _algeClearPoints, true) ?? TryParseFromCollection(str, _algePoints, false);
+            return TryParseFromCollection(str, _algeClearPoints, true, false) ?? TryParseFromCollection(str, _algePoints, false, str[0] == '?');
         }
 
-        private string? TryParseFromCollection(string str, IEnumerable<KeyValuePair<string, (Regex RegexManual, Regex RegexAuto, string TimingPoint)>> collection, bool isClear)
+        private string? TryParseFromCollection(string str, IEnumerable<KeyValuePair<string, (Regex RegexManual, Regex RegexAuto, string TimingPoint)>> collection, bool isClear, bool isQuestion)
         {
             foreach (var v in collection)
             {
@@ -336,7 +333,7 @@ namespace TimeMaker.Services
                     var match = regex.Match(str);
                     if (match.Success)
                     {
-                        return $"{match.Groups["number"].Value}|{match.Groups["time"].Value}|{v.Value.TimingPoint}|{isClear}";
+                        return $"{match.Groups["number"].Value}|{match.Groups["time"].Value}|{v.Value.TimingPoint}|{isClear}|{isQuestion}";
                     }
                 }
             }
@@ -347,15 +344,17 @@ namespace TimeMaker.Services
         private DataModel? StringToData(string parsedImpulse, string raw)
         {
             var parts = parsedImpulse.Split('|');
-            if (parts.Length == 4)
+            if (parts.Length == 5)
             {
                 var number = parts[0];
                 var timeStr = parts[1];
                 var clear = parts[3];
+                var question = parts[4];
                 var can = TimeOnly.TryParse(timeStr, out var parsed);
                 var canBib = int.TryParse(number, out var parsedBib);
                 var canClear = bool.TryParse(clear, out var parsedClear);
-                if (can && canBib && canClear)
+                var canQuestion = bool.TryParse(question, out var parsedQuestion);
+                if (can && canBib && canClear && canQuestion)
                 {
                     return new DataModel()
                     {
@@ -365,7 +364,8 @@ namespace TimeMaker.Services
                         Time = parsed,
                         TimingPoint = new ApiTimingPoint() { Name = parts[2] },
                         RawData = raw,
-                        IsClear = parsedClear
+                        IsClear = parsedClear,
+                        IsQuestion = parsedQuestion
                     };
                 }
             }
