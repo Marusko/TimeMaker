@@ -1,9 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using TimeMaker.Models;
 using TimeMaker.ViewModels;
 
