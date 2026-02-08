@@ -370,9 +370,9 @@ namespace TimeMaker.Services
 
         private async void SendDataToRr(object? sender, EventArgs e)
         {
-            App.Logger.Log("[RR] AUTO sending data...");
             if (!_unsentData.IsEmpty)
             {
+                App.Logger.Log("[RR] AUTO sending data...");
                 var data = _unsentData.TryDequeue(out var item) ? item : null;
                 try
                 {

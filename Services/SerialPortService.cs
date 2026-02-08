@@ -30,7 +30,6 @@ namespace TimeMaker.Services
         private SerialPort _port = new();
         private ConcurrentDictionary<string, (Regex RegexManual, Regex RegexAuto, string TimingPoint)> _algePoints = new();
         private ConcurrentDictionary<string, (Regex RegexManual, Regex RegexAuto, string TimingPoint)> _algeClearPoints = new();
-        private readonly string _regEnd = " 00";
         private readonly char[] _impulseModifiers = [' ', '?', 'c', 'C', 'i'];
         private string _tempImpulse = "";
 
@@ -234,10 +233,10 @@ namespace TimeMaker.Services
 
                     str = _port.ReadExisting().Replace("\n", "").Replace("\r", "|");
 
-                    if (!_tempImpulse.EndsWith($"{_regEnd}|"))
+                    if (!_tempImpulse.EndsWith("|"))
                     {
                         _tempImpulse += str;
-                        if (_tempImpulse.EndsWith($"{_regEnd}|"))
+                        if (_tempImpulse.EndsWith("|"))
                         {
                             complete = _tempImpulse;
                             _tempImpulse = "";
@@ -318,7 +317,11 @@ namespace TimeMaker.Services
         {
             var str = Regex.Replace(impulse, @"\s+", " ").Trim();
 
-            return TryParseFromCollection(str, _algeClearPoints, true, false) ?? TryParseFromCollection(str, _algePoints, false, str[0] == '?');
+            if (str.Length > 0)
+            {
+                return TryParseFromCollection(str, _algeClearPoints, true, false) ?? TryParseFromCollection(str, _algePoints, false, str[0] == '?');
+            }
+            return null;
         }
 
         private string? TryParseFromCollection(string str, IEnumerable<KeyValuePair<string, (Regex RegexManual, Regex RegexAuto, string TimingPoint)>> collection, bool isClear, bool isQuestion)
