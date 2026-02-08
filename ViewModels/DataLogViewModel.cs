@@ -83,6 +83,8 @@ namespace TimeMaker.ViewModels
             _ => Visibility.Collapsed
         };
 
+        public Visibility SeparatorVisibility => (ErrorVisibility == Visibility.Visible || RetryVisibility == Visibility.Visible) ? Visibility.Visible : Visibility.Collapsed;
+
         public string ClearLabel => IsClear ? "Áno" : "";
 
         public event PropertyChangedEventHandler? PropertyChanged;

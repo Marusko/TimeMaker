@@ -24,6 +24,15 @@
         </GroupBox>
         <GroupBox Grid.Row="1" Header="Dáta zo zdroja">
             <ListView x:Name="ListViewData" Margin="5" ScrollViewer.CanContentScroll="False">
+                <ListView.Resources>
+                    <ContextMenu x:Key="ItemContextMenu">
+                        <MenuItem Header="Kopírovať číslo" Click="CopyNumber"/>
+                        <MenuItem Header="Kopírovať čas" Click="CopyTime"/>
+                        <Separator Visibility="{Binding SeparatorVisibility}"/>
+                        <MenuItem Header="Znova nahrať" Visibility="{Binding RetryVisibility}" Click="Upload"/>
+                        <MenuItem Header="Ukázať chybu" Visibility="{Binding ErrorVisibility}" Click="ShowError"/>
+                    </ContextMenu>
+                </ListView.Resources>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="Focusable" Value="False"/>
@@ -31,6 +40,7 @@
                         <Setter Property="BorderBrush" Value="Transparent"/>
                         <Setter Property="FontWeight" Value="{Binding ItemFontWeight}"/>
                         <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="{Binding ItemBackground}"/>
@@ -45,27 +55,9 @@
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="CLR" DisplayMemberBinding="{Binding ClearLabel}" Width="35"/>
-                        <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="180"/>
-                        <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding TimingPoint.Name}" Width="80"/>
-                        <GridViewColumn Header="Akcie" Width="130">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate DataType="{x:Type viewModels:DataLogViewModel}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label VerticalAlignment="Center" Visibility="{Binding RetryVisibility}">
-                                            <Hyperlink Click="Upload">
-                                                <Run Text="Nahrať"/>
-                                            </Hyperlink>
-                                        </Label>
-                                        <Label VerticalAlignment="Center" Visibility="{Binding ErrorVisibility}">
-                                            <Hyperlink Click="ShowError">
-                                                <Run Text="Chyba"/>
-                                            </Hyperlink>
-                                        </Label>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                        <GridViewColumn Header="CLR" DisplayMemberBinding="{Binding ClearLabel}" Width="40"/>
+                        <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="290"/>
+                        <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding TimingPoint.Name}" Width="100"/>
                     </GridView>
                 </ListView.View>
             </ListView>

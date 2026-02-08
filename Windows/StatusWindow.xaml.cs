@@ -41,30 +41,56 @@ namespace TimeMaker.Windows
 
         private void Upload(object sender, RoutedEventArgs e)
         {
-            var link = sender as Hyperlink;
-            if (link?.DataContext is DataLogViewModel dataVm)
+            var menuItem = sender as MenuItem;
+            var contextMenu = menuItem?.Parent as ContextMenu;
+            var lvi = contextMenu?.PlacementTarget as ListViewItem;
+            if (lvi?.Content is DataLogViewModel item)
             {
                 var data = new DataModel()
                 {
-                    Id = dataVm.Id,
+                    Id = item.Id,
                     SourceId = _sourceService.Id,
-                    Bib = dataVm.Bib,
-                    Time = dataVm.Time,
-                    TimingPoint = dataVm.TimingPoint,
-                    RawData = dataVm.Raw,
-                    IsClear = dataVm.IsClear
+                    Bib = item.Bib,
+                    Time = item.Time,
+                    TimingPoint = item.TimingPoint,
+                    RawData = item.Raw,
+                    IsClear = item.IsClear
                 };
-                dataVm.Status = UploadStatus.Pending;
+                item.Status = UploadStatus.Pending;
                 App.RaceResult.AddManual(data);
             }
         }
 
         private void ShowError(object sender, RoutedEventArgs e)
         {
-            var link = sender as Hyperlink;
-            if (link?.DataContext is DataLogViewModel dataVm)
+            var menuItem = sender as MenuItem;
+            var contextMenu = menuItem?.Parent as ContextMenu;
+            var lvi = contextMenu?.PlacementTarget as ListViewItem;
+            if (lvi?.Content is DataLogViewModel item)
             {
-                MessageBox.Show($"Chyba nahrávania času. Chyba: [{dataVm.StatusCode}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.None);
+                MessageBox.Show($"Chyba nahrávania času. Chyba: [{item.StatusCode}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.None);
+            }
+        }
+
+        private void CopyNumber(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var contextMenu = menuItem?.Parent as ContextMenu;
+            var lvi = contextMenu?.PlacementTarget as ListViewItem;
+            if (lvi?.Content is DataLogViewModel item)
+            {
+                Clipboard.SetText(item.Bib);
+            }
+        }
+
+        private void CopyTime(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var contextMenu = menuItem?.Parent as ContextMenu;
+            var lvi = contextMenu?.PlacementTarget as ListViewItem;
+            if (lvi?.Content is DataLogViewModel item)
+            {
+                Clipboard.SetText(item.Time.ToString("HH:mm:ss.ffff"));
             }
         }
 
