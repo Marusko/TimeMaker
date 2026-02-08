@@ -69,6 +69,9 @@ namespace TimeMaker.Windows
             }
             else
             {
+                var window = new SerialFlagsSettingsWindow(!_stopwatch);
+                window.ShowDialog();
+                var flags = window.GetFlags();
                 var init = new SerialSourceInitModel()
                 {
                     Name = NameText.Text,
@@ -76,7 +79,8 @@ namespace TimeMaker.Windows
                     FirstTarget = new ApiTimingPoint() { Name = StartPoint.Text },
                     SecondTarget = new ApiTimingPoint() { Name = FinishPoint.Text },
                     ThirdTarget = new ApiTimingPoint() { Name = RunTimePoint.Text },
-                    Mode = _stopwatch ? TimyMode.Stopwatch : TimyMode.Backup
+                    Mode = _stopwatch ? TimyMode.Stopwatch : TimyMode.Backup,
+                    Flags = flags
                 };
                 App.SourceManager.AddSource(typeof(SerialPortService), init);
                 Close();

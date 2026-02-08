@@ -8,5 +8,6 @@
         public ApiTimingPoint SecondTarget { get; set; } = new();
         public ApiTimingPoint ThirdTarget { get; set; } = new();
         public TimyMode Mode { get; set; } = TimyMode.Stopwatch;
+        public List<char> Flags { get; set; } = new();
     }
 }

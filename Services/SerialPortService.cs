@@ -30,7 +30,7 @@ namespace TimeMaker.Services
         private SerialPort _port = new();
         private ConcurrentDictionary<string, (Regex RegexManual, Regex RegexAuto, string TimingPoint)> _algePoints = new();
         private ConcurrentDictionary<string, (Regex RegexManual, Regex RegexAuto, string TimingPoint)> _algeClearPoints = new();
-        private readonly char[] _impulseModifiers = [' ', '?', 'c', 'C', 'i'];
+        private List<char> _impulseModifiers = [' ', '?', 'c', 'C', 'i'];
         private string _tempImpulse = "";
 
         public override void Init(SourceInitModel initModel)
@@ -55,6 +55,7 @@ namespace TimeMaker.Services
                 TargetFinish = model.SecondTarget.Name;
                 TargetRunTime = model.ThirdTarget.Name;
                 Mode = model.Mode;
+                _impulseModifiers = model.Flags;
                 if (Mode == TimyMode.Stopwatch)
                 {
                     SetStopwatchPoints(Target, TargetFinish, TargetRunTime);
@@ -170,7 +171,6 @@ namespace TimeMaker.Services
                 {
                     _algePoints.TryAdd("RunTime", (CreateCompiledRegex("[n] RTM [t] 00"), CreateCompiledRegex("[n] RT [t] 00"), runTimePoint));
                 }
-                _impulseModifiers[0] = ' ';
             }
             catch (Exception e)
             {
@@ -191,7 +191,6 @@ namespace TimeMaker.Services
                 {
                     _algePoints.TryAdd("RunTime", (CreateCompiledRegex("*[n] RTM [t] 00"), CreateCompiledRegex("*[n] RT [t] 00"), runTimePoint));
                 }
-                _impulseModifiers[0] = '*';
             }
             catch (Exception e)
             {

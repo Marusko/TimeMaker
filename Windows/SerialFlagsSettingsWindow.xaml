@@ -1,0 +1,29 @@
+﻿<Window x:Class="TimeMaker.Windows.SerialFlagsSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Nastavenie príznakov" Height="250" Width="200" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
+        <GroupBox Header="Nastavenie príznakov">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <GroupBox Grid.Row="0" Header="Spracovávané príznaky" Padding="5">
+                    <StackPanel>
+                        <CheckBox x:Name="BoxCorrect" Margin="5"/>
+                        <CheckBox x:Name="BoxQuestion" Content="?" Margin="5"/>
+                        <CheckBox x:Name="BoxSmallC" Content="c" Margin="5"/>
+                        <CheckBox x:Name="BoxBigC" Content="C" Margin="5"/>
+                        <CheckBox x:Name="BoxInfo" Content="i" Margin="5"/>
+                        <CheckBox x:Name="BoxMemo" Content="m" Margin="5"/>
+                    </StackPanel>
+                </GroupBox>
+                <Grid Grid.Row="1">
+                    <Button Content="Uložiť" Click="Save" HorizontalAlignment="Right" Margin="0,10,10,0" Padding="10 5" Width="93"/>
+                </Grid>
+            </Grid>
+    </GroupBox>
+</Window>
