@@ -67,7 +67,7 @@ namespace TimeMaker.ViewModels
         {
             (UploadStatus.Completed, false) => "LightGreen",
             (UploadStatus.Completed, true) => "LightBlue",
-            (UploadStatus.Failed, _) => "LightCoral",
+            (UploadStatus.Failed, _) => "LightSalmon",
             (UploadStatus.Ignored, _) => "LightGray",
             _ => "White"  // Default/Pending
         };
