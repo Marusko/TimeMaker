@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:TimeMaker.ViewModels"
         mc:Ignorable="d"
         Title="Dáta zo zdroja" Height="450" Width="500" ResizeMode="NoResize" Icon="../Icons/favicon.ico"
         Closing="StatusWindow_OnClosing">
@@ -22,7 +23,7 @@
             </ComboBox>
         </GroupBox>
         <GroupBox Grid.Row="1" Header="Dáta zo zdroja">
-            <ListView x:Name="ListViewData" Margin="5" ScrollViewer.CanContentScroll="False">
+            <ListView x:Name="ListViewData" Margin="5" ScrollViewer.CanContentScroll="False" AlternationCount="2">
                 <ListView.Resources>
                     <ContextMenu x:Key="ItemContextMenu">
                         <MenuItem Header="Kopírovať číslo" Click="CopyNumber"/>
@@ -38,27 +39,49 @@
                     <Style TargetType="ListViewItem">
                         <EventSetter Event="MouseDoubleClick" Handler="EditBib"/>
                         <Setter Property="Focusable" Value="False"/>
-                        <Setter Property="Background" Value="{Binding ItemBackground}"/>
                         <Setter Property="BorderBrush" Value="Transparent"/>
                         <Setter Property="FontWeight" Value="{Binding ItemFontWeight}"/>
                         <Setter Property="FontSize" Value="16"/>
                         <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}">
+                                        <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                                Columns="{TemplateBinding GridView.ColumnCollection}" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
                         <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{Binding ItemBackground}"/>
-                                <Setter Property="BorderBrush" Value="Transparent"/>
+                            <!-- Alternating row colors -->
+                            <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                <Setter Property="Background" Value="White" />
                             </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{Binding ItemBackground}"/>
-                                <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                <Setter Property="Background" Value="#F5F5F5" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
+                        <!-- Status dot column -->
+                        <GridViewColumn Header="" Width="20">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate DataType="viewModels:DataLogViewModel">
+                                    <Ellipse Width="10" Height="10" 
+                                 Fill="{Binding ItemBackground}" 
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
                         <GridViewColumn Header="Značka" DisplayMemberBinding="{Binding FlagsLabel}" Width="50"/>
-                        <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="290"/>
+                        <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="280"/>
                         <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding TimingPoint.Name}" Width="100"/>
                     </GridView>
                 </ListView.View>

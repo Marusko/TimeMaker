@@ -72,9 +72,9 @@ namespace TimeMaker.ViewModels
         {
             (UploadStatus.Completed, false) => "LightGreen",
             (UploadStatus.Completed, true) => "LightBlue",
-            (UploadStatus.Failed, _) => "LightSalmon",
+            (UploadStatus.Failed, _) => "LightCoral",
             (UploadStatus.Ignored, _) => "LightGray",
-            _ => "White"  // Default/Pending
+            _ => "Transparent"  // Default/Pending
         };
 
         public FontWeight ItemFontWeight => IsQuestion ? FontWeights.Bold : FontWeights.Normal;
