@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using TimeMaker.Models;
@@ -9,10 +10,11 @@ namespace TimeMaker.ViewModels
     {
         public string Id { get; init; } = string.Empty;
         public string Raw { get; init; } = string.Empty;
-        public string Bib { get; init; } = string.Empty;
+        public string Bib { get; set; } = string.Empty;
         public TimeOnly Time { get; init; }
         public ApiTimingPoint TimingPoint { get; init; } = new();
         public string StatusCode { get; private set; } = string.Empty;
+        public ObservableCollection<string> BibChanges { get; init; } = new();
 
         private UploadStatus _status = UploadStatus.Pending;
         public UploadStatus Status
@@ -25,6 +27,7 @@ namespace TimeMaker.ViewModels
                     _status = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(ErrorVisibility));
+                    OnPropertyChanged(nameof(SeparatorVisibility));
                     OnPropertyChanged(nameof(ItemBackground));
                     OnPropertyChanged(nameof(RetryVisibility));
                 }
@@ -41,9 +44,10 @@ namespace TimeMaker.ViewModels
                 {
                     _isClear = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(ClearLabel));
+                    OnPropertyChanged(nameof(FlagsLabel));
                     OnPropertyChanged(nameof(ItemBackground));
                     OnPropertyChanged(nameof(RetryVisibility));
+                    OnPropertyChanged(nameof(SeparatorVisibility));
                 }
             }
         }
@@ -59,6 +63,7 @@ namespace TimeMaker.ViewModels
                     _isQuestion = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(ItemFontWeight));
+                    OnPropertyChanged(nameof(FlagsLabel));
                 }
             }
         }
@@ -85,9 +90,21 @@ namespace TimeMaker.ViewModels
 
         public Visibility SeparatorVisibility => (ErrorVisibility == Visibility.Visible || RetryVisibility == Visibility.Visible) ? Visibility.Visible : Visibility.Collapsed;
 
-        public string ClearLabel => IsClear ? "Áno" : "";
+        public Visibility ChangesVisibility => BibChanges.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+        public string FlagsLabel => (IsClear ? "C" : "") + (BibChanges.Count > 0 ? "B" : "") + (IsQuestion ? "Q" : "");
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public DataLogViewModel()
+        {
+            BibChanges.CollectionChanged += (_, _) =>
+            {
+                OnPropertyChanged(nameof(BibChanges));
+                OnPropertyChanged(nameof(ChangesVisibility));
+                OnPropertyChanged(nameof(FlagsLabel));
+            };
+        }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
