@@ -30,10 +30,13 @@
                         <Separator Visibility="{Binding SeparatorVisibility}"/>
                         <MenuItem Header="Znova nahrať" Visibility="{Binding RetryVisibility}" Click="Upload"/>
                         <MenuItem Header="Ukázať chybu" Visibility="{Binding ErrorVisibility}" Click="ShowError"/>
+                        <Separator Visibility="{Binding ChangesVisibility}"/>
+                        <MenuItem Header="Zobraziť zmeny" Visibility="{Binding ChangesVisibility}" Click="ShowChanges"/>
                     </ContextMenu>
                 </ListView.Resources>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
+                        <EventSetter Event="MouseDoubleClick" Handler="EditBib"/>
                         <Setter Property="Focusable" Value="False"/>
                         <Setter Property="Background" Value="{Binding ItemBackground}"/>
                         <Setter Property="BorderBrush" Value="Transparent"/>
@@ -54,7 +57,7 @@
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="CLR" DisplayMemberBinding="{Binding ClearLabel}" Width="40"/>
+                        <GridViewColumn Header="Značka" DisplayMemberBinding="{Binding FlagsLabel}" Width="50"/>
                         <GridViewColumn Header="Dáta" DisplayMemberBinding="{Binding Raw}" Width="290"/>
                         <GridViewColumn Header="Cieľ" DisplayMemberBinding="{Binding TimingPoint.Name}" Width="100"/>
                     </GridView>

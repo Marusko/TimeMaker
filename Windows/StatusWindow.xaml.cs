@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using TimeMaker.Models;
@@ -90,6 +91,42 @@ namespace TimeMaker.Windows
             if (lvi?.Content is DataLogViewModel item)
             {
                 Clipboard.SetText(item.Time.ToString("HH:mm:ss.ffff"));
+            }
+        }
+
+        private void ShowChanges(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var contextMenu = menuItem?.Parent as ContextMenu;
+            var lvi = contextMenu?.PlacementTarget as ListViewItem;
+            if (lvi?.Content is DataLogViewModel item)
+            {
+                var changes = string.Join("\n", item.BibChanges);
+                MessageBox.Show($"Zmeny čísla: \n{changes}", "Zmeny čísla", MessageBoxButton.OK, MessageBoxImage.None);
+            }
+        }
+
+        private void EditBib(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is ListViewItem { DataContext: DataLogViewModel { RetryVisibility: Visibility.Visible } itemVm })
+            {
+                var window = new EditBibWindow(itemVm.Bib);
+                window.ShowDialog();
+                itemVm.BibChanges.Add($"{itemVm.Bib} -> {window.GetBib()}");
+                itemVm.Bib = window.GetBib();
+
+                var data = new DataModel()
+                {
+                    Id = itemVm.Id,
+                    SourceId = _sourceService.Id,
+                    Bib = itemVm.Bib,
+                    Time = itemVm.Time,
+                    TimingPoint = itemVm.TimingPoint,
+                    RawData = itemVm.Raw,
+                    IsClear = itemVm.IsClear
+                };
+                itemVm.Status = UploadStatus.Pending;
+                App.RaceResult.AddManual(data);
             }
         }
 
