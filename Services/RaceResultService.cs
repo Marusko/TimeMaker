@@ -123,11 +123,13 @@ namespace TimeMaker.Services
                             await LoadPoints(_pointsUrl);
                             App.Logger.Log("[RR] Successfully loaded Points API");
                             evArgs.PointsApiStatus = "Načítané";
+                            evArgs.PointsApiLoaded = true;
                         }
                         else
                         {
                             App.Logger.LogWarning("[RR] Points API is off");
                             evArgs.PointsApiStatus = "Vypnuté";
+                            evArgs.PointsApiLoaded = false;
                         }
                     }
                     else if (api.Label != null && api.Label.ToLower().Trim().Equals("manual"))
@@ -137,11 +139,13 @@ namespace TimeMaker.Services
                             _manualUrl = link + api.Key;
                             App.Logger.Log("[RR] Successfully loaded Manual API");
                             evArgs.ManualApiStatus = "Načítané";
+                            evArgs.ManualApiLoaded = true;
                         }
                         else
                         {
                             App.Logger.LogWarning("[RR] Manual API is off");
                             evArgs.ManualApiStatus = "Vypnuté";
+                            evArgs.ManualApiLoaded = false;
                         }
                     }
                     else if (api.Label != null && api.Label.ToLower().Trim().Equals("bibs"))
@@ -152,11 +156,13 @@ namespace TimeMaker.Services
                             TemplateEnabled = true;
                             App.Logger.Log("[RR] Successfully loaded Bibs API");
                             evArgs.BibsApiStatus = "Načítané";
+                            evArgs.BibsApiLoaded = true;
                         }
                         else
                         {
                             App.Logger.LogWarning("[RR] Bibs API is off");
                             evArgs.BibsApiStatus = "Vypnuté";
+                            evArgs.BibsApiLoaded = false;
                         }
                     }
                     else if (api.Label != null && api.Label.ToLower().Trim().Equals("invalid"))
@@ -167,12 +173,14 @@ namespace TimeMaker.Services
                             hasFirstPart = true;
                             App.Logger.Log("[RR] Successfully loaded Invalid API");
                             evArgs.InvalidApiStatus = "Načítané";
+                            evArgs.InvalidApiLoaded = true;
                         }
                         else
                         {
                             hasFirstPart = false;
                             App.Logger.LogWarning("[RR] Invalid API is off");
                             evArgs.InvalidApiStatus = "Vypnuté";
+                            evArgs.InvalidApiLoaded = false;
                         }
                     }
                     else if (api.Label != null && api.Label.ToLower().Trim().Equals("search"))
@@ -183,12 +191,14 @@ namespace TimeMaker.Services
                             hasSecondPart = true;
                             App.Logger.Log("[RR] Successfully loaded Raw Search API");
                             evArgs.RawSearchApiStatus = "Načítané";
+                            evArgs.RawSearchApiLoaded = true;
                         }
                         else
                         {
                             hasSecondPart = false;
                             App.Logger.LogWarning("[RR] Raw Search API is off");
                             evArgs.RawSearchApiStatus = "Vypnuté";
+                            evArgs.RawSearchApiLoaded = false;
                         }
                     }
                 }

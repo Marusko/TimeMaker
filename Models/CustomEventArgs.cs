@@ -9,6 +9,12 @@ namespace TimeMaker.Models
         public string BibsApiStatus { get; set; } = "Nenájdené";
         public string InvalidApiStatus { get; set; } = "Nenájdené";
         public string RawSearchApiStatus { get; set; } = "Nenájdené";
+
+        public bool PointsApiLoaded { get; set; }
+        public bool ManualApiLoaded { get; set; }
+        public bool BibsApiLoaded { get; set; }
+        public bool InvalidApiLoaded { get; set; }
+        public bool RawSearchApiLoaded { get; set; }
     }
 
     public class RaceResultBibsLoadedEventArgs : EventArgs
