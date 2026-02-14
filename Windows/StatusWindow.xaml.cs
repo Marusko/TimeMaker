@@ -111,6 +111,7 @@ namespace TimeMaker.Windows
             if (sender is ListViewItem { DataContext: DataLogViewModel { RetryVisibility: Visibility.Visible } itemVm })
             {
                 var window = new EditBibWindow(itemVm.Bib);
+                window.Owner = this;
                 window.ShowDialog();
                 itemVm.BibChanges.Add($"{itemVm.Bib} -> {window.GetBib()}");
                 itemVm.Bib = window.GetBib();

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Nový CSV súbor" Height="320" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
+        Title="Nový CSV súbor" Height="320" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Topmost="True" Icon="../Icons/favicon.ico">
     <GroupBox Header="Nový CSV súbor">
         <Grid>
             <Grid.RowDefinitions>

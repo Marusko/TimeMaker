@@ -26,18 +26,21 @@ namespace TimeMaker.Windows
         private void BtnAddFile_Click(object sender, RoutedEventArgs e)
         {
             var window = new CreateFileSourceWindow();
+            window.Owner = this;
             window.ShowDialog();
         }
 
         private void BtnAddTimy_Click(object sender, RoutedEventArgs e)
         {
             var window = new CreateSerialSourceWindow();
+            window.Owner = this;
             window.ShowDialog();
         }
 
         private void BtnRaceSettings_Click(object sender, RoutedEventArgs e)
         {
             var window = new RaceResultSettingsWindow();
+            window.Owner = this;
             window.ShowDialog();
         }
 

@@ -70,6 +70,7 @@ namespace TimeMaker.Windows
             else
             {
                 var window = new SerialFlagsSettingsWindow(!_stopwatch);
+                window.Owner = this;
                 window.ShowDialog();
                 var flags = window.GetFlags();
                 var init = new SerialSourceInitModel()
