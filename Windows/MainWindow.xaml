@@ -95,7 +95,7 @@
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>
-                <TextBlock Text="1.2.0"/>
+                <TextBlock Text="1.2.1"/>
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>
