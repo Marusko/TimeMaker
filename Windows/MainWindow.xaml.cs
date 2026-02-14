@@ -153,6 +153,12 @@ namespace TimeMaker.Windows
             Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
 
+        private void OpenNtf(object sender, RoutedEventArgs e)
+        {
+            const string url = "https://www.nuget.org/packages/Microsoft.Toolkit.Uwp.Notifications";
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+        }
+
         private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
         {
             App.RaceResult.RaceResultApiLoaded -= OnApiLoaded;

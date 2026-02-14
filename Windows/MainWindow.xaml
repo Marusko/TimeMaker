@@ -113,6 +113,14 @@
                     </Hyperlink>
                 </TextBlock>
             </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock>
+                    <Hyperlink Click="OpenNtf">
+                        <Run Text="Microsoft.Toolkit.Uwp.Notifications"/>
+                    </Hyperlink>
+                </TextBlock>
+            </StatusBarItem>
         </StatusBar>
     </Grid>
 </Window>
