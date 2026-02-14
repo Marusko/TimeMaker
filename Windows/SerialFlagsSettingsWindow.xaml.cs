@@ -30,7 +30,7 @@ namespace TimeMaker.Windows
             {
                 BoxCorrect.IsChecked = true;
                 BoxCorrect.Content = "medzera - platný";
-                BoxQuestion.IsChecked = true;
+                BoxQuestion.IsChecked = false;
                 BoxSmallC.IsChecked = true;
                 BoxBigC.IsChecked = true;
                 BoxInfo.IsChecked = true;
