@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Windows;
 using TimeMaker.Models;
 using TimeMaker.ViewModels;
 
@@ -72,7 +71,7 @@ namespace TimeMaker.Services
                 SourceItemViewModel.UpdateStatus($"Aktívne - OK: {SentOk}, Chyba: {SentError}, Všetky: {_count}");
                 if (SentError + SentOk == _count)
                 {
-                    MessageBox.Show($"Dáta boli nahraté pre zdroj {Name}", "Nahraté", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    NotificationService.ShowInfoNotification("Nahraté", $"Dáta boli nahraté pre zdroj {Name}");
                     App.Logger.Log($"[FS] All data sent for FileSource: {Id}");
                     Stop();
                 }

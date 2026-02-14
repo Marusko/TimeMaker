@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
-using System.Windows;
 using System.Windows.Threading;
 using TimeMaker.Models;
 
@@ -207,7 +206,7 @@ namespace TimeMaker.Services
                 App.Logger.Log("[RR] Successfully loaded APIs");
                 if (!ClearEnabled)
                 {
-                    MessageBox.Show("Automatické / ručné zneplatnenie je vypnuté", "Zneplatnenie", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    NotificationService.ShowInfoNotification("Zneplatnenie", "Automatické / ručné zneplatnenie je vypnuté");
                 }
             }
             else
