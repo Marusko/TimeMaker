@@ -20,6 +20,8 @@
             <Button x:Name="BtnAddTimy" Content="Pridať Timy" Click="BtnAddTimy_Click" Padding="10,5" IsEnabled="False"/>
             <Separator/>
             <Button x:Name="BtnRaceSettings" Content="Nastavenia RR" Click="BtnRaceSettings_Click" Padding="10,5"/>
+            <Separator/>
+            <CheckBox Content="Upozorniť na nenahraté" Checked="SetNotify" Unchecked="SetNotNotify" Padding="10,5"></CheckBox>
         </ToolBar>
 
         <!-- Main content -->

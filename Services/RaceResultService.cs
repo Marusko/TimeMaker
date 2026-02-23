@@ -13,6 +13,7 @@ namespace TimeMaker.Services
         public List<ApiTimingPoint> Points { get; set; } = new();
         public bool TemplateEnabled { get; set; }
         public bool ClearEnabled { get; set; }
+        public bool ShowErrorNotification { get; set; }
 
         private HttpClient _httpClient;
         private DispatcherTimer? _timer;
@@ -398,6 +399,11 @@ namespace TimeMaker.Services
                         });
                         if (!resp.IsSuccessStatusCode)
                         {
+                            if (ShowErrorNotification)
+                            {
+                                var type = data.IsClear ? "mazania" : "času";
+                                NotificationService.ShowRetryNotification("Odoslanie impulzu", $"Neúspešné odoslanie {type} pre číslo {data.Bib} a čas {data.Time.ToString("HH:mm:ss.ffff")} na bod {data.TimingPoint.Name}", data.SourceId, data.Id);
+                            }
                             App.Logger.LogError($"[RR] AUTO sending data failed - {resp.StatusCode}");
                         }
                     }
@@ -413,6 +419,11 @@ namespace TimeMaker.Services
                             Status = UploadStatus.Failed,
                             StatusCode = ex.Message
                         });
+                        if (ShowErrorNotification)
+                        {
+                            var type = data.IsClear ? "mazania" : "času";
+                            NotificationService.ShowRetryNotification("Odoslanie impulzu", $"Neúspešné odoslanie {type} pre číslo {data.Bib} a čas {data.Time.ToString("HH:mm:ss.ffff")} na bod {data.TimingPoint.Name}", data.SourceId, data.Id);
+                        }
                     }
                     App.Logger.LogError("[RR] AUTO sending data failed", ex);
                 }

@@ -44,6 +44,16 @@ namespace TimeMaker.Windows
             window.ShowDialog();
         }
 
+        private void SetNotify(object sender, RoutedEventArgs e)
+        {
+            App.RaceResult.ShowErrorNotification = true;
+        }
+
+        private void SetNotNotify(object sender, RoutedEventArgs e)
+        {
+            App.RaceResult.ShowErrorNotification = false;
+        }
+
         private void StartSource(object sender, RoutedEventArgs e)
         {
             var link = sender as Hyperlink;
