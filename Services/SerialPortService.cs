@@ -121,6 +121,16 @@ namespace TimeMaker.Services
             return unsent;
         }
 
+        public override void ChangeTarget(TargetChangeModel target)
+        {
+            if (target is SerialTargetChangeModel model)
+            {
+                Target = model.Target;
+                TargetFinish = model.SecondTarget;
+                TargetRunTime = model.ThirdTarget;
+            }
+        }
+
         public override void Stop()
         {
             if (Running)

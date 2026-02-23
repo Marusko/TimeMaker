@@ -137,6 +137,11 @@ namespace TimeMaker.Services
             return unsent;
         }
 
+        public override void ChangeTarget(TargetChangeModel target)
+        {
+            Target = target.Target;
+        }
+
         public override void Stop()
         {
             if (Running)

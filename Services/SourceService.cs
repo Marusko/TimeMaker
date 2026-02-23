@@ -27,6 +27,8 @@ namespace TimeMaker.Services
 
         public abstract List<DataModel> GetUnsentData();
 
+        public abstract void ChangeTarget(TargetChangeModel target);
+
         public abstract void Stop();
     }
 }
