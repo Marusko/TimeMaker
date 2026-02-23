@@ -140,6 +140,7 @@ namespace TimeMaker.Services
         public override void ChangeTarget(TargetChangeModel target)
         {
             Target = target.Target;
+            SourceItemViewModel.Target = target.Target;
         }
 
         public override void Stop()

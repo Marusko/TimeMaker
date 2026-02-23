@@ -128,6 +128,7 @@ namespace TimeMaker.Services
                 Target = model.Target;
                 TargetFinish = model.SecondTarget;
                 TargetRunTime = model.ThirdTarget;
+                SourceItemViewModel.Target = $"C0(M): {model.Target} C1(M): {model.SecondTarget} RT(M): {model.ThirdTarget}";
             }
         }
 

@@ -5,6 +5,11 @@
         public abstract string Target { get; set; }
     }
 
+    public class FileTargetChangeModel : TargetChangeModel
+    {
+        public override string Target { get; set; } = string.Empty;
+    }
+
     public class SerialTargetChangeModel : TargetChangeModel
     {
         public override string Target { get; set; } = string.Empty;
