@@ -12,7 +12,7 @@ namespace TimeMaker.Services
                 .SetToastDuration(ToastDuration.Short)
                 .Show(toast =>
                 {
-                    toast.ExpirationTime = DateTimeOffset.Now.AddSeconds(1);
+                    toast.ExpirationTime = DateTimeOffset.Now.AddSeconds(10);
                 });
         }
     }
