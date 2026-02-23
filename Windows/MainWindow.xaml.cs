@@ -107,6 +107,28 @@ namespace TimeMaker.Windows
             }
         }
 
+        private void EditTarget(object sender, RoutedEventArgs e)
+        {
+            var link = sender as Hyperlink;
+            if (link?.DataContext is SourceItemViewModel sourceVm)
+            {
+                try
+                {
+                    var source = App.SourceManager.GetSource(sourceVm.Id);
+                    if (source != null)
+                    {
+                        var window = new EditTargetWindow(source);
+                        window.Owner = this;
+                        window.ShowDialog();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Nepodarilo sa upraviť zdroj. Chyba: [{ex.Message}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         private void OnApiLoaded(object? sender, RaceResultApiLoadedEventArgs e)
         {
             Dispatcher.Invoke(() =>

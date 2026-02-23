@@ -6,7 +6,7 @@
         xmlns:viewModels="clr-namespace:TimeMaker.ViewModels"
         mc:Ignorable="d"
         Closing="MainWindow_OnClosing"
-        Title="Time Maker" Height="450" Width="800" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
+        Title="Time Maker" Height="450" Width="830" WindowStartupLocation="CenterScreen" Icon="../Icons/favicon.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -55,7 +55,7 @@
                         <GridViewColumn Header="Zdroj" DisplayMemberBinding="{Binding Source}" Width="100"/>
                         <GridViewColumn Header="Cieľový bod" DisplayMemberBinding="{Binding Target}" Width="100"/>
                         <GridViewColumn Header="Stav" DisplayMemberBinding="{Binding Status}" Width="100"/>
-                        <GridViewColumn Header="Akcie" Width="230">
+                        <GridViewColumn Header="Akcie" Width="280">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate DataType="{x:Type viewModels:SourceItemViewModel}">
                                     <StackPanel Orientation="Horizontal">
@@ -72,6 +72,11 @@
                                         <Label VerticalAlignment="Center">
                                             <Hyperlink Click="RemoveSource" IsEnabled="{Binding IsNotRunning}">
                                                 <Run Text="Odstrániť"/>
+                                            </Hyperlink>
+                                        </Label>
+                                        <Label VerticalAlignment="Center">
+                                            <Hyperlink Click="EditTarget">
+                                                <Run Text="Upraviť"/>
                                             </Hyperlink>
                                         </Label>
                                         <Label VerticalAlignment="Center">
