@@ -8,7 +8,20 @@ namespace TimeMaker.ViewModels
         public string Name { get; init; } = string.Empty;
         public string Type { get; init; } = string.Empty;
         public string Source { get; init; } = string.Empty;
-        public string Target { get; init; } = string.Empty;
+
+        private string _target = string.Empty;
+        public string Target
+        {
+            get => _target;
+            set
+            {
+                if (_target != value)
+                {
+                    _target = value;
+                    OnPropertyChanged(nameof(Target));
+                }
+            }
+        }
 
         private string _status = string.Empty;
         public string Status
