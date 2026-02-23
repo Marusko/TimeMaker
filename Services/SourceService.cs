@@ -18,7 +18,7 @@ namespace TimeMaker.Services
         public abstract bool Running { get; protected set; }
         public abstract ConcurrentDictionary<string, DataModel> DataDictionary { get; protected set; }
         public abstract ObservableCollection<DataLogViewModel> LogData { get; protected set; }
-        protected abstract ConcurrentDictionary<string, DataLogViewModel> LogDataLookup { get; set; }
+        public abstract ConcurrentDictionary<string, DataLogViewModel> LogDataLookup { get; protected set; }
         public abstract SourceItemViewModel SourceItemViewModel { get; protected set; }
 
         public abstract void Init(SourceInitModel initModel);

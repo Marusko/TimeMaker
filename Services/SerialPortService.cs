@@ -24,7 +24,7 @@ namespace TimeMaker.Services
         public override bool Running { get; protected set; }
         public override ConcurrentDictionary<string, DataModel> DataDictionary { get; protected set; } = new();
         public override ObservableCollection<DataLogViewModel> LogData { get; protected set; } = new();
-        protected override ConcurrentDictionary<string, DataLogViewModel> LogDataLookup { get; set; } = new();
+        public override ConcurrentDictionary<string, DataLogViewModel> LogDataLookup { get; protected set; } = new();
         public override SourceItemViewModel SourceItemViewModel { get; protected set; } = new();
 
         private SerialPort _port = new();
