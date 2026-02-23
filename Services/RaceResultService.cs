@@ -399,7 +399,7 @@ namespace TimeMaker.Services
                         });
                         if (!resp.IsSuccessStatusCode)
                         {
-                            if (ShowErrorNotification)
+                            if (ShowErrorNotification && (!data.IsClear || (data.IsClear && ClearEnabled)))
                             {
                                 var type = data.IsClear ? "mazania" : "času";
                                 NotificationService.ShowRetryNotification("Odoslanie impulzu", $"Neúspešné odoslanie {type} pre číslo {data.Bib} a čas {data.Time.ToString("HH:mm:ss.ffff")} na bod {data.TimingPoint.Name}", data.SourceId, data.Id);
@@ -419,7 +419,7 @@ namespace TimeMaker.Services
                             Status = UploadStatus.Failed,
                             StatusCode = ex.Message
                         });
-                        if (ShowErrorNotification)
+                        if (ShowErrorNotification && (!data.IsClear || (data.IsClear && ClearEnabled)))
                         {
                             var type = data.IsClear ? "mazania" : "času";
                             NotificationService.ShowRetryNotification("Odoslanie impulzu", $"Neúspešné odoslanie {type} pre číslo {data.Bib} a čas {data.Time.ToString("HH:mm:ss.ffff")} na bod {data.TimingPoint.Name}", data.SourceId, data.Id);
