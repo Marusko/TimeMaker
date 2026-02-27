@@ -19,7 +19,7 @@ namespace TimeMaker.Services
             if (!File.Exists(_logFilePath))
             {
                 // Create the log file with header
-                File.WriteAllText(_logFilePath, "=== Ad Display App Log ===\n\n");
+                File.WriteAllText(_logFilePath, "=== Time Maker App Log ===\n\n");
             }
         }
 

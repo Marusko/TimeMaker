@@ -404,7 +404,7 @@ namespace TimeMaker.Services
                                 var type = data.IsClear ? "mazania" : "času";
                                 NotificationService.ShowRetryNotification("Odoslanie impulzu", $"Neúspešné odoslanie {type} pre číslo {data.Bib} a čas {data.Time.ToString("HH:mm:ss.ffff")} na bod {data.TimingPoint.Name}", data.SourceId, data.Id);
                             }
-                            App.Logger.LogError($"[RR] AUTO sending data failed - {resp.StatusCode}");
+                            App.Logger.LogWarning($"[RR] AUTO sending data failed - {resp.StatusCode}");
                         }
                     }
                 }
