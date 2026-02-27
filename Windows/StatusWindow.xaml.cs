@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using Microsoft.Win32;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -200,6 +201,76 @@ namespace TimeMaker.Windows
                 };
             }
             return false;
+        }
+
+        private async void ExportAll(object sender, RoutedEventArgs e)
+        {
+            var window = new ExportSeparatorWindow();
+            window.Owner = this;
+            var progressWindow = new ExportProgressWindow();
+            progressWindow.Owner = this;
+            try
+            {
+                window.ShowDialog();
+                var op = new SaveFileDialog();
+                op.Title = "Vyberte miesto na uloženie";
+                op.Filter = "CSV súbor|*.csv";
+                op.FileName = $"{_sourceService.Name}_export.csv";
+                var res = op.ShowDialog();
+                if (res == null || string.IsNullOrEmpty(op.FileName))
+                {
+                    MessageBox.Show("Je potrebné vybrať miesto pre uloženie", "CSV súbor", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var progress = new Progress<int>(value =>
+                {
+                    progressWindow.Report(value);
+                });
+                progressWindow.Show();
+                await ExportService.ExportAllAsync(op.FileName, _sourceService.Id, window.GetDelimiter(), progress);
+                progressWindow.Close();
+                NotificationService.ShowInfoNotification("Export dokončený", $"Data exportované do súboru {op.FileName}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Nastala chyba pri ukladaní súboru: {ex.Message}", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                App.Logger.LogError("[SW] Error saving CSV file", ex);
+                progressWindow.Close();
+            }
+        }
+
+        private async void ExportImpulses(object sender, RoutedEventArgs e)
+        {
+            var progressWindow = new ExportProgressWindow();
+            progressWindow.Owner = this;
+            try
+            {
+                var op = new SaveFileDialog();
+                op.Title = "Vyberte miesto na uloženie";
+                op.Filter = "Textový súbor|*.txt";
+                op.FileName = $"{_sourceService.Name}_RAW_export.txt";
+                var res = op.ShowDialog();
+                if (res == null || string.IsNullOrEmpty(op.FileName))
+                {
+                    MessageBox.Show("Je potrebné vybrať miesto pre uloženie", "Textový súbor", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                var progress = new Progress<int>(value =>
+                {
+                    progressWindow.Report(value);
+                });
+                progressWindow.Show();
+                await ExportService.ExportImpulsesOnlyAsync(op.FileName, _sourceService.Id, progress);
+                progressWindow.Close();
+                NotificationService.ShowInfoNotification("Export dokončený", $"Data exportované do súboru {op.FileName}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Nastala chyba pri ukladaní súboru: {ex.Message}", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                App.Logger.LogError("[SW] Error saving TXT file", ex);
+                progressWindow.Close();
+            }
         }
 
         private bool IsNearBottom()

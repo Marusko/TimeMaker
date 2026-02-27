@@ -11,16 +11,28 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <GroupBox Grid.Row="0" Header="Filter">
-            <ComboBox x:Name="ComboBox" Margin="5">
-                <ComboBoxItem Tag="0">Všetky</ComboBoxItem>
-                <ComboBoxItem Tag="1">Čakajúce</ComboBoxItem>
-                <ComboBoxItem Tag="2">Nahraté</ComboBoxItem>
-                <ComboBoxItem Tag="3">Ignorované</ComboBoxItem>
-                <ComboBoxItem Tag="4">Mazania</ComboBoxItem>
-                <ComboBoxItem Tag="5">Chybné</ComboBoxItem>
-            </ComboBox>
-        </GroupBox>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Grid.Column="0" Header="Filter">
+                <ComboBox x:Name="ComboBox" Margin="5" VerticalContentAlignment="Center">
+                    <ComboBoxItem Tag="0">Všetky</ComboBoxItem>
+                    <ComboBoxItem Tag="1">Čakajúce</ComboBoxItem>
+                    <ComboBoxItem Tag="2">Nahraté</ComboBoxItem>
+                    <ComboBoxItem Tag="3">Ignorované</ComboBoxItem>
+                    <ComboBoxItem Tag="4">Mazania</ComboBoxItem>
+                    <ComboBoxItem Tag="5">Chybné</ComboBoxItem>
+                </ComboBox>
+            </GroupBox>
+            <GroupBox Grid.Column="1" Header="Export">
+                <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
+                    <Button Content="Všetko" Click="ExportAll" HorizontalAlignment="Left" Padding="10 5" VerticalAlignment="Top" Width="93"/>
+                    <Button Content="Len RAW" Click="ExportImpulses" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="10 5" VerticalAlignment="Top" Width="93"/>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
         <GroupBox Grid.Row="1" Header="Dáta zo zdroja">
             <ListView x:Name="ListViewData" Margin="5" ScrollViewer.CanContentScroll="False">
                 <ListView.Resources>
