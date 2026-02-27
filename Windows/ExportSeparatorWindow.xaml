@@ -1,0 +1,31 @@
+﻿<Window x:Class="TimeMaker.Windows.ExportSeparatorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Výber CSV rozdeľovača" Height="100" Width="200"  WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Topmost="True" Icon="../Icons/favicon.ico">
+    <GroupBox Header="Nastavenia exportu">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Row="0">
+                <StackPanel Orientation="Horizontal">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="Rozdeľovač CSV: "/>
+                        <RadioButton Grid.Column="1" x:Name="SemiColonRadio" Content=";" Checked="DelimiterChecked" IsChecked="True" GroupName="delimiter" Margin="0 0 10 0" VerticalAlignment="Center"/>
+                        <RadioButton Grid.Column="2" x:Name="ColonRadio" Content="," Checked="DelimiterChecked" GroupName="delimiter" Margin="0 0 10 0" VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+            <Button Grid.Row="1" Content="Ďalej" Click="Export" HorizontalAlignment="Right" Margin="0,10,10,0" Padding="10 5" VerticalAlignment="Top" Width="93"/>
+        </Grid>
+    </GroupBox>
+</Window>
