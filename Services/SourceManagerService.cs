@@ -102,13 +102,9 @@ namespace TimeMaker.Services
         private void CloseAllStatusWindows()
         {
             App.Logger.Log("[SM] Closing all status windows");
-            foreach (var sw in _statusWindows)
+            foreach (var key in _statusWindows.Keys)
             {
-                foreach (var window in sw.Value)
-                {
-                    window.Close();
-                }
-                sw.Value.Clear();
+                RemoveAllSourceWindows(key);
             }
             _statusWindows.Clear();
         }
