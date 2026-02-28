@@ -128,6 +128,15 @@ namespace TimeMaker.Services
                 Target = model.Target;
                 TargetFinish = model.SecondTarget;
                 TargetRunTime = model.ThirdTarget;
+                if (Mode == TimyMode.Stopwatch)
+                {
+                    SetStopwatchPoints(Target, TargetFinish, TargetRunTime);
+                }
+                else if (Mode == TimyMode.Backup)
+                {
+                    SetBackupPoints(Target, TargetFinish, TargetRunTime);
+                }
+                SetClearPoints(Target, TargetFinish, TargetRunTime);
                 SourceItemViewModel.Target = $"C0(M): {model.Target} C1(M): {model.SecondTarget} RT(M): {model.ThirdTarget}";
             }
         }
@@ -215,6 +224,7 @@ namespace TimeMaker.Services
             try
             {
                 App.Logger.Log($"[SS] Setting clear points for SerialPortSource: {Id}");
+                _algeClearPoints.Clear();
                 _algeClearPoints.TryAdd("StartClear", (CreateCompiledRegex("c[n] C0M [t] 00"), CreateCompiledRegex("c[n] C0 [t] 00"), startPoint));
                 _algeClearPoints.TryAdd("FinishClear", (CreateCompiledRegex("c[n] C1M [t] 00"), CreateCompiledRegex("c[n] C1 [t] 00"), finishPoint));
                 _algeClearPoints.TryAdd("StartBigClear", (CreateCompiledRegex("C[n] C0M [t] 00"), CreateCompiledRegex("C[n] C0 [t] 00"), startPoint));
