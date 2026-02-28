@@ -102,7 +102,7 @@
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>
-                <TextBlock Text="1.4.0"/>
+                <TextBlock Text="1.4.1"/>
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>
