@@ -197,6 +197,7 @@ namespace TimeMaker.Windows
             App.SourceManager.SourceAdded -= OnSourceAdded;
             App.SourceManager.SourceRemoved -= OnSourceRemoved;
             _sources.Clear();
+            Application.Current.Shutdown();
         }
     }
 }
