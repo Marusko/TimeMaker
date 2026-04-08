@@ -212,8 +212,18 @@ namespace TimeMaker.Services
             }
             else
             {
-                App.Logger.LogError($"[RR] Cannot load API - {response.StatusCode}");
-                throw new HttpRequestException($"Neúspešné načítanie API\nChyba: \n[{response.StatusCode}]");
+                var error = response.StatusCode.ToString();
+                try
+                {
+                    error = await response.Content.ReadAsStringAsync();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+                App.Logger.LogError($"[RR] Cannot load API - {error}");
+                throw new HttpRequestException($"Neúspešné načítanie API\nChyba: \n[{error}]");
             }
         }
 
@@ -258,8 +268,17 @@ namespace TimeMaker.Services
             }
             else
             {
-                App.Logger.LogError($"[RR] Cannot load Bibs from API - {response.StatusCode}");
-                throw new HttpRequestException($"Neúspešné načítanie štartových čísel\nChyba: \n[{response.StatusCode}]");
+                var error = response.StatusCode.ToString();
+                try
+                {
+                    error = await response.Content.ReadAsStringAsync();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+                App.Logger.LogError($"[RR] Cannot load Bibs from API - {error}");
+                throw new HttpRequestException($"Neúspešné načítanie štartových čísel\nChyba: \n[{error}]");
             }
         }
 
@@ -324,8 +343,17 @@ namespace TimeMaker.Services
             }
             else
             {
-                App.Logger.LogError($"[RR] Cannot load Points from API - {response.StatusCode}");
-                throw new HttpRequestException($"Neúspešné načítanie meracích bodov\nChyba: \n[{response.StatusCode}]");
+                var error = response.StatusCode.ToString();
+                try
+                {
+                    error = await response.Content.ReadAsStringAsync();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+                App.Logger.LogError($"[RR] Cannot load Points from API - {error}");
+                throw new HttpRequestException($"Neúspešné načítanie meracích bodov\nChyba: \n[{error}]");
             }
         }
 
@@ -395,7 +423,7 @@ namespace TimeMaker.Services
                             Id = data.Id,
                             SourceId = data.SourceId,
                             Status = resp.IsSuccessStatusCode ? UploadStatus.Completed : UploadStatus.Failed,
-                            StatusCode = resp.StatusCode.ToString()
+                            StatusCode = resp.IsSuccessStatusCode ? "" : await resp.Content.ReadAsStringAsync()
                         });
                         if (!resp.IsSuccessStatusCode)
                         {
