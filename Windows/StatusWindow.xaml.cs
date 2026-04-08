@@ -37,7 +37,7 @@ namespace TimeMaker.Windows
             ListViewData.Loaded += ListLoaded;
             ComboBox.SelectionChanged += SelectedFilterChanged;
             ComboBox.SelectedIndex = 0;
-            Title = _sourceService.Source;
+            Title = _sourceService.Name;
         }
 
         private void Upload(object sender, RoutedEventArgs e)
