@@ -590,7 +590,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ProgressBar">
-                    <Border CornerRadius="2" Background="{TemplateBinding Background}" ClipToBounds="True">
+                    <!-- PART_Track is required: WPF sizes PART_Indicator as
+                         percent * PART_Track.ActualWidth; without it the
+                         indicator width is never set and stays at 0. -->
+                    <Border x:Name="PART_Track" CornerRadius="2" Background="{TemplateBinding Background}" ClipToBounds="True">
                         <Border x:Name="PART_Indicator" CornerRadius="2" HorizontalAlignment="Left"
                                 Background="{TemplateBinding Foreground}" />
                     </Border>
