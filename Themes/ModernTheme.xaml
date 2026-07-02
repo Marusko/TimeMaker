@@ -32,12 +32,12 @@
     <SolidColorBrush x:Key="InfoForegroundBrush" Color="#92400E" />
 
     <!-- ============================ Text ============================ -->
-    <!-- NOTE: deliberately no Foreground setter here. A global TextBlock
-         Foreground would override the text colour of content inside Buttons,
-         CheckBoxes, RadioButtons and Tabs (which set their own Foreground and
-         rely on inheritance). The window sets a default Foreground instead. -->
+    <!-- NOTE: deliberately no Foreground or FontSize setter here. A global
+         TextBlock setter would override values inherited from containers
+         (Buttons, ListViewItems with a custom FontSize, GridView headers, ...)
+         because a style setter beats property inheritance. The window sets the
+         default Foreground and FontSize instead, and they inherit down. -->
     <Style TargetType="TextBlock">
-        <Setter Property="FontSize" Value="13" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 

@@ -26,7 +26,7 @@
 
                 <TextBlock Text="Číslo" Style="{StaticResource FieldLabelStyle}"/>
                 <TextBox x:Name="BibText" HorizontalContentAlignment="Center"
-                         FontWeight="SemiBold" FontSize="17"/>
+                         FontWeight="SemiBold" FontSize="20"/>
 
                 <Button Content="Uložiť" Click="Save" HorizontalAlignment="Right"
                         MinWidth="100" Margin="0,18,0,0"/>

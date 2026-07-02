@@ -38,7 +38,7 @@
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                         <TextBlock x:Name="TitleText" Style="{StaticResource TitleTextStyle}" FontSize="17" TextWrapping="Wrap" />
-                        <TextBlock x:Name="MessageText" Margin="0,8,0,0" FontSize="13" TextWrapping="Wrap"
+                        <TextBlock x:Name="MessageText" Margin="0,8,0,0" FontSize="14" TextWrapping="Wrap"
                                    Foreground="{StaticResource TextPrimaryBrush}" />
                     </StackPanel>
                 </Grid>
