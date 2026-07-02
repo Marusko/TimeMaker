@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
 using TimeMaker.Services;
+using TimeMaker.Windows;
 
 namespace TimeMaker
 {
@@ -45,8 +46,16 @@ namespace TimeMaker
             {
                 var ex = args.ExceptionObject as Exception;
                 Logger.LogError("Unhandled exception", ex);
-                MessageBox.Show($"An unhandled exception occurred: {ex?.Message}\nThe application will now close.",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                try
+                {
+                    ThemedDialog.Show("Error", $"An unhandled exception occurred: {ex?.Message}\nThe application will now close.", ThemedDialogIcon.Error);
+                }
+                catch
+                {
+                    // The dispatcher may already be unusable during a crash.
+                    MessageBox.Show($"An unhandled exception occurred: {ex?.Message}\nThe application will now close.",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             };
         }
 

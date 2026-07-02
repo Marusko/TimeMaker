@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using TimeMaker.Models;
 using TimeMaker.ViewModels;
+using TimeMaker.Windows;
 
 namespace TimeMaker.Services
 {
@@ -195,7 +196,7 @@ namespace TimeMaker.Services
             catch (Exception e)
             {
                 App.Logger.LogError("[SS] Error setting stopwatch points", e);
-                MessageBox.Show($"Nepodarilo sa nastaviť pravidlá pre impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", "Chyba impulzov", MessageBoxButton.OK, MessageBoxImage.Error);
+                ThemedDialog.Show("Chyba impulzov", $"Nepodarilo sa nastaviť pravidlá pre impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", ThemedDialogIcon.Error);
             }
         }
 
@@ -215,7 +216,7 @@ namespace TimeMaker.Services
             catch (Exception e)
             {
                 App.Logger.LogError("[SS] Error setting backup points", e);
-                MessageBox.Show($"Nepodarilo sa nastaviť pravidlá pre impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", "Chyba impulzov", MessageBoxButton.OK, MessageBoxImage.Error);
+                ThemedDialog.Show("Chyba impulzov", $"Nepodarilo sa nastaviť pravidlá pre impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", ThemedDialogIcon.Error);
             }
         }
 
@@ -238,7 +239,7 @@ namespace TimeMaker.Services
             catch (Exception e)
             {
                 App.Logger.LogError("[SS] Error setting clear points", e);
-                MessageBox.Show($"Nepodarilo sa nastaviť pravidlá pre mazacie impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", "Chyba mazacích impulzov", MessageBoxButton.OK, MessageBoxImage.Error);
+                ThemedDialog.Show("Chyba mazacích impulzov", $"Nepodarilo sa nastaviť pravidlá pre mazacie impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", ThemedDialogIcon.Error);
             }
         }
 
@@ -327,8 +328,7 @@ namespace TimeMaker.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Chyba pri čítaní zo sériového portu: {ex.Message}",
-                    "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ThemedDialog.Show("Chyba", $"Chyba pri čítaní zo sériového portu: {ex.Message}", ThemedDialogIcon.Warning);
                 App.Logger.LogError($"[SS] Error reading from serial port {Source}", ex);
             }
         }
@@ -405,7 +405,7 @@ namespace TimeMaker.Services
             catch (Exception e)
             {
                 App.Logger.LogError("[SS] Error getting available ports", e);
-                MessageBox.Show($"Nepodarilo sa načítať dostupné porty: [{e.Message}]", "Chyba dostupných portov", MessageBoxButton.OK, MessageBoxImage.Error);
+                ThemedDialog.Show("Chyba dostupných portov", $"Nepodarilo sa načítať dostupné porty: [{e.Message}]", ThemedDialogIcon.Error);
                 return new List<string>();
             }
         }
@@ -439,7 +439,7 @@ namespace TimeMaker.Services
             catch (Exception e)
             {
                 App.Logger.LogError($"[SS] Error connecting to port: {port}", e);
-                MessageBox.Show(e.Message, "Varovanie - pripojenie", MessageBoxButton.OK, MessageBoxImage.Error);
+                ThemedDialog.Show("Varovanie - pripojenie", e.Message, ThemedDialogIcon.Error);
             }
         }
 
@@ -456,7 +456,7 @@ namespace TimeMaker.Services
             catch (Exception e)
             {
                 App.Logger.LogError($"[SS] Error disconnecting from port: {_port.PortName}", e);
-                MessageBox.Show(e.Message, "Varovanie - odpojenie", MessageBoxButton.OK, MessageBoxImage.Error);
+                ThemedDialog.Show("Varovanie - odpojenie", e.Message, ThemedDialogIcon.Error);
             }
         }
     }

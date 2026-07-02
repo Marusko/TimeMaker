@@ -47,9 +47,7 @@ namespace TimeMaker.Windows
             }
             catch (Exception ex)
             {
-                MessageBoxButton button = MessageBoxButton.OK;
-                MessageBoxImage icon = MessageBoxImage.Error;
-                MessageBox.Show($"Nastala chyba pri načítavaní API: {ex.Message}", "Chyba", button, icon, MessageBoxResult.OK);
+                ThemedDialog.Show("Chyba", $"Nastala chyba pri načítavaní API: {ex.Message}", ThemedDialogIcon.Error);
             }
         }
 
@@ -63,9 +61,7 @@ namespace TimeMaker.Windows
             }
             catch (Exception ex)
             {
-                MessageBoxButton button = MessageBoxButton.OK;
-                MessageBoxImage icon = MessageBoxImage.Error;
-                MessageBox.Show($"Nastala chyba pri spustení API služby: {ex.Message}", "Chyba", button, icon, MessageBoxResult.OK);
+                ThemedDialog.Show("Chyba", $"Nastala chyba pri spustení API služby: {ex.Message}", ThemedDialogIcon.Error);
             }
         }
     }

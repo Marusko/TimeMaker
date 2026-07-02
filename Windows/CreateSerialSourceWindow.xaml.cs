@@ -65,7 +65,7 @@ namespace TimeMaker.Windows
         {
             if (string.IsNullOrEmpty(ComPortBox.Text) || string.IsNullOrEmpty(StartPoint.Text) || string.IsNullOrEmpty(FinishPoint.Text) || string.IsNullOrEmpty(NameText.Text))
             {
-                MessageBox.Show("Prosím zadajte všetky potrebné dáta", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                ThemedDialog.Show("Chyba", "Prosím zadajte všetky potrebné dáta", ThemedDialogIcon.Error);
             }
             else
             {

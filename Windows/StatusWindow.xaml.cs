@@ -69,7 +69,7 @@ namespace TimeMaker.Windows
             var lvi = contextMenu?.PlacementTarget as ListViewItem;
             if (lvi?.Content is DataLogViewModel item)
             {
-                MessageBox.Show($"Chyba nahrávania času. Chyba: [{item.StatusCode}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.None);
+                ThemedDialog.Show("Chyba", $"Chyba nahrávania času. Chyba: [{item.StatusCode}]", ThemedDialogIcon.Error);
             }
         }
 
@@ -103,7 +103,7 @@ namespace TimeMaker.Windows
             if (lvi?.Content is DataLogViewModel item)
             {
                 var changes = string.Join("\n", item.BibChanges);
-                MessageBox.Show($"Zmeny čísla: \n{changes}", "Zmeny čísla", MessageBoxButton.OK, MessageBoxImage.None);
+                ThemedDialog.Show("Zmeny čísla", changes, ThemedDialogIcon.Info);
             }
         }
 
@@ -219,7 +219,7 @@ namespace TimeMaker.Windows
                 var res = op.ShowDialog();
                 if (res == null || string.IsNullOrEmpty(op.FileName))
                 {
-                    MessageBox.Show("Je potrebné vybrať miesto pre uloženie", "CSV súbor", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ThemedDialog.Show("CSV súbor", "Je potrebné vybrať miesto pre uloženie", ThemedDialogIcon.Warning);
                     return;
                 }
 
@@ -234,7 +234,7 @@ namespace TimeMaker.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Nastala chyba pri ukladaní súboru: {ex.Message}", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                ThemedDialog.Show("Chyba", $"Nastala chyba pri ukladaní súboru: {ex.Message}", ThemedDialogIcon.Error);
                 App.Logger.LogError("[SW] Error saving CSV file", ex);
                 progressWindow.Close();
             }
@@ -253,7 +253,7 @@ namespace TimeMaker.Windows
                 var res = op.ShowDialog();
                 if (res == null || string.IsNullOrEmpty(op.FileName))
                 {
-                    MessageBox.Show("Je potrebné vybrať miesto pre uloženie", "Textový súbor", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ThemedDialog.Show("Textový súbor", "Je potrebné vybrať miesto pre uloženie", ThemedDialogIcon.Warning);
                     return;
                 }
                 var progress = new Progress<int>(value =>
@@ -267,7 +267,7 @@ namespace TimeMaker.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Nastala chyba pri ukladaní súboru: {ex.Message}", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                ThemedDialog.Show("Chyba", $"Nastala chyba pri ukladaní súboru: {ex.Message}", ThemedDialogIcon.Error);
                 App.Logger.LogError("[SW] Error saving TXT file", ex);
                 progressWindow.Close();
             }

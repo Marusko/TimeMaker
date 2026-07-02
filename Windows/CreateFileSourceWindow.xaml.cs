@@ -48,7 +48,7 @@ namespace TimeMaker.Windows
                 var res = op.ShowDialog();
                 if (res == null || string.IsNullOrEmpty(op.FileName))
                 {
-                    MessageBox.Show("CSV súbor je potrebný", "CSV súbor", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ThemedDialog.Show("CSV súbor", "CSV súbor je potrebný", ThemedDialogIcon.Warning);
                     FileNameLabel.Content = "Nie je vybraný žiadny súbor";
                     return;
                 }
@@ -59,7 +59,7 @@ namespace TimeMaker.Windows
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Nastala chyba pri načítavaní súboru: {ex.Message}", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                ThemedDialog.Show("Chyba", $"Nastala chyba pri načítavaní súboru: {ex.Message}", ThemedDialogIcon.Error);
                 App.Logger.LogError("[CF] Error loading file", ex);
                 FileNameLabel.Content = "Nie je vybraný žiadny súbor";
                 _path = string.Empty;
@@ -70,7 +70,7 @@ namespace TimeMaker.Windows
         {
             if (string.IsNullOrEmpty(_path) || string.IsNullOrEmpty(TimingPointsCombo.Text) || string.IsNullOrEmpty(NameText.Text))
             {
-                MessageBox.Show("Prosím zadajte všetky potrebné dáta", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                ThemedDialog.Show("Chyba", "Prosím zadajte všetky potrebné dáta", ThemedDialogIcon.Error);
             }
             else
             {

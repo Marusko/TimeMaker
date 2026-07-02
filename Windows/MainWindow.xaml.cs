@@ -65,7 +65,7 @@ namespace TimeMaker.Windows
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Nepodarilo sa spustiť zdroj. Chyba: [{ex.Message}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ThemedDialog.Show("Chyba", $"Nepodarilo sa spustiť zdroj. Chyba: [{ex.Message}]", ThemedDialogIcon.Error);
                 }
             }
         }
@@ -81,7 +81,7 @@ namespace TimeMaker.Windows
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Nepodarilo sa zastaviť zdroj. Chyba: [{ex.Message}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ThemedDialog.Show("Chyba", $"Nepodarilo sa zastaviť zdroj. Chyba: [{ex.Message}]", ThemedDialogIcon.Error);
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace TimeMaker.Windows
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Nepodarilo sa odstrániť zdroj. Chyba: [{ex.Message}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ThemedDialog.Show("Chyba", $"Nepodarilo sa odstrániť zdroj. Chyba: [{ex.Message}]", ThemedDialogIcon.Error);
                 }
             }
         }
@@ -134,7 +134,7 @@ namespace TimeMaker.Windows
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Nepodarilo sa upraviť zdroj. Chyba: [{ex.Message}]", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ThemedDialog.Show("Chyba", $"Nepodarilo sa upraviť zdroj. Chyba: [{ex.Message}]", ThemedDialogIcon.Error);
                 }
             }
         }
