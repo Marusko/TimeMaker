@@ -161,7 +161,7 @@ namespace TimeMaker.Services
         {
             // Konvertujeme vlastný formát na štandardný regex
             // [n] -> (?<number>\d+) - zachytáva číslo do group "number"
-            // [t] -> (?<time>\d{2}:\d{2}:\d{2}\.\d{2}) - zachytáva čas do group "time"
+            // [t] -> (?<time>\d{2}:\d{2}:\d{2}(?:\.\d{1,4})?) - zachytáva čas do group "time", desatinné miesta sekúnd sú voliteľné
             // . = ľubovoľný znak
             // \. = literálna bodka
             App.Logger.Log($"[SS] Creating regex for SerialPortSource: {Id}, Pattern: {customRegex}");
@@ -172,7 +172,7 @@ namespace TimeMaker.Services
             pattern = pattern.Replace(".", wildcardDotPlaceholder);
             pattern = Regex.Escape(pattern);
             pattern = pattern.Replace(@"\[n]", @"(?<number>\d+)");
-            pattern = pattern.Replace(@"\[t]", @"(?<time>\d{2}:\d{2}:\d{2}\.\d{1,4})");
+            pattern = pattern.Replace(@"\[t]", @"(?<time>\d{2}:\d{2}:\d{2}(?:\.\d{1,4})?)");
             pattern = pattern.Replace(literalDotPlaceholder, @"\.");
             pattern = pattern.Replace(wildcardDotPlaceholder, ".");
 
@@ -373,7 +373,7 @@ namespace TimeMaker.Services
                 var timeStr = parts[1];
                 var clear = parts[3];
                 var question = parts[4];
-                var can = TimeOnly.TryParse(timeStr, out var parsed);
+                var can = TryParseTime(timeStr, out var parsed);
                 var canBib = int.TryParse(number, out var parsedBib);
                 var canClear = bool.TryParse(clear, out var parsedClear);
                 var canQuestion = bool.TryParse(question, out var parsedQuestion);

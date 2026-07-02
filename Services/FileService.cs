@@ -209,7 +209,7 @@ namespace TimeMaker.Services
 
         private TimeOnly StringToDateTime(string s)
         {
-            if (TimeOnly.TryParse(s, out var parsedTime))
+            if (TryParseTime(s, out var parsedTime))
             {
                 return parsedTime;
             }

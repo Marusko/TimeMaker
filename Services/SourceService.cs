@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using TimeMaker.Models;
 using TimeMaker.ViewModels;
 
@@ -7,6 +8,14 @@ namespace TimeMaker.Services
 {
     public abstract class SourceService
     {
+        private static readonly string[] TimeFormats = { "HH:mm:ss.FFFF", "H:mm:ss.FFFF" };
+
+        protected static bool TryParseTime(string s, out TimeOnly time)
+        {
+            return TimeOnly.TryParseExact(s, TimeFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out time)
+                   || TimeOnly.TryParse(s, out time);
+        }
+
         public abstract string Id { get; protected set; }
         public abstract Type InternalType { get; protected set; }
         public abstract string Name { get; protected set; }
