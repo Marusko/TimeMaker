@@ -1,3 +1,4 @@
+using System.Media;
 using System.Windows;
 using System.Windows.Media;
 
@@ -24,6 +25,8 @@ namespace TimeMaker.Windows
     /// </summary>
     public partial class ThemedDialog : Window
     {
+        private readonly SystemSound? _sound;
+
         public ThemedDialog(string title, string message, ThemedDialogButtons buttons, ThemedDialogIcon icon)
         {
             InitializeComponent();
@@ -32,6 +35,17 @@ namespace TimeMaker.Windows
             MessageText.Text = message;
 
             SetIcon(icon);
+
+            // Mirror the sounds MessageBox plays for each MessageBoxImage.
+            _sound = icon switch
+            {
+                ThemedDialogIcon.Error => SystemSounds.Hand,
+                ThemedDialogIcon.Warning => SystemSounds.Exclamation,
+                ThemedDialogIcon.Info => SystemSounds.Asterisk,
+                ThemedDialogIcon.Success => SystemSounds.Asterisk,
+                _ => null,
+            };
+            Loaded += (_, _) => _sound?.Play();
 
             if (buttons == ThemedDialogButtons.YesNo)
             {
