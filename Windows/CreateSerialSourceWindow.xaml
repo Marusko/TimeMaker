@@ -1,57 +1,63 @@
-﻿<Window x:Class="TimeMaker.Windows.CreateSerialSourceWindow"
+<Window x:Class="TimeMaker.Windows.CreateSerialSourceWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Nový COM port" Height="390" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Topmost="True" Icon="../Icons/favicon.ico">
-    <GroupBox Header="Nový COM port">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Názov">
-                <TextBox x:Name="NameText" HorizontalAlignment="Stretch" Margin="5" Text="" />
-            </GroupBox>
-            <GroupBox Grid.Row="1" Header="Timy mód">
-                <Grid Margin="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <RadioButton Grid.Column="0" x:Name="StopwatchRadio" Content="Stopwatch" Checked="ModeChecked" IsChecked="True" GroupName="mode" Margin="0 0 10 0" VerticalAlignment="Center"/>
-                    <RadioButton Grid.Column="1" x:Name="BackupRadio" Content="Backup" Checked="ModeChecked" GroupName="mode" Margin="0 0 10 0" VerticalAlignment="Center"/>
-                </Grid>
-            </GroupBox>
-            <GroupBox Grid.Row="2" Header="Zdrojový port">
-                <Grid>
-                    <ComboBox x:Name="ComPortBox" HorizontalAlignment="Left" Margin="5" Width="120"></ComboBox>
-                    <Button Click="Test" Content="Test" HorizontalAlignment="Right" Margin="5" Padding="5 2" Width="93"/>
-                </Grid>
-            </GroupBox>
-            <GroupBox Grid.Row="3" Header="Cieľové meracie body">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Content="C0 / C0M bod:" Margin="5"/>
-                    <ComboBox Grid.Row="0" x:Name="StartPoint" Margin="138,6,5,5" Width="120"/>
-                    <Label Grid.Row="1" Content="C1 / C1M bod:" Margin="5"/>
-                    <ComboBox Grid.Row="1" x:Name="FinishPoint" Margin="138,6,5,5" Width="120"/>
-                    <Label Grid.Row="2" Content="RT / RTM bod:" Margin="5"/>
-                    <ComboBox Grid.Row="2" x:Name="RunTimePoint" Margin="138,6,5,5" Width="120" IsEnabled="{Binding ElementName=StopwatchRadio, Path=IsChecked}"/>
-                </Grid>
-            </GroupBox>
-            <Grid Grid.Row="4">
-                <Button Content="Obnoviť" Click="Refresh" HorizontalAlignment="Left" Margin="10,10,0,0" Padding="10 5" Width="93"/>
-                <Button Content="Uložiť" Click="Save" HorizontalAlignment="Right" Margin="0,10,10,0" Padding="10 5" Width="93"/>
+        Title="Nový COM port" Width="380" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" Topmost="True" Icon="../Icons/favicon.ico"
+        FontFamily="Segoe UI" FontSize="13"
+        Foreground="{StaticResource TextPrimaryBrush}"
+        TextOptions.TextFormattingMode="Ideal"
+        UseLayoutRounding="True"
+        Background="{StaticResource WindowBackgroundBrush}">
+    <Border Style="{StaticResource CardStyle}" Margin="16" Padding="20">
+        <StackPanel>
+            <TextBlock Text="Nový COM port" Style="{StaticResource TitleTextStyle}" FontSize="17"/>
+
+            <TextBlock Text="Názov" Style="{StaticResource FieldLabelStyle}"/>
+            <TextBox x:Name="NameText" Text=""/>
+
+            <TextBlock Text="Timy mód" Style="{StaticResource FieldLabelStyle}"/>
+            <StackPanel Orientation="Horizontal">
+                <RadioButton x:Name="StopwatchRadio" Content="Stopwatch" Checked="ModeChecked"
+                             IsChecked="True" GroupName="mode" Margin="0,0,18,0" VerticalAlignment="Center"/>
+                <RadioButton x:Name="BackupRadio" Content="Backup" Checked="ModeChecked"
+                             GroupName="mode" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <TextBlock Text="Zdrojový port" Style="{StaticResource FieldLabelStyle}"/>
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Click="Test" Content="Test"
+                        Style="{StaticResource SecondaryButtonStyle}" Margin="10,0,0,0" MinWidth="70"/>
+                <ComboBox x:Name="ComPortBox"/>
+            </DockPanel>
+
+            <TextBlock Text="Cieľové meracie body" Style="{StaticResource FieldLabelStyle}"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="C0 / C0M bod:" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="StartPoint" Margin="10,0,0,6"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="C1 / C1M bod:" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" x:Name="FinishPoint" Margin="10,0,0,6"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="RT / RTM bod:" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" x:Name="RunTimePoint" Margin="10,0,0,0"
+                          IsEnabled="{Binding ElementName=StopwatchRadio, Path=IsChecked}"/>
             </Grid>
-        </Grid>
-    </GroupBox>
+
+            <Grid Margin="0,20,0,0">
+                <Button Content="Obnoviť" Click="Refresh" HorizontalAlignment="Left"
+                        Style="{StaticResource SecondaryButtonStyle}" MinWidth="100"/>
+                <Button Content="Uložiť" Click="Save" HorizontalAlignment="Right" MinWidth="100"/>
+            </Grid>
+        </StackPanel>
+    </Border>
 </Window>

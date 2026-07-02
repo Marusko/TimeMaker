@@ -33,7 +33,6 @@ namespace TimeMaker.Windows
                 RunTimePoint.Visibility = Visibility.Collapsed;
                 ThirdTargetLabel.Visibility = Visibility.Collapsed;
                 StartPoint.SelectedItem = fileService.Target;
-                Height = 165;
             }
             else if (_sourceService is SerialPortService serialService)
             {
