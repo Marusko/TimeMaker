@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="RaceResult nastavenia" Height="320" Width="350" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Topmost="True" Icon="../Icons/favicon.ico">
+        Title="RaceResult nastavenia" Height="360" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Topmost="True" Icon="../Icons/favicon.ico">
     <GroupBox Header="RaceResult nastavenia">
         <Grid>
             <Grid.RowDefinitions>
