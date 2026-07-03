@@ -31,7 +31,10 @@ namespace TimeMaker.Services
                 return;
             }
 
-            var total = source.LogData.Count;
+            // Snapshot on the calling (UI) thread - the live ObservableCollection
+            // may be appended to by a running source during the export.
+            var rows = source.LogData.ToList();
+            var total = rows.Count;
             int processed = 0;
 
             await Task.Run(() =>
@@ -44,7 +47,7 @@ namespace TimeMaker.Services
                     "RawData","IsClear","IsQuestion","HasBibChanges","BibChanges"
                 }));
 
-                foreach (var d in source.LogData)
+                foreach (var d in rows)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -83,14 +86,17 @@ namespace TimeMaker.Services
 
             App.Logger.Log($"[ES] Exporting impulses data for source ({sourceId})");
 
-            var total = source.LogData.Count;
+            // Snapshot on the calling (UI) thread - the live ObservableCollection
+            // may be appended to by a running source during the export.
+            var rows = source.LogData.ToList();
+            var total = rows.Count;
             int processed = 0;
 
             await Task.Run(() =>
             {
                 using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
 
-                foreach (var d in source.LogData)
+                foreach (var d in rows)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 

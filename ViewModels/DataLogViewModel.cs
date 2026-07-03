@@ -116,5 +116,19 @@ namespace TimeMaker.ViewModels
             StatusCode = statusCode;
             Status = status;
         }
+
+        public DataModel ToDataModel(string sourceId)
+        {
+            return new DataModel()
+            {
+                Id = Id,
+                SourceId = sourceId,
+                Bib = Bib,
+                Time = Time,
+                TimingPoint = TimingPoint,
+                RawData = Raw,
+                IsClear = IsClear
+            };
+        }
     }
 }

@@ -57,14 +57,7 @@ namespace TimeMaker.Services
                 TargetRunTime = model.ThirdTarget.Name;
                 Mode = model.Mode;
                 _impulseModifiers = model.Flags;
-                if (Mode == TimyMode.Stopwatch)
-                {
-                    SetStopwatchPoints(Target, TargetFinish, TargetRunTime);
-                }
-                else if (Mode == TimyMode.Backup)
-                {
-                    SetBackupPoints(Target, TargetFinish, TargetRunTime);
-                }
+                SetPoints(Target, TargetFinish, TargetRunTime);
                 SetClearPoints(Target, TargetFinish, TargetRunTime);
                 App.Logger.Log($"[SS] Initialized SerialPortSource: {Id}");
             }
@@ -75,6 +68,14 @@ namespace TimeMaker.Services
             if (!Running)
             {
                 App.Logger.Log($"[SS] Starting SerialPortSource: {Id}");
+                _port = new SerialPort();
+                if (!Connect(Source))
+                {
+                    // Do not report the source as active when the port is dead.
+                    SourceItemViewModel.UpdateStatus("Chyba - port sa nepodarilo otvoriť");
+                    App.Logger.LogWarning($"[SS] SerialPortSource not started, port unavailable: {Id}");
+                    return;
+                }
                 Running = true;
                 SourceItemViewModel.IsRunning = true;
                 SourceItemViewModel.UpdateStatus("Aktívne");
@@ -83,8 +84,6 @@ namespace TimeMaker.Services
                 LogData.Clear();
                 LogDataLookup.Clear();
                 App.RaceResult.RaceResultTimeSent += OnRaceResultTimeSent;
-                _port = new SerialPort();
-                Connect(Source);
                 _port.DataReceived += Read;
                 App.Logger.Log($"[SS] Started SerialPortSource: {Id}");
             }
@@ -129,14 +128,7 @@ namespace TimeMaker.Services
                 Target = model.Target;
                 TargetFinish = model.SecondTarget;
                 TargetRunTime = model.ThirdTarget;
-                if (Mode == TimyMode.Stopwatch)
-                {
-                    SetStopwatchPoints(Target, TargetFinish, TargetRunTime);
-                }
-                else if (Mode == TimyMode.Backup)
-                {
-                    SetBackupPoints(Target, TargetFinish, TargetRunTime);
-                }
+                SetPoints(Target, TargetFinish, TargetRunTime);
                 SetClearPoints(Target, TargetFinish, TargetRunTime);
                 SourceItemViewModel.Target = $"C0(M): {model.Target} C1(M): {model.SecondTarget} RT(M): {model.ThirdTarget}";
             }
@@ -180,42 +172,24 @@ namespace TimeMaker.Services
             return new Regex(pattern, RegexOptions.Compiled);
         }
 
-        private void SetStopwatchPoints(string startPoint, string finishPoint, string runTimePoint)
+        private void SetPoints(string startPoint, string finishPoint, string runTimePoint)
         {
+            // Backup mode impulses are prefixed with '*', stopwatch ones are not.
+            var prefix = Mode == TimyMode.Backup ? "*" : "";
             try
             {
-                App.Logger.Log($"[SS] Setting stopwatch points for SerialPortSource: {Id}");
+                App.Logger.Log($"[SS] Setting {Mode} points for SerialPortSource: {Id}");
                 _algePoints.Clear();
-                _algePoints.TryAdd("Start", (CreateCompiledRegex("[n] C0M [t] 00"), CreateCompiledRegex("[n] C0 [t] 00"), startPoint));
-                _algePoints.TryAdd("Finish", (CreateCompiledRegex("[n] C1M [t] 00"), CreateCompiledRegex("[n] C1 [t] 00"), finishPoint));
+                _algePoints.TryAdd("Start", (CreateCompiledRegex($"{prefix}[n] C0M [t] 00"), CreateCompiledRegex($"{prefix}[n] C0 [t] 00"), startPoint));
+                _algePoints.TryAdd("Finish", (CreateCompiledRegex($"{prefix}[n] C1M [t] 00"), CreateCompiledRegex($"{prefix}[n] C1 [t] 00"), finishPoint));
                 if (!string.IsNullOrEmpty(runTimePoint))
                 {
-                    _algePoints.TryAdd("RunTime", (CreateCompiledRegex("[n] RTM [t] 00"), CreateCompiledRegex("[n] RT [t] 00"), runTimePoint));
+                    _algePoints.TryAdd("RunTime", (CreateCompiledRegex($"{prefix}[n] RTM [t] 00"), CreateCompiledRegex($"{prefix}[n] RT [t] 00"), runTimePoint));
                 }
             }
             catch (Exception e)
             {
-                App.Logger.LogError("[SS] Error setting stopwatch points", e);
-                ThemedDialog.Show("Chyba impulzov", $"Nepodarilo sa nastaviť pravidlá pre impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", ThemedDialogIcon.Error);
-            }
-        }
-
-        private void SetBackupPoints(string startPoint, string finishPoint, string runTimePoint)
-        {
-            try
-            {
-                App.Logger.Log($"[SS] Setting backup points for SerialPortSource: {Id}");
-                _algePoints.Clear();
-                _algePoints.TryAdd("Start", (CreateCompiledRegex("*[n] C0M [t] 00"), CreateCompiledRegex("*[n] C0 [t] 00"), startPoint));
-                _algePoints.TryAdd("Finish", (CreateCompiledRegex("*[n] C1M [t] 00"), CreateCompiledRegex("*[n] C1 [t] 00"), finishPoint));
-                if (!string.IsNullOrEmpty(runTimePoint))
-                {
-                    _algePoints.TryAdd("RunTime", (CreateCompiledRegex("*[n] RTM [t] 00"), CreateCompiledRegex("*[n] RT [t] 00"), runTimePoint));
-                }
-            }
-            catch (Exception e)
-            {
-                App.Logger.LogError("[SS] Error setting backup points", e);
+                App.Logger.LogError($"[SS] Error setting {Mode} points", e);
                 ThemedDialog.Show("Chyba impulzov", $"Nepodarilo sa nastaviť pravidlá pre impulzy. Prosím vymažte a znova pridajte tento zdroj. Chyba: [{e.Message}]", ThemedDialogIcon.Error);
             }
         }
@@ -262,7 +236,8 @@ namespace TimeMaker.Services
                             complete = _tempImpulse;
                             _tempImpulse = "";
                             App.Logger.Log($"[SS] Read from serial port {Source}: {complete}");
-                            _port.DiscardInBuffer();
+                            // No DiscardInBuffer here - bytes of the next impulse
+                            // may already be waiting and must not be thrown away.
                         }
                     }
                     else
@@ -410,13 +385,17 @@ namespace TimeMaker.Services
             }
         }
 
-        public void TestConnection(string port)
+        public bool TestConnection(string port)
         {
             try
             {
                 App.Logger.Log($"[SS] Testing connection on port: {port}");
-                Connect(port);
+                if (!Connect(port))
+                {
+                    return false;
+                }
                 Thread.Sleep(500);
+                return true;
             }
             finally
             {
@@ -424,7 +403,7 @@ namespace TimeMaker.Services
             }
         }
 
-        private void Connect(string port)
+        private bool Connect(string port)
         {
             try
             {
@@ -435,11 +414,13 @@ namespace TimeMaker.Services
                 _port.StopBits = StopBits.One;
                 _port.Open();
                 App.Logger.Log($"[SS] Connected to port: {port}");
+                return true;
             }
             catch (Exception e)
             {
                 App.Logger.LogError($"[SS] Error connecting to port: {port}", e);
                 ThemedDialog.Show("Varovanie - pripojenie", e.Message, ThemedDialogIcon.Error);
+                return false;
             }
         }
 

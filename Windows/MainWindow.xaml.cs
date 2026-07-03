@@ -17,6 +17,7 @@ namespace TimeMaker.Windows
         public MainWindow()
         {
             InitializeComponent();
+            VersionText.Text = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "";
             ListViewSources.ItemsSource = _sources;
             App.RaceResult.RaceResultApiLoaded += OnApiLoaded;
             App.SourceManager.SourceAdded += OnSourceAdded;
@@ -145,7 +146,6 @@ namespace TimeMaker.Windows
             {
                 BtnAddFile.IsEnabled = true;
                 BtnAddTimy.IsEnabled = true;
-                BtnRaceSettings.IsEnabled = false;
             });
         }
 

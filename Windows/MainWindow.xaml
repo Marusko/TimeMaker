@@ -123,7 +123,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Matúš Suský" Foreground="{StaticResource TextSecondaryBrush}"/>
                 <Border Width="1" Background="{StaticResource BorderSoftBrush}" Margin="12,1"/>
-                <TextBlock Text="1.4.1" Foreground="{StaticResource TextSecondaryBrush}"/>
+                <TextBlock x:Name="VersionText" Foreground="{StaticResource TextSecondaryBrush}"/>
                 <Border Width="1" Background="{StaticResource BorderSoftBrush}" Margin="12,1"/>
                 <TextBlock>
                     <Hyperlink Click="OpenJson">

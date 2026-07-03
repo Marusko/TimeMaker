@@ -25,10 +25,22 @@ namespace TimeMaker.Windows
             }
         }
 
-        private void Test(object sender, RoutedEventArgs e)
+        private async void Test(object sender, RoutedEventArgs e)
         {
+            var port = ComPortBox.Text;
+            if (string.IsNullOrEmpty(port))
+            {
+                ThemedDialog.Show("Test portu", "Najprv vyberte port", ThemedDialogIcon.Warning);
+                return;
+            }
+
+            // Off the UI thread - TestConnection holds the port open for 500 ms.
             var sps = new SerialPortService();
-            sps.TestConnection(ComPortBox.Text);
+            var ok = await Task.Run(() => sps.TestConnection(port));
+            if (ok)
+            {
+                ThemedDialog.Show("Test portu", $"Port {port} je dostupný", ThemedDialogIcon.Success);
+            }
         }
 
         private void Refresh(object sender, RoutedEventArgs e)

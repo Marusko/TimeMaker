@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net;
@@ -26,14 +26,16 @@ namespace TimeMaker.Services
         private string _invalidateUrl = "";
         private List<string> _bibList = new();
         private ConcurrentQueue<DataModel> _unsentData = new();
-        
+
         public event EventHandler<RaceResultApiLoadedEventArgs>? RaceResultApiLoaded;
         public event EventHandler<RaceResultBibsLoadedEventArgs>? RaceResultBibsLoaded;
         public event EventHandler<RaceResultTimeSentEventArgs>? RaceResultTimeSent;
 
         public RaceResultService()
         {
-            _httpClient = new HttpClient();
+            // Without a short timeout a hung server stacks up in-flight
+            // requests, because the send timer ticks every second.
+            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
         }
 
         private void Clear()
@@ -46,11 +48,18 @@ namespace TimeMaker.Services
             _bibListUrl = "";
             _rawSearchUrl = "";
             _invalidateUrl = "";
+            TemplateEnabled = false;
+            ClearEnabled = false;
         }
 
         public async Task Start()
         {
             App.Logger.Log("[RR] Starting...");
+            // Stop any timers from a previous Start so a re-save of the
+            // settings does not leave orphaned timers ticking.
+            _timer?.Stop();
+            _bibTimer?.Stop();
+            _collectTimer?.Stop();
             _timer = new();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += SendDataToRr;
@@ -74,212 +83,96 @@ namespace TimeMaker.Services
         {
             Clear();
             App.Logger.Log("[RR] Loading API...");
-            HttpResponseMessage response;
-            bool hasFirstPart = false;
-            bool hasSecondPart = false;
             var evArgs = new RaceResultApiLoadedEventArgs();
-            try
-            {
-                response = await _httpClient.GetAsync(apiLink);
-            }
-            catch (Exception e)
-            {
-                App.Logger.LogError("[RR] Cannot load API", e);
-                throw new HttpRequestException($"Neúspešné načítanie API\nChyba: \n[{e.Message}]");
-            }
-            if (response.IsSuccessStatusCode)
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                List<ApiModel>? apis;
-                try
-                {
-                    apis = JsonConvert.DeserializeObject<List<ApiModel>>(responseString);
-                }
-                catch (Exception e)
-                {
-                    App.Logger.LogError("[RR] Cannot load API - cannot deserialize data", e);
-                    throw new HttpRequestException("Neúspešné načítanie API\nChyba: \n[Nemôžem deserializovať dáta]");
-                }
-                if (apis == null)
-                {
-                    App.Logger.LogError("[RR] Cannot load API - API list is null");
-                    throw new HttpRequestException("Neúspešné načítanie API\nChyba: \n[API sú null]");
-                }
+            var apis = await GetJsonAsync<List<ApiModel>>(apiLink, "Neúspešné načítanie API");
 
-                var index = apiLink.LastIndexOf("/", StringComparison.Ordinal);
-                if (index == -1)
+            var index = apiLink.LastIndexOf("/", StringComparison.Ordinal);
+            if (index == -1)
+            {
+                App.Logger.LogError("[RR] Cannot load API - cannot find common part of the link");
+                throw new HttpRequestException("Neúspešné načítanie API\nChyba: \n[Nepodarilo sa nájsť spoločnú časť]");
+            }
+            var link = apiLink.Substring(0, index + 1);
+
+            bool hasInvalidApi = false;
+            bool hasSearchApi = false;
+
+            foreach (var api in apis)
+            {
+                var label = api.Label?.ToLower().Trim();
+                var enabled = api.Disabled == false;
+                var url = link + api.Key;
+
+                switch (label)
                 {
-                    App.Logger.LogError("[RR] Cannot load API - cannot find common part of the link");
-                    throw new HttpRequestException("Neúspešné načítanie API\nChyba: \n[Nepodarilo sa nájsť spoločnú časť]");
-                }
-                var link = apiLink.Substring(0, index + 1);
-                foreach (var api in apis)
-                {
-                    if (api.Label != null && api.Label.ToLower().Trim().Equals("points"))
-                    {
-                        if (api.Disabled != null && !(bool)api.Disabled)
+                    case "points":
+                        (evArgs.PointsApiStatus, evArgs.PointsApiLoaded) = ApiStatus("Points", enabled);
+                        if (enabled)
                         {
-                            _pointsUrl = link + api.Key;
-                            await LoadPoints(_pointsUrl);
-                            App.Logger.Log("[RR] Successfully loaded Points API");
-                            evArgs.PointsApiStatus = "Načítané";
-                            evArgs.PointsApiLoaded = true;
+                            _pointsUrl = url;
+                            await LoadPoints(url);
                         }
-                        else
+                        break;
+                    case "manual":
+                        (evArgs.ManualApiStatus, evArgs.ManualApiLoaded) = ApiStatus("Manual", enabled);
+                        if (enabled)
                         {
-                            App.Logger.LogWarning("[RR] Points API is off");
-                            evArgs.PointsApiStatus = "Vypnuté";
-                            evArgs.PointsApiLoaded = false;
+                            _manualUrl = url;
                         }
-                    }
-                    else if (api.Label != null && api.Label.ToLower().Trim().Equals("manual"))
-                    {
-                        if (api.Disabled != null && !(bool)api.Disabled)
+                        break;
+                    case "bibs":
+                        (evArgs.BibsApiStatus, evArgs.BibsApiLoaded) = ApiStatus("Bibs", enabled);
+                        if (enabled)
                         {
-                            _manualUrl = link + api.Key;
-                            App.Logger.Log("[RR] Successfully loaded Manual API");
-                            evArgs.ManualApiStatus = "Načítané";
-                            evArgs.ManualApiLoaded = true;
-                        }
-                        else
-                        {
-                            App.Logger.LogWarning("[RR] Manual API is off");
-                            evArgs.ManualApiStatus = "Vypnuté";
-                            evArgs.ManualApiLoaded = false;
-                        }
-                    }
-                    else if (api.Label != null && api.Label.ToLower().Trim().Equals("bibs"))
-                    {
-                        if (api.Disabled != null && !(bool)api.Disabled)
-                        {
-                            _bibListUrl = link + api.Key;
+                            _bibListUrl = url;
                             TemplateEnabled = true;
-                            App.Logger.Log("[RR] Successfully loaded Bibs API");
-                            evArgs.BibsApiStatus = "Načítané";
-                            evArgs.BibsApiLoaded = true;
                         }
-                        else
+                        break;
+                    case "invalid":
+                        (evArgs.InvalidApiStatus, evArgs.InvalidApiLoaded) = ApiStatus("Invalid", enabled);
+                        if (enabled)
                         {
-                            App.Logger.LogWarning("[RR] Bibs API is off");
-                            evArgs.BibsApiStatus = "Vypnuté";
-                            evArgs.BibsApiLoaded = false;
+                            _invalidateUrl = url;
                         }
-                    }
-                    else if (api.Label != null && api.Label.ToLower().Trim().Equals("invalid"))
-                    {
-                        if (api.Disabled != null && !(bool)api.Disabled)
+                        hasInvalidApi = enabled;
+                        break;
+                    case "search":
+                        (evArgs.RawSearchApiStatus, evArgs.RawSearchApiLoaded) = ApiStatus("Raw Search", enabled);
+                        if (enabled)
                         {
-                            _invalidateUrl = link + api.Key;
-                            hasFirstPart = true;
-                            App.Logger.Log("[RR] Successfully loaded Invalid API");
-                            evArgs.InvalidApiStatus = "Načítané";
-                            evArgs.InvalidApiLoaded = true;
+                            _rawSearchUrl = url;
                         }
-                        else
-                        {
-                            hasFirstPart = false;
-                            App.Logger.LogWarning("[RR] Invalid API is off");
-                            evArgs.InvalidApiStatus = "Vypnuté";
-                            evArgs.InvalidApiLoaded = false;
-                        }
-                    }
-                    else if (api.Label != null && api.Label.ToLower().Trim().Equals("search"))
-                    {
-                        if (api.Disabled != null && !(bool)api.Disabled)
-                        {
-                            _rawSearchUrl = link + api.Key;
-                            hasSecondPart = true;
-                            App.Logger.Log("[RR] Successfully loaded Raw Search API");
-                            evArgs.RawSearchApiStatus = "Načítané";
-                            evArgs.RawSearchApiLoaded = true;
-                        }
-                        else
-                        {
-                            hasSecondPart = false;
-                            App.Logger.LogWarning("[RR] Raw Search API is off");
-                            evArgs.RawSearchApiStatus = "Vypnuté";
-                            evArgs.RawSearchApiLoaded = false;
-                        }
-                    }
-                }
-                ClearEnabled = hasFirstPart && hasSecondPart;
-                RaceResultApiLoaded?.Invoke(this, evArgs);
-                App.Logger.Log("[RR] Successfully loaded APIs");
-                if (!ClearEnabled)
-                {
-                    NotificationService.ShowInfoNotification("Zneplatnenie", "Automatické / ručné zneplatnenie je vypnuté");
+                        hasSearchApi = enabled;
+                        break;
                 }
             }
-            else
-            {
-                var error = response.StatusCode.ToString();
-                try
-                {
-                    error = await response.Content.ReadAsStringAsync();
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
 
-                App.Logger.LogError($"[RR] Cannot load API - {error}");
-                throw new HttpRequestException($"Neúspešné načítanie API\nChyba: \n[{error}]");
+            ClearEnabled = hasInvalidApi && hasSearchApi;
+            RaceResultApiLoaded?.Invoke(this, evArgs);
+            App.Logger.Log("[RR] Successfully loaded APIs");
+            if (!ClearEnabled)
+            {
+                NotificationService.ShowInfoNotification("Zneplatnenie", "Automatické / ručné zneplatnenie je vypnuté");
             }
+        }
+
+        private static (string Status, bool Loaded) ApiStatus(string name, bool enabled)
+        {
+            if (enabled)
+            {
+                App.Logger.Log($"[RR] Successfully loaded {name} API");
+                return ("Načítané", true);
+            }
+            App.Logger.LogWarning($"[RR] {name} API is off");
+            return ("Vypnuté", false);
         }
 
         private async Task LoadBibs(string apiLink)
         {
             App.Logger.Log("[RR] Loading Bibs from API...");
-            HttpResponseMessage response;
-            try
-            {
-                response = await _httpClient.GetAsync(apiLink);
-            }
-            catch (Exception e)
-            {
-                App.Logger.LogError("[RR] Cannot load Bibs from API", e);
-                throw new HttpRequestException($"Neúspešné načítanie štartových čísel\nChyba: \n[{e.Message}]");
-            }
-            if (response.IsSuccessStatusCode)
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                List<List<string>>? bibs;
-                try
-                {
-                    bibs = JsonConvert.DeserializeObject<List<List<string>>>(responseString);
-                }
-                catch (Exception e)
-                {
-                    App.Logger.LogError("[RR] Cannot load Bibs from API - cannot deserialize data", e);
-                    throw new HttpRequestException("Neúspešné načítanie štartových čísel\nChyba: \n[Nemôžem deserializovať dáta]");
-                }
-
-                if (bibs != null)
-                {
-                    var tmp = (from b in bibs select b[0]).ToList();
-                    _bibList = tmp;
-                    App.Logger.Log("[RR] Successfully loaded Bibs from API");
-                }
-                else
-                {
-                    App.Logger.LogError("[RR] Cannot load Bibs from API - bibs list is null");
-                    throw new HttpRequestException("Neúspešné načítanie štartových čísel\nChyba: \n[Čísla sú null]");
-                }
-            }
-            else
-            {
-                var error = response.StatusCode.ToString();
-                try
-                {
-                    error = await response.Content.ReadAsStringAsync();
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
-                App.Logger.LogError($"[RR] Cannot load Bibs from API - {error}");
-                throw new HttpRequestException($"Neúspešné načítanie štartových čísel\nChyba: \n[{error}]");
-            }
+            var bibs = await GetJsonAsync<List<List<string>>>(apiLink, "Neúspešné načítanie štartových čísel");
+            _bibList = bibs.Where(b => b.Count > 0).Select(b => b[0]).ToList();
+            App.Logger.Log("[RR] Successfully loaded Bibs from API");
         }
 
         private async void LoadBibsAuto(object? sender, EventArgs e)
@@ -289,13 +182,7 @@ namespace TimeMaker.Services
             {
                 await LoadBibs(_bibListUrl);
                 RaceResultBibsLoaded?.Invoke(this, new RaceResultBibsLoadedEventArgs { Bibs = _bibList });
-                if (!_unsentData.IsEmpty)
-                {
-                    if (_timer is { IsEnabled: false })
-                    {
-                        _timer.Start();
-                    }
-                }
+                StartSendTimerIfNeeded();
             }
             catch (Exception ex)
             {
@@ -306,54 +193,64 @@ namespace TimeMaker.Services
         private async Task LoadPoints(string apiLink)
         {
             App.Logger.Log("[RR] Loading Points from API...");
+            Points = await GetJsonAsync<List<ApiTimingPoint>>(apiLink, "Neúspešné načítanie meracích bodov");
+            App.Logger.Log("[RR] Successfully loaded Points from API");
+        }
+
+        /// <summary>
+        /// GET + status check + JSON deserialize with the shared error handling
+        /// (logged and rethrown as a user-facing HttpRequestException).
+        /// </summary>
+        private async Task<T> GetJsonAsync<T>(string url, string errorPrefix) where T : class
+        {
             HttpResponseMessage response;
             try
             {
-                response = await _httpClient.GetAsync(apiLink);
+                response = await _httpClient.GetAsync(url);
             }
             catch (Exception e)
             {
-                App.Logger.LogError("[RR] Cannot load Points from API", e);
-                throw new HttpRequestException($"Neúspešné načítanie meracích bodov\nChyba: \n[{e.Message}]");
+                App.Logger.LogError($"[RR] {errorPrefix} - request failed", e);
+                throw new HttpRequestException($"{errorPrefix}\nChyba: \n[{e.Message}]");
             }
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var responseString = await response.Content.ReadAsStringAsync();
-                List<ApiTimingPoint>? points;
-                try
-                {
-                    points = JsonConvert.DeserializeObject<List<ApiTimingPoint>>(responseString);
-                }
-                catch (Exception e)
-                {
-                    App.Logger.LogError("[RR] Cannot load Points from API - cannot deserialize data", e);
-                    throw new HttpRequestException("Neúspešné načítanie meracích bodov\nChyba: \n[Nemôžem deserializovať dáta]");
-                }
-
-                if (points != null)
-                {
-                    Points = points;
-                }
-                else
-                {
-                    App.Logger.LogError("[RR] Cannot load Points from API - points list is null");
-                    throw new HttpRequestException("Neúspešné načítanie meracích bodov\nChyba: \n[Body sú null]");
-                }
+                var error = await ReadErrorAsync(response);
+                App.Logger.LogError($"[RR] {errorPrefix} - {error}");
+                throw new HttpRequestException($"{errorPrefix}\nChyba: \n[{error}]");
             }
-            else
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            T? result;
+            try
             {
-                var error = response.StatusCode.ToString();
-                try
-                {
-                    error = await response.Content.ReadAsStringAsync();
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
-                App.Logger.LogError($"[RR] Cannot load Points from API - {error}");
-                throw new HttpRequestException($"Neúspešné načítanie meracích bodov\nChyba: \n[{error}]");
+                result = JsonConvert.DeserializeObject<T>(responseString);
+            }
+            catch (Exception e)
+            {
+                App.Logger.LogError($"[RR] {errorPrefix} - cannot deserialize data", e);
+                throw new HttpRequestException($"{errorPrefix}\nChyba: \n[Nemôžem deserializovať dáta]");
+            }
+
+            if (result == null)
+            {
+                App.Logger.LogError($"[RR] {errorPrefix} - response is null");
+                throw new HttpRequestException($"{errorPrefix}\nChyba: \n[Dáta sú null]");
+            }
+
+            return result;
+        }
+
+        private static async Task<string> ReadErrorAsync(HttpResponseMessage response)
+        {
+            try
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception)
+            {
+                return response.StatusCode.ToString();
             }
         }
 
@@ -361,12 +258,14 @@ namespace TimeMaker.Services
         {
             App.Logger.Log($"[RR] Adding manual data - {model.Id}");
             _unsentData.Enqueue(model);
-            if (!_unsentData.IsEmpty)
+            StartSendTimerIfNeeded();
+        }
+
+        private void StartSendTimerIfNeeded()
+        {
+            if (!_unsentData.IsEmpty && _timer is { IsEnabled: false })
             {
-                if (_timer is { IsEnabled: false })
-                {
-                    _timer.Start();
-                }
+                _timer.Start();
             }
         }
 
@@ -377,27 +276,16 @@ namespace TimeMaker.Services
             {
                 foreach (var source in App.SourceManager.Sources)
                 {
-                    if (source.Value.Running)
+                    if (source.Value.Running && !source.Value.DataDictionary.IsEmpty)
                     {
-                        if (!source.Value.DataDictionary.IsEmpty)
+                        foreach (var data in source.Value.GetUnsentData())
                         {
-                            var unsent = source.Value.GetUnsentData();
-                            foreach (var data in unsent)
-                            {
-                                _unsentData.Enqueue(data);
-                            }
+                            _unsentData.Enqueue(data);
                         }
                     }
                 }
 
-                if (!_unsentData.IsEmpty)
-                {
-                    if (_timer is { IsEnabled: false })
-                    {
-                        _timer.Start();
-                    }
-                }
-
+                StartSendTimerIfNeeded();
                 App.Logger.Log("[RR] AUTO data collected");
             }
             catch (Exception ex)
@@ -408,108 +296,109 @@ namespace TimeMaker.Services
 
         private async void SendDataToRr(object? sender, EventArgs e)
         {
-            if (!_unsentData.IsEmpty)
-            {
-                App.Logger.Log("[RR] AUTO sending data...");
-                var data = _unsentData.TryDequeue(out var item) ? item : null;
-                try
-                {
-                    if (data != null)
-                    {
-                        HttpResponseMessage resp;
-                        resp = ClearEnabled ? (data.IsClear ? await SendClearData(data) : await SendData(data)) : (data.IsClear ? new HttpResponseMessage(HttpStatusCode.FailedDependency) : await SendData(data));
-                        RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
-                        {
-                            Id = data.Id,
-                            SourceId = data.SourceId,
-                            Status = resp.IsSuccessStatusCode ? UploadStatus.Completed : UploadStatus.Failed,
-                            StatusCode = resp.IsSuccessStatusCode ? "" : await resp.Content.ReadAsStringAsync()
-                        });
-                        if (!resp.IsSuccessStatusCode)
-                        {
-                            if (ShowErrorNotification && (!data.IsClear || (data.IsClear && ClearEnabled)))
-                            {
-                                var type = data.IsClear ? "mazania" : "času";
-                                NotificationService.ShowRetryNotification("Odoslanie impulzu", $"Neúspešné odoslanie {type} pre číslo {data.Bib} a čas {data.Time.ToString("HH:mm:ss.ffff")} na bod {data.TimingPoint.Name}", data.SourceId, data.Id);
-                            }
-                            App.Logger.LogWarning($"[RR] AUTO sending data failed - {resp.StatusCode}");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (data != null)
-                    {
-                        RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
-                        {
-                            Id = data.Id,
-                            SourceId = data.SourceId,
-                            Status = UploadStatus.Failed,
-                            StatusCode = ex.Message
-                        });
-                        if (ShowErrorNotification && (!data.IsClear || (data.IsClear && ClearEnabled)))
-                        {
-                            var type = data.IsClear ? "mazania" : "času";
-                            NotificationService.ShowRetryNotification("Odoslanie impulzu", $"Neúspešné odoslanie {type} pre číslo {data.Bib} a čas {data.Time.ToString("HH:mm:ss.ffff")} na bod {data.TimingPoint.Name}", data.SourceId, data.Id);
-                        }
-                    }
-                    App.Logger.LogError("[RR] AUTO sending data failed", ex);
-                }
-            }
-            else
+            if (_unsentData.IsEmpty)
             {
                 _timer?.Stop();
+                return;
             }
+
+            App.Logger.Log("[RR] AUTO sending data...");
+            if (!_unsentData.TryDequeue(out var data))
+            {
+                return;
+            }
+
+            try
+            {
+                HttpResponseMessage resp;
+                resp = ClearEnabled
+                    ? (data.IsClear ? await SendClearData(data) : await SendData(data))
+                    : (data.IsClear ? new HttpResponseMessage(HttpStatusCode.FailedDependency) : await SendData(data));
+                RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
+                {
+                    Id = data.Id,
+                    SourceId = data.SourceId,
+                    Status = resp.IsSuccessStatusCode ? UploadStatus.Completed : UploadStatus.Failed,
+                    StatusCode = resp.IsSuccessStatusCode ? "" : await resp.Content.ReadAsStringAsync()
+                });
+                if (!resp.IsSuccessStatusCode)
+                {
+                    NotifySendFailure(data);
+                    App.Logger.LogWarning($"[RR] AUTO sending data failed - {resp.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                RaceResultTimeSent?.Invoke(this, new RaceResultTimeSentEventArgs()
+                {
+                    Id = data.Id,
+                    SourceId = data.SourceId,
+                    Status = UploadStatus.Failed,
+                    StatusCode = ex.Message
+                });
+                NotifySendFailure(data);
+                App.Logger.LogError("[RR] AUTO sending data failed", ex);
+            }
+        }
+
+        private void NotifySendFailure(DataModel data)
+        {
+            if (ShowErrorNotification && (!data.IsClear || ClearEnabled))
+            {
+                var type = data.IsClear ? "mazania" : "času";
+                NotificationService.ShowRetryNotification("Odoslanie impulzu",
+                    $"Neúspešné odoslanie {type} pre číslo {data.Bib} a čas {data.Time:HH:mm:ss.ffff} na bod {data.TimingPoint.Name}",
+                    data.SourceId, data.Id);
+            }
+        }
+
+        private static string FormatTime(TimeOnly time)
+        {
+            return time.ToTimeSpan().TotalSeconds.ToString(CultureInfo.InvariantCulture);
         }
 
         private async Task<HttpResponseMessage> SendData(DataModel d)
         {
-            string time = d.Time.ToTimeSpan().TotalSeconds.ToString(CultureInfo.InvariantCulture).Replace(',', '.');
-            var conn = $"{_manualUrl}?&timingpoint={d.TimingPoint.Name}&bib={d.Bib}&time={time}";
-            var resp = await _httpClient.GetAsync(conn);
-            return resp;
+            var conn = $"{_manualUrl}?timingpoint={Uri.EscapeDataString(d.TimingPoint.Name)}&bib={Uri.EscapeDataString(d.Bib)}&time={FormatTime(d.Time)}";
+            return await _httpClient.GetAsync(conn);
         }
 
         private async Task<HttpResponseMessage> SendClearData(DataModel d)
         {
-            string time = d.Time.ToTimeSpan().TotalSeconds.ToString(CultureInfo.InvariantCulture).Replace(',', '.');
-            var conn = $"{_rawSearchUrl}?&bib={d.Bib}";
+            string time = FormatTime(d.Time);
+            var conn = $"{_rawSearchUrl}?bib={Uri.EscapeDataString(d.Bib)}";
             var resp = await _httpClient.GetAsync(conn);
-            if (resp.IsSuccessStatusCode)
+            if (!resp.IsSuccessStatusCode)
             {
-                var responseString = await resp.Content.ReadAsStringAsync();
-                List<TimingResult>? results;
-                try
-                {
-                    results = JsonConvert.DeserializeObject<List<TimingResult>>(responseString);
-                }
-                catch (Exception e)
-                {
-                    App.Logger.LogError("[RR] Cannot load timing data from API - cannot deserialize data", e);
-                    throw new HttpRequestException("Neúspešné načítanie časových dát\nChyba: \n[Nemôžem deserializovať dáta]");
-                }
-
-                if (results != null)
-                {
-                    var single = (from r in results where r.TimingPoint == d.TimingPoint.Name && r.Time.Equals(time) select r).FirstOrDefault();
-                    if (single != null)
-                    {
-                        var invConn = $"{_invalidateUrl}?&id={single.Id}&invalid=true";
-                        var invResp = await _httpClient.GetAsync(invConn);
-                        return invResp;
-                    }
-                    else
-                    {
-                        return new HttpResponseMessage(HttpStatusCode.NotFound);
-                    }
-                }
-                else
-                {
-                    App.Logger.LogError("[RR] Cannot load timing data from API - results list is null");
-                    throw new HttpRequestException("Neúspešné načítanie časových dát\nChyba: \n[Impulzy sú null]");
-                }
+                return resp;
             }
-            return resp;
+
+            var responseString = await resp.Content.ReadAsStringAsync();
+            List<TimingResult>? results;
+            try
+            {
+                results = JsonConvert.DeserializeObject<List<TimingResult>>(responseString);
+            }
+            catch (Exception e)
+            {
+                App.Logger.LogError("[RR] Cannot load timing data from API - cannot deserialize data", e);
+                throw new HttpRequestException("Neúspešné načítanie časových dát\nChyba: \n[Nemôžem deserializovať dáta]");
+            }
+
+            if (results == null)
+            {
+                App.Logger.LogError("[RR] Cannot load timing data from API - results list is null");
+                throw new HttpRequestException("Neúspešné načítanie časových dát\nChyba: \n[Impulzy sú null]");
+            }
+
+            var single = results.FirstOrDefault(r => r.TimingPoint == d.TimingPoint.Name && r.Time.Equals(time));
+            if (single == null)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+
+            var invConn = $"{_invalidateUrl}?id={single.Id}&invalid=true";
+            return await _httpClient.GetAsync(invConn);
         }
 
         public void Dispose()

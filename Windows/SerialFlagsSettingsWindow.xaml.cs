@@ -42,13 +42,13 @@ namespace TimeMaker.Windows
         public List<char> GetFlags()
         {
             var flags = new List<char>();
-                        
-            if (BoxCorrect.IsChecked != null && (bool)BoxCorrect.IsChecked) flags.Add(_correctChar);
-            if (BoxQuestion.IsChecked != null && (bool)BoxQuestion.IsChecked) flags.Add('?');
-            if (BoxSmallC.IsChecked != null && (bool)BoxSmallC.IsChecked) flags.Add('c');
-            if (BoxBigC.IsChecked != null && (bool)BoxBigC.IsChecked) flags.Add('C');
-            if (BoxInfo.IsChecked != null && (bool)BoxInfo.IsChecked) flags.Add('i');
-            if (BoxMemo.IsChecked != null && (bool)BoxMemo.IsChecked) flags.Add('m');
+
+            if (BoxCorrect.IsChecked == true) flags.Add(_correctChar);
+            if (BoxQuestion.IsChecked == true) flags.Add('?');
+            if (BoxSmallC.IsChecked == true) flags.Add('c');
+            if (BoxBigC.IsChecked == true) flags.Add('C');
+            if (BoxInfo.IsChecked == true) flags.Add('i');
+            if (BoxMemo.IsChecked == true) flags.Add('m');
 
             return flags;
         }

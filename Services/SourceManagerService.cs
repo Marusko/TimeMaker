@@ -18,24 +18,25 @@ namespace TimeMaker.Services
 
         public bool AddSource(Type sourceType, SourceInitModel initModel)
         {
-            if (sourceType == typeof(FileService))
+            SourceService? source =
+                sourceType == typeof(FileService) ? new FileService()
+                : sourceType == typeof(SerialPortService) ? new SerialPortService()
+                : null;
+            if (source == null)
             {
-                var fileService = new FileService();
-                fileService.Init(initModel);
-                App.Logger.Log($"[SM] FileService added: {fileService.Id}");
-                SourceAdded?.Invoke(this, new SourceEventArgs { SourceService = fileService });
-                return Sources.TryAdd(fileService.Id, fileService);
-            }
-            else if (sourceType == typeof(SerialPortService))
-            {
-                var serialPortService = new SerialPortService();
-                serialPortService.Init(initModel);
-                App.Logger.Log($"[SM] SerialPortService added: {serialPortService.Id}");
-                SourceAdded?.Invoke(this, new SourceEventArgs { SourceService = serialPortService });
-                return Sources.TryAdd(serialPortService.Id, serialPortService);
+                return false;
             }
 
-            return false;
+            source.Init(initModel);
+            if (!Sources.TryAdd(source.Id, source))
+            {
+                return false;
+            }
+
+            // Raise the event only after the source is retrievable via GetSource.
+            App.Logger.Log($"[SM] {source.InternalType.Name} added: {source.Id}");
+            SourceAdded?.Invoke(this, new SourceEventArgs { SourceService = source });
+            return true;
         }
 
         public bool RemoveSource(string id)

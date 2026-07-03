@@ -40,34 +40,26 @@ namespace TimeMaker.Windows
             Title = _sourceService.Name;
         }
 
-        private void Upload(object sender, RoutedEventArgs e)
+        private static DataLogViewModel? GetContextMenuItem(object sender)
         {
             var menuItem = sender as MenuItem;
             var contextMenu = menuItem?.Parent as ContextMenu;
             var lvi = contextMenu?.PlacementTarget as ListViewItem;
-            if (lvi?.Content is DataLogViewModel item)
+            return lvi?.Content as DataLogViewModel;
+        }
+
+        private void Upload(object sender, RoutedEventArgs e)
+        {
+            if (GetContextMenuItem(sender) is { } item)
             {
-                var data = new DataModel()
-                {
-                    Id = item.Id,
-                    SourceId = _sourceService.Id,
-                    Bib = item.Bib,
-                    Time = item.Time,
-                    TimingPoint = item.TimingPoint,
-                    RawData = item.Raw,
-                    IsClear = item.IsClear
-                };
                 item.Status = UploadStatus.Pending;
-                App.RaceResult.AddManual(data);
+                App.RaceResult.AddManual(item.ToDataModel(_sourceService.Id));
             }
         }
 
         private void ShowError(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var contextMenu = menuItem?.Parent as ContextMenu;
-            var lvi = contextMenu?.PlacementTarget as ListViewItem;
-            if (lvi?.Content is DataLogViewModel item)
+            if (GetContextMenuItem(sender) is { } item)
             {
                 ThemedDialog.Show("Chyba", $"Chyba nahrávania času. Chyba: [{item.StatusCode}]", ThemedDialogIcon.Error);
             }
@@ -75,10 +67,7 @@ namespace TimeMaker.Windows
 
         private void CopyNumber(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var contextMenu = menuItem?.Parent as ContextMenu;
-            var lvi = contextMenu?.PlacementTarget as ListViewItem;
-            if (lvi?.Content is DataLogViewModel item)
+            if (GetContextMenuItem(sender) is { } item)
             {
                 Clipboard.SetText(item.Bib);
             }
@@ -86,10 +75,7 @@ namespace TimeMaker.Windows
 
         private void CopyTime(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var contextMenu = menuItem?.Parent as ContextMenu;
-            var lvi = contextMenu?.PlacementTarget as ListViewItem;
-            if (lvi?.Content is DataLogViewModel item)
+            if (GetContextMenuItem(sender) is { } item)
             {
                 Clipboard.SetText(item.Time.ToString("HH:mm:ss.ffff"));
             }
@@ -97,10 +83,7 @@ namespace TimeMaker.Windows
 
         private void ShowChanges(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var contextMenu = menuItem?.Parent as ContextMenu;
-            var lvi = contextMenu?.PlacementTarget as ListViewItem;
-            if (lvi?.Content is DataLogViewModel item)
+            if (GetContextMenuItem(sender) is { } item)
             {
                 var changes = string.Join("\n", item.BibChanges);
                 ThemedDialog.Show("Zmeny čísla", changes, ThemedDialogIcon.Info);
@@ -114,21 +97,18 @@ namespace TimeMaker.Windows
                 var window = new EditBibWindow(itemVm.Bib);
                 window.Owner = this;
                 window.ShowDialog();
-                itemVm.BibChanges.Add($"{itemVm.Bib} -> {window.GetBib()}");
-                itemVm.Bib = window.GetBib();
 
-                var data = new DataModel()
+                var newBib = window.GetBib();
+                if (string.IsNullOrEmpty(newBib) || newBib == itemVm.Bib)
                 {
-                    Id = itemVm.Id,
-                    SourceId = _sourceService.Id,
-                    Bib = itemVm.Bib,
-                    Time = itemVm.Time,
-                    TimingPoint = itemVm.TimingPoint,
-                    RawData = itemVm.Raw,
-                    IsClear = itemVm.IsClear
-                };
+                    // Closed without an actual change - do not re-upload.
+                    return;
+                }
+
+                itemVm.BibChanges.Add($"{itemVm.Bib} -> {newBib}");
+                itemVm.Bib = newBib;
                 itemVm.Status = UploadStatus.Pending;
-                App.RaceResult.AddManual(data);
+                App.RaceResult.AddManual(itemVm.ToDataModel(_sourceService.Id));
             }
         }
 

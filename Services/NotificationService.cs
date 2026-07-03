@@ -48,66 +48,43 @@ namespace TimeMaker.Services
 
         private static void Toast_Activated(ToastNotification sender, object args)
         {
-            if (args is ToastActivatedEventArgs activated)
+            // Toasts outlive the app - the callback may fire after shutdown.
+            var app = Application.Current;
+            if (args is ToastActivatedEventArgs activated && app is not null)
             {
                 var arguments = ToastArguments.Parse(activated.Arguments);
                 var userInputs = activated.UserInput;
 
-                Application.Current.Dispatcher.Invoke(() =>
+                app.Dispatcher.Invoke(() =>
                 {
                     var dataId = arguments.TryGetValue("dataId", out var dataIdValue) ? dataIdValue : string.Empty;
                     var sourceId = arguments.TryGetValue("sourceId", out var sourceIdValue) ? sourceIdValue : string.Empty;
                     var action = arguments.TryGetValue("action", out var actionValue) ? actionValue : string.Empty;
 
-                    if (!string.IsNullOrEmpty(action) && action.Equals("retry") && !string.IsNullOrEmpty(sourceId) && !string.IsNullOrEmpty(dataId))
+                    if (string.IsNullOrEmpty(sourceId) || string.IsNullOrEmpty(dataId))
                     {
-                        var source = App.SourceManager.GetSource(sourceId);
-                        if (source != null)
-                        {
-                            if (source.LogDataLookup.TryGetValue(dataId, out var item))
-                            {
-                                var data = new DataModel()
-                                {
-                                    Id = item.Id,
-                                    SourceId = sourceId,
-                                    Bib = item.Bib,
-                                    Time = item.Time,
-                                    TimingPoint = item.TimingPoint,
-                                    RawData = item.Raw,
-                                    IsClear = item.IsClear
-                                };
-                                item.Status = UploadStatus.Pending;
-                                App.RaceResult.AddManual(data);
-                            }
-                        }
+                        return;
                     }
-                    else if (!string.IsNullOrEmpty(action) && action.Equals("change") && !string.IsNullOrEmpty(sourceId) && !string.IsNullOrEmpty(dataId))
+                    var source = App.SourceManager.GetSource(sourceId);
+                    if (source == null || !source.LogDataLookup.TryGetValue(dataId, out var item))
                     {
-                        if (userInputs.TryGetValue("bibInput", out var input))
-                        {
-                            var inputText = input?.ToString();
-                            var source = App.SourceManager.GetSource(sourceId);
-                            if (source != null && !string.IsNullOrEmpty(inputText))
-                            {
-                                if (source.LogDataLookup.TryGetValue(dataId, out var itemVm))
-                                {
-                                    itemVm.BibChanges.Add($"{itemVm.Bib} -> {inputText}");
-                                    itemVm.Bib = inputText;
+                        return;
+                    }
 
-                                    var data = new DataModel()
-                                    {
-                                        Id = itemVm.Id,
-                                        SourceId = sourceId,
-                                        Bib = itemVm.Bib,
-                                        Time = itemVm.Time,
-                                        TimingPoint = itemVm.TimingPoint,
-                                        RawData = itemVm.Raw,
-                                        IsClear = itemVm.IsClear
-                                    };
-                                    itemVm.Status = UploadStatus.Pending;
-                                    App.RaceResult.AddManual(data);
-                                }
-                            }
+                    if (action.Equals("retry"))
+                    {
+                        item.Status = UploadStatus.Pending;
+                        App.RaceResult.AddManual(item.ToDataModel(sourceId));
+                    }
+                    else if (action.Equals("change") && userInputs.TryGetValue("bibInput", out var input))
+                    {
+                        var inputText = input?.ToString();
+                        if (!string.IsNullOrEmpty(inputText))
+                        {
+                            item.BibChanges.Add($"{item.Bib} -> {inputText}");
+                            item.Bib = inputText;
+                            item.Status = UploadStatus.Pending;
+                            App.RaceResult.AddManual(item.ToDataModel(sourceId));
                         }
                     }
                 });

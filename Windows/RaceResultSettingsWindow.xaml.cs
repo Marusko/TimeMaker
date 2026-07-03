@@ -43,11 +43,19 @@ namespace TimeMaker.Windows
             try
             {
                 LoadButton.IsEnabled = false;
+                if (ApiLinkText.Text.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+                {
+                    ThemedDialog.Show("Nezabezpečené pripojenie",
+                        "API link používa HTTP bez šifrovania, prístupový kľúč môže byť odchytený. Odporúčame použiť HTTPS.",
+                        ThemedDialogIcon.Warning);
+                }
                 await App.RaceResult.LoadApi(ApiLinkText.Text);
             }
             catch (Exception ex)
             {
                 ThemedDialog.Show("Chyba", $"Nastala chyba pri načítavaní API: {ex.Message}", ThemedDialogIcon.Error);
+                // Let the user correct the link and retry.
+                LoadButton.IsEnabled = true;
             }
         }
 

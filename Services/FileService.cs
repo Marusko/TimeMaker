@@ -169,8 +169,16 @@ namespace TimeMaker.Services
                 using StreamReader reader = new StreamReader(Source);
                 while (reader.ReadLine() is { } line)
                 {
-                    _count++;
+                    if (string.IsNullOrWhiteSpace(line))
+                    {
+                        continue;
+                    }
                     var split = line.Split(_separator);
+                    if (split.Length < 2)
+                    {
+                        App.Logger.LogWarning($"[FS] Skipping malformed line for FileSource {Id}: {line}");
+                        continue;
+                    }
                     var data = new DataModel()
                     {
                         Id = Guid.NewGuid().ToString(),
@@ -193,6 +201,9 @@ namespace TimeMaker.Services
                     };
                     if (_undefined.Add(data.Bib))
                     {
+                        // Count only rows that are actually queued - skipped and
+                        // duplicate lines must not block the "all sent" check.
+                        _count++;
                         DataDictionary.AddOrUpdate(data.Bib, data, (_, _) => data);
                         LogData.Add(vm);
                         LogDataLookup.AddOrUpdate(data.Id, vm, (_, _) => vm);

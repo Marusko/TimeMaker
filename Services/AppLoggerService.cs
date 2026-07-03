@@ -1,32 +1,21 @@
-﻿using System.IO;
-using TimeMaker.Windows;
+using System.IO;
 
 namespace TimeMaker.Services
 {
     public class AppLoggerService
     {
-        private readonly string _logFilePath;
+        private readonly string _logFolder;
+        private readonly object _writeLock = new();
 
         public AppLoggerService(string logFolder)
         {
-            // Create a log file with timestamp in name
-            string timestamp = DateTime.Now.ToString("yyyyMMdd");
-            _logFilePath = Path.Combine(logFolder, $"Log_{timestamp}.txt");
-
-            // Ensure the directory exists
+            _logFolder = logFolder;
             Directory.CreateDirectory(logFolder);
-
-            if (!File.Exists(_logFilePath))
-            {
-                // Create the log file with header
-                File.WriteAllText(_logFilePath, "=== Time Maker App Log ===\n\n");
-            }
         }
 
         public void Log(string message)
         {
-            string logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] INFO: {message}";
-            WriteToLog(logEntry);
+            WriteToLog($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] INFO: {message}");
         }
 
         public void LogError(string message, Exception? ex = null)
@@ -42,24 +31,30 @@ namespace TimeMaker.Services
 
         public void LogWarning(string message)
         {
-            string logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] WARNING: {message}";
-            WriteToLog(logEntry);
+            WriteToLog($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] WARNING: {message}");
         }
 
         private void WriteToLog(string entry)
         {
             try
             {
-                // Append to the log file
-                using (StreamWriter writer = File.AppendText(_logFilePath))
+                // Log calls come from the UI thread, timers and the serial port
+                // thread at once - serialize the writes. The file name is
+                // resolved per write so a run that crosses midnight rolls over.
+                lock (_writeLock)
                 {
-                    writer.WriteLine(entry);
+                    string path = Path.Combine(_logFolder, $"Log_{DateTime.Now:yyyyMMdd}.txt");
+                    if (!File.Exists(path))
+                    {
+                        File.WriteAllText(path, "=== Time Maker App Log ===\n\n");
+                    }
+                    File.AppendAllText(path, entry + Environment.NewLine);
                 }
             }
             catch
             {
-                // If we can't write to the log file, there's not much we can do
-                ThemedDialog.Show("Logging Error", "Failed to write to log file.", ThemedDialogIcon.Error);
+                // Logging must never block or interrupt the app - if the file
+                // is unwritable there is nothing useful we can do about it here.
             }
         }
     }
