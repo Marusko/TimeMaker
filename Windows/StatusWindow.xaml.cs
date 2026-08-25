@@ -69,7 +69,7 @@ namespace TimeMaker.Windows
         {
             if (GetContextMenuItem(sender) is { } item)
             {
-                Clipboard.SetText(item.Bib);
+                CopyToClipboard(item.GetBibToCopy(), "číslo");
             }
         }
 
@@ -77,7 +77,27 @@ namespace TimeMaker.Windows
         {
             if (GetContextMenuItem(sender) is { } item)
             {
-                Clipboard.SetText(item.Time.ToString("HH:mm:ss.ffff"));
+                CopyToClipboard(item.GetTimeToCopy(), "čas");
+            }
+        }
+
+        private static void CopyToClipboard(string value, string what)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                // Nothing parsed and nothing usable in the raw impulse.
+                ThemedDialog.Show("Kopírovanie", $"V impulze sa nepodarilo nájsť {what}.", ThemedDialogIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                Clipboard.SetText(value);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.LogError("[SW] Error copying to clipboard", ex);
+                ThemedDialog.Show("Chyba", $"Nepodarilo sa skopírovať do schránky: {ex.Message}", ThemedDialogIcon.Error);
             }
         }
 

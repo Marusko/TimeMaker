@@ -10,7 +10,7 @@ namespace TimeMaker.Services
     {
         private static readonly string[] TimeFormats = { "HH:mm:ss.FFFF", "H:mm:ss.FFFF" };
 
-        protected static bool TryParseTime(string s, out TimeOnly time)
+        public static bool TryParseTime(string s, out TimeOnly time)
         {
             return TimeOnly.TryParseExact(s, TimeFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out time)
                    || TimeOnly.TryParse(s, out time);

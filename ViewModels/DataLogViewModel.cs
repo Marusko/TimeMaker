@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using TimeMaker.Models;
+using TimeMaker.Services;
 
 namespace TimeMaker.ViewModels
 {
@@ -93,6 +95,54 @@ namespace TimeMaker.ViewModels
         public Visibility ChangesVisibility => BibChanges.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
         public string FlagsLabel => (IsClear ? "C" : "") + (BibChanges.Count > 0 ? "B" : "") + (IsQuestion ? "Q" : "");
+
+        private const string CopyTimeFormat = "HH:mm:ss.ffff";
+
+        // Ignored impulses are kept as raw text only - the bib and the time are
+        // dug out of it so they can still be copied.
+        private static readonly Regex RawTimeRegex = new(@"\d{1,2}:\d{2}:\d{2}(?:[.,]\d{1,4})?", RegexOptions.Compiled);
+        // A bib is a whole token of digits, optionally prefixed by impulse flags.
+        // Token boundaries are whitespace or a CSV separator, so raw rows of a
+        // file source can be read the same way as Timy impulses.
+        private static readonly Regex RawBibRegex = new(@"(?<=^|[\s;,|])[*?cCi]*(?<bib>\d+)(?=$|[\s;,|])", RegexOptions.Compiled);
+        private static readonly Regex RawTerminatorRegex = new(@"\s00\s*$", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Bib to put on the clipboard, falling back to the first number of the
+        /// raw impulse. Empty when there is nothing to copy.
+        /// </summary>
+        public string GetBibToCopy()
+        {
+            if (!string.IsNullOrEmpty(Bib))
+            {
+                return Bib;
+            }
+
+            // Drop the time and the trailing "00" terminator first, otherwise
+            // their digits get picked up instead of the bib.
+            var stripped = RawTerminatorRegex.Replace(RawTimeRegex.Replace(Raw, " "), " ");
+            var match = RawBibRegex.Match(stripped);
+            return match.Success && int.TryParse(match.Groups["bib"].Value, out var bib) ? $"{bib}" : string.Empty;
+        }
+
+        /// <summary>
+        /// Time to put on the clipboard, falling back to the first time found in
+        /// the raw impulse. Empty when there is nothing to copy.
+        /// </summary>
+        public string GetTimeToCopy()
+        {
+            if (Time != TimeOnly.MinValue)
+            {
+                return Time.ToString(CopyTimeFormat);
+            }
+
+            var match = RawTimeRegex.Match(Raw);
+            if (match.Success && SourceService.TryParseTime(match.Value.Replace(',', '.'), out var time))
+            {
+                return time.ToString(CopyTimeFormat);
+            }
+            return string.Empty;
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
