@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Local-only harness for the run-timemaker skill (agent tooling, not shipped)
+.claude/skills/

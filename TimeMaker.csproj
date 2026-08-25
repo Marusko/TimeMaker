@@ -6,12 +6,19 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <Version>1.5.0</Version>
+    <Version>1.5.1</Version>
 	<ApplicationIcon>Icons/favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
 	<ItemGroup>
 		<None Remove="Icons\favicon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- The run-timemaker skill keeps its harness project under .claude;
+		     it must not be compiled into this application. -->
+		<Compile Remove=".claude\**" />
+		<None Remove=".claude\**" />
 	</ItemGroup>
 
   <ItemGroup>
