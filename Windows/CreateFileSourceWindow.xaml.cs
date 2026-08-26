@@ -14,6 +14,7 @@ namespace TimeMaker.Windows
     {
         private char _delimiter = ';';
         private string _path = string.Empty;
+        private List<TimeDefinitionPartModel> _definition = new();
         public CreateFileSourceWindow()
         {
             InitializeComponent();
@@ -27,6 +28,18 @@ namespace TimeMaker.Windows
             {
                 _delimiter = button.Content.ToString()?[0] ?? ';';
             }
+        }
+
+        private void SourceKindChecked(object sender, RoutedEventArgs e)
+        {
+            // Checked fires before the panels exist during InitializeComponent.
+            if (FilePanel == null || DefinitionPanel == null)
+            {
+                return;
+            }
+            var isFile = FileRadio.IsChecked ?? false;
+            FilePanel.Visibility = isFile ? Visibility.Visible : Visibility.Collapsed;
+            DefinitionPanel.Visibility = isFile ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void SetPoints()
@@ -66,9 +79,22 @@ namespace TimeMaker.Windows
             }
         }
 
+        private void EditDefinition(object sender, RoutedEventArgs e)
+        {
+            var window = new CreateTimeDefinitionWindow(_definition);
+            window.Owner = this;
+            if (window.ShowDialog() == true)
+            {
+                _definition = window.Definition;
+                DefinitionLabel.Content = TimeDefinition.Summary(_definition);
+            }
+        }
+
         private void Save(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(_path) || string.IsNullOrEmpty(TimingPointsCombo.Text) || string.IsNullOrEmpty(NameText.Text))
+            var isFile = FileRadio.IsChecked ?? false;
+            var missingSource = isFile ? string.IsNullOrEmpty(_path) : _definition.Count == 0;
+            if (missingSource || string.IsNullOrEmpty(TimingPointsCombo.Text) || string.IsNullOrEmpty(NameText.Text))
             {
                 ThemedDialog.Show("Chyba", "Prosím zadajte všetky potrebné dáta", ThemedDialogIcon.Error);
             }
@@ -77,10 +103,11 @@ namespace TimeMaker.Windows
                 var init = new FileSourceInitModel()
                 {
                     Name = NameText.Text,
-                    Source = _path,
+                    Source = isFile ? _path : string.Empty,
                     FirstTarget = new ApiTimingPoint(){ Name = TimingPointsCombo.Text },
                     Separator = _delimiter,
-                    Template = TemplateCheckBox.IsChecked ?? false
+                    Template = TemplateCheckBox.IsChecked ?? false,
+                    Definition = isFile ? new List<TimeDefinitionPartModel>() : _definition
                 };
                 App.SourceManager.AddSource(typeof(FileService), init);
                 Close();

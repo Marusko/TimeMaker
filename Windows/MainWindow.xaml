@@ -29,9 +29,9 @@
                 <CheckBox DockPanel.Dock="Right" Content="Upozorniť na nenahraté"
                           Checked="SetNotify" Unchecked="SetNotNotify" VerticalAlignment="Center"/>
                 <StackPanel Orientation="Horizontal">
-                    <Button x:Name="BtnAddFile" Content="Pridať CSV" Click="BtnAddFile_Click"
+                    <Button x:Name="BtnAddFile" Content="Ručné časy" Click="BtnAddFile_Click"
                             Padding="14,7" IsEnabled="False"/>
-                    <Button x:Name="BtnAddTimy" Content="Pridať Timy" Click="BtnAddTimy_Click"
+                    <Button x:Name="BtnAddTimy" Content="Timy časy" Click="BtnAddTimy_Click"
                             Padding="14,7" Margin="8,0,0,0" IsEnabled="False"/>
                     <Border Width="1" Background="{StaticResource BorderSoftBrush}" Margin="14,2"/>
                     <Button x:Name="BtnRaceSettings" Content="Nastavenia RR" Click="BtnRaceSettings_Click"

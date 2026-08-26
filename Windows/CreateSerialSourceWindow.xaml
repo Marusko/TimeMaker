@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Nový COM port" Width="380" SizeToContent="Height" ResizeMode="NoResize"
+        Title="Nový zdroj Timy časov" Width="380" SizeToContent="Height" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" Topmost="True" Icon="../Icons/favicon.ico"
         FontFamily="Segoe UI" FontSize="13"
         Foreground="{StaticResource TextPrimaryBrush}"
@@ -13,7 +13,7 @@
         Background="{StaticResource WindowBackgroundBrush}">
     <Border Style="{StaticResource CardStyle}" Margin="16" Padding="20">
         <StackPanel>
-            <TextBlock Text="Nový COM port" Style="{StaticResource TitleTextStyle}" FontSize="17"/>
+            <TextBlock Text="Nový zdroj Timy časov" Style="{StaticResource TitleTextStyle}" FontSize="17"/>
 
             <TextBlock Text="Názov" Style="{StaticResource FieldLabelStyle}"/>
             <TextBox x:Name="NameText" Text=""/>

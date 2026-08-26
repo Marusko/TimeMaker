@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Nový CSV súbor" Width="380" SizeToContent="Height" ResizeMode="NoResize"
+        Title="Nový zdroj ručných časov" Width="380" SizeToContent="Height" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" Topmost="True" Icon="../Icons/favicon.ico"
         FontFamily="Segoe UI" FontSize="13"
         Foreground="{StaticResource TextPrimaryBrush}"
@@ -13,29 +13,50 @@
         Background="{StaticResource WindowBackgroundBrush}">
     <Border Style="{StaticResource CardStyle}" Margin="16" Padding="20">
         <StackPanel>
-            <TextBlock Text="Nový CSV súbor" Style="{StaticResource TitleTextStyle}" FontSize="17"/>
+            <TextBlock Text="Nový zdroj ručných časov" Style="{StaticResource TitleTextStyle}" FontSize="17"/>
 
             <TextBlock Text="Názov" Style="{StaticResource FieldLabelStyle}"/>
             <TextBox x:Name="NameText" Text=""/>
 
-            <TextBlock Text="Rozdeľovač CSV" Style="{StaticResource FieldLabelStyle}"/>
+            <TextBlock Text="Typ zdroja" Style="{StaticResource FieldLabelStyle}"/>
             <StackPanel Orientation="Horizontal">
-                <RadioButton x:Name="SemiColonRadio" Content=";" Checked="DelimiterChecked"
-                             IsChecked="True" GroupName="delimiter" Margin="0,0,18,0" VerticalAlignment="Center"/>
-                <RadioButton x:Name="ColonRadio" Content="," Checked="DelimiterChecked"
-                             GroupName="delimiter" VerticalAlignment="Center"/>
+                <RadioButton x:Name="FileRadio" Content="CSV súbor" Checked="SourceKindChecked"
+                             IsChecked="True" GroupName="sourceKind" Margin="0,0,18,0" VerticalAlignment="Center"/>
+                <RadioButton x:Name="DefinitionRadio" Content="Definícia časov" Checked="SourceKindChecked"
+                             GroupName="sourceKind" VerticalAlignment="Center"/>
             </StackPanel>
 
             <CheckBox x:Name="TemplateCheckBox" Content="Šablóna" Margin="0,14,0,0"/>
 
-            <TextBlock Text="Zdrojový súbor" Style="{StaticResource FieldLabelStyle}"/>
-            <DockPanel>
-                <Button DockPanel.Dock="Left" Click="LoadFile" Content="Vybrať súbor"
-                        Style="{StaticResource SecondaryButtonStyle}"/>
-                <Label x:Name="FileNameLabel" Content="Nie je vybraný žiadny súbor"
-                       Margin="10,0,0,0" VerticalAlignment="Center"
-                       Foreground="{StaticResource TextSecondaryBrush}"/>
-            </DockPanel>
+            <StackPanel x:Name="FilePanel">
+                <TextBlock Text="Rozdeľovač CSV" Style="{StaticResource FieldLabelStyle}"/>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="SemiColonRadio" Content=";" Checked="DelimiterChecked"
+                                 IsChecked="True" GroupName="delimiter" Margin="0,0,18,0" VerticalAlignment="Center"/>
+                    <RadioButton x:Name="ColonRadio" Content="," Checked="DelimiterChecked"
+                                 GroupName="delimiter" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock Text="Zdrojový súbor" Style="{StaticResource FieldLabelStyle}"/>
+                <DockPanel>
+                    <Button DockPanel.Dock="Left" Click="LoadFile" Content="Vybrať súbor"
+                            Style="{StaticResource SecondaryButtonStyle}"/>
+                    <Label x:Name="FileNameLabel" Content="Nie je vybraný žiadny súbor"
+                           Margin="10,0,0,0" VerticalAlignment="Center"
+                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                </DockPanel>
+            </StackPanel>
+
+            <StackPanel x:Name="DefinitionPanel" Visibility="Collapsed">
+                <TextBlock Text="Časy" Style="{StaticResource FieldLabelStyle}"/>
+                <DockPanel>
+                    <Button DockPanel.Dock="Left" Click="EditDefinition" Content="Definovať časy"
+                            Style="{StaticResource SecondaryButtonStyle}"/>
+                    <Label x:Name="DefinitionLabel" Content="Časy nie sú definované"
+                           Margin="10,0,0,0" VerticalAlignment="Center"
+                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                </DockPanel>
+            </StackPanel>
 
             <TextBlock Text="Cieľový merací bod" Style="{StaticResource FieldLabelStyle}"/>
             <ComboBox x:Name="TimingPointsCombo"/>
