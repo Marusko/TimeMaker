@@ -23,6 +23,7 @@ namespace TimeMaker.Services
         public override ConcurrentDictionary<string, DataLogViewModel> LogDataLookup { get; protected set; } = new();
         public override SourceItemViewModel SourceItemViewModel { get; protected set; } = new();
         private char _separator = ';';
+        private List<TimeDefinitionPartModel> _definition = new();
         private HashSet<string> _defined = new();
         private HashSet<string> _undefined = new();
         private int _count;
@@ -31,23 +32,26 @@ namespace TimeMaker.Services
         {
             if (initModel is FileSourceInitModel model)
             {
+                var type = (model.IsDefinition ? "Časy" : "CSV") + (model.Template ? " šablóna" : "");
+                var source = model.IsDefinition ? TimeDefinition.Summary(model.Definition) : model.Source;
                 SourceItemViewModel = new SourceItemViewModel()
                 {
                     Id = Guid.NewGuid().ToString(),
                     Name = model.Name,
-                    Type = "CSV" + (model.Template ? " šablóna" : ""),
-                    Source = model.Source,
+                    Type = type,
+                    Source = source,
                     Target = model.FirstTarget.Name,
                     Status = "Pripravené",
                     IsRunning = false
                 };
                 Id = SourceItemViewModel.Id;
                 Name = model.Name;
-                Type = "CSV" + (model.Template ? " šablóna" : "");
-                Source = model.Source;
+                Type = type;
+                Source = source;
                 Target = model.FirstTarget.Name;
                 Template = model.Template;
                 _separator = model.Separator;
+                _definition = model.Definition;
                 App.Logger.Log($"[FS] Initialized FileSource: {Id}");
             }
         }
@@ -163,6 +167,31 @@ namespace TimeMaker.Services
         private void LoadData()
         {
             _count = 0;
+            if (_definition.Count > 0)
+            {
+                LoadFromDefinition();
+            }
+            else
+            {
+                LoadFromFile();
+            }
+        }
+
+        private void LoadFromDefinition()
+        {
+            App.Logger.Log($"[FS] Generating times from definition: {Id}");
+            foreach (var part in _definition)
+            {
+                foreach (var entry in part.Generate())
+                {
+                    AddEntry(entry.Bib, entry.Time, $"{entry.Bib}{_separator}{entry.Time:HH:mm:ss.ffff}");
+                }
+            }
+            App.Logger.Log($"[FS] Generated {_count} times for FileSource: {Id}");
+        }
+
+        private void LoadFromFile()
+        {
             try
             {
                 App.Logger.Log($"[FS] Loading data from: {Source}, {Id}");
@@ -179,35 +208,7 @@ namespace TimeMaker.Services
                         App.Logger.LogWarning($"[FS] Skipping malformed line for FileSource {Id}: {line}");
                         continue;
                     }
-                    var data = new DataModel()
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        SourceId = Id,
-                        Bib = split[0].Trim(),
-                        Time = StringToDateTime(split[1].Trim()),
-                        TimingPoint = new ApiTimingPoint() { Name = Target },
-                        RawData = line.Trim(),
-                        IsClear = false
-                    };
-                    var vm = new DataLogViewModel()
-                    {
-                        Id = data.Id,
-                        Raw = data.RawData,
-                        Bib = data.Bib,
-                        Time = data.Time,
-                        TimingPoint = data.TimingPoint,
-                        Status = UploadStatus.Pending,
-                        IsClear = false
-                    };
-                    if (_undefined.Add(data.Bib))
-                    {
-                        // Count only rows that are actually queued - skipped and
-                        // duplicate lines must not block the "all sent" check.
-                        _count++;
-                        DataDictionary.AddOrUpdate(data.Bib, data, (_, _) => data);
-                        LogData.Add(vm);
-                        LogDataLookup.AddOrUpdate(data.Id, vm, (_, _) => vm);
-                    }
+                    AddEntry(split[0].Trim(), StringToDateTime(split[1].Trim()), line.Trim());
                 }
                 reader.Close();
             }
@@ -215,6 +216,39 @@ namespace TimeMaker.Services
             {
                 App.Logger.LogError($"[FS] Error loading data for FileSource: {Id}", ex);
                 throw;
+            }
+        }
+
+        private void AddEntry(string bib, TimeOnly time, string raw)
+        {
+            var data = new DataModel()
+            {
+                Id = Guid.NewGuid().ToString(),
+                SourceId = Id,
+                Bib = bib,
+                Time = time,
+                TimingPoint = new ApiTimingPoint() { Name = Target },
+                RawData = raw,
+                IsClear = false
+            };
+            var vm = new DataLogViewModel()
+            {
+                Id = data.Id,
+                Raw = data.RawData,
+                Bib = data.Bib,
+                Time = data.Time,
+                TimingPoint = data.TimingPoint,
+                Status = UploadStatus.Pending,
+                IsClear = false
+            };
+            if (_undefined.Add(data.Bib))
+            {
+                // Count only rows that are actually queued - skipped and
+                // duplicate lines must not block the "all sent" check.
+                _count++;
+                DataDictionary.AddOrUpdate(data.Bib, data, (_, _) => data);
+                LogData.Add(vm);
+                LogDataLookup.AddOrUpdate(data.Id, vm, (_, _) => vm);
             }
         }
 
