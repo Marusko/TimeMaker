@@ -7,5 +7,7 @@
         public override ApiTimingPoint FirstTarget { get; set; } = new();
         public char Separator { get; init; } = ';';
         public bool Template { get; init; }
+        public List<TimeDefinitionPartModel> Definition { get; init; } = new();
+        public bool IsDefinition => Definition.Count > 0;
     }
 }
