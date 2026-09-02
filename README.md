@@ -19,6 +19,7 @@ Táto aplikácia využíva tieto knižnice:
 * [Newtonsoft.Json](https://www.newtonsoft.com/json)
 * [System.IO.Ports](https://www.nuget.org/packages/System.IO.Ports)
 * [Microsoft.Toolkit.Uwp.Notifications](https://www.nuget.org/packages/Microsoft.Toolkit.Uwp.Notifications)
+* [ClickWrap.UpdateClient](https://github.com/Marusko/ClickWrap) - kontrola dostupnosti novej verzie pri štarte
 ---
 ### Kontakt na mňa
 Keď nastanú nejaké problémy s aplikáciou alebo sa budete chcieť niečo opýtať, prípadne navrhnúť novú funkciu, neváhajte ma kontaktovať:

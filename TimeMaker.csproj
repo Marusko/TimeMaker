@@ -22,6 +22,14 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <!-- ClickWrap's update-check library. Not published on nuget.org - the DLL is built
+         from the ClickWrap repo and committed here; see lib/README.md to refresh it. -->
+    <Reference Include="ClickWrap.UpdateClient">
+      <HintPath>lib\ClickWrap.UpdateClient.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.IO.Ports" Version="10.0.2" />

@@ -15,6 +15,7 @@ namespace TimeMaker
         public static AppLoggerService Logger { get; private set; } = null!;
         public static RaceResultService RaceResult { get; private set; } = null!;
         public static SourceManagerService SourceManager { get; private set; } = null!;
+        public static UpdateService Updates { get; private set; } = null!;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -41,6 +42,10 @@ namespace TimeMaker
             // Initialize source manager service
             SourceManager = new SourceManagerService();
 
+            // Initialize update service - the check itself runs from MainWindow, once
+            // there is a window for its dialog to sit over.
+            Updates = new UpdateService();
+
             // Handle unhandled exceptions
             AppDomain.CurrentDomain.UnhandledException += (_, args) =>
             {
@@ -64,6 +69,7 @@ namespace TimeMaker
             Logger.Log("Application shutting down");
             RaceResult.Dispose();
             SourceManager.Dispose();
+            Updates.Dispose();
             base.OnExit(e);
         }
     }

@@ -142,6 +142,12 @@
                         <Run Text="Microsoft.Toolkit.Uwp.Notifications"/>
                     </Hyperlink>
                 </TextBlock>
+                <Border Width="1" Background="{StaticResource BorderSoftBrush}" Margin="12,1"/>
+                <TextBlock>
+                    <Hyperlink Click="OpenClickWrap">
+                        <Run Text="ClickWrap"/>
+                    </Hyperlink>
+                </TextBlock>
             </StackPanel>
         </Border>
     </Grid>

@@ -22,6 +22,10 @@ namespace TimeMaker.Windows
             App.RaceResult.RaceResultApiLoaded += OnApiLoaded;
             App.SourceManager.SourceAdded += OnSourceAdded;
             App.SourceManager.SourceRemoved += OnSourceRemoved;
+
+            // Fire and forget: the window is already up, and a slow or unreachable
+            // update server must not hold the app back.
+            Loaded += async (_, _) => await App.Updates.PromptIfUpdateAvailableAsync();
         }
 
         private void BtnAddFile_Click(object sender, RoutedEventArgs e)
@@ -188,6 +192,12 @@ namespace TimeMaker.Windows
         private void OpenNtf(object sender, RoutedEventArgs e)
         {
             const string url = "https://www.nuget.org/packages/Microsoft.Toolkit.Uwp.Notifications";
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+        }
+
+        private void OpenClickWrap(object sender, RoutedEventArgs e)
+        {
+            const string url = "https://github.com/Marusko/ClickWrap";
             Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
 
