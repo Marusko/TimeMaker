@@ -57,7 +57,13 @@
                             <Setter Property="Focusable" Value="False"/>
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="BorderThickness" Value="0"/>
+                            <!-- MinHeight, not Padding, is what sets the row height here - the
+                                 cells are shorter than the padding suggests, so 4,7 alone gives
+                                 rows 20px apart. Every action in the last column is a hyperlink,
+                                 and that gap is the only thing keeping a click off the row above
+                                 or below, hence the floor. -->
                             <Setter Property="Padding" Value="4,7"/>
+                            <Setter Property="MinHeight" Value="32"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="Transparent"/>
