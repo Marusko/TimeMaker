@@ -27,6 +27,13 @@
     <Reference Include="ClickWrap.UpdateClient">
       <HintPath>lib\ClickWrap.UpdateClient.dll</HintPath>
     </Reference>
+
+    <!-- RaceResultClient.NET - the typed race|result Web API client the RaceResult
+         settings window uses to log in and create the event's Simple API entries.
+         Also not published on nuget.org; see lib/README.md to refresh it. -->
+    <Reference Include="RaceResultClient">
+      <HintPath>lib\RaceResultClient.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

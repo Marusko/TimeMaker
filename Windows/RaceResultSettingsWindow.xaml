@@ -4,56 +4,160 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="RaceResult nastavenia" Width="400" SizeToContent="Height" ResizeMode="NoResize"
+        Title="RaceResult nastavenia" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" Topmost="True" Icon="../Icons/favicon.ico"
         FontFamily="Segoe UI" FontSize="13"
         Foreground="{StaticResource TextPrimaryBrush}"
         TextOptions.TextFormattingMode="Ideal"
         UseLayoutRounding="True"
+        Closed="WindowClosed"
         Background="{StaticResource WindowBackgroundBrush}">
     <Border Style="{StaticResource CardStyle}" Margin="16" Padding="20">
-        <StackPanel>
-            <TextBlock Text="RaceResult nastavenia" Style="{StaticResource TitleTextStyle}" FontSize="17"/>
+        <!-- Two columns: the link and what it loaded on the left, the RaceResult login beside
+             it on the right. The login column is collapsed in manual mode, and the window
+             sizes itself to whichever is showing. -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-            <TextBlock Text="API link" Style="{StaticResource FieldLabelStyle}"/>
-            <TextBox x:Name="ApiLinkText" Text=""/>
-
-            <TextBlock Text="Načítané API" Style="{StaticResource FieldLabelStyle}" Margin="0,16,0,6"/>
-            <Grid>
+            <!-- Same two-row shape as the login card beside it: content on top, buttons pinned
+                 to the bottom, so both sets of buttons follow the window as it grows. -->
+            <Grid Grid.Column="0" Width="360">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Meracie body:" VerticalAlignment="Center" Margin="0,3"/>
-                <Label Grid.Row="0" Grid.Column="1" Content="Nenačítané" x:Name="PointsApiLabel"
-                       Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Pridávanie impulzov:" VerticalAlignment="Center" Margin="0,3"/>
-                <Label Grid.Row="1" Grid.Column="1" Content="Nenačítané" x:Name="RawDataApiLabel"
-                       Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Zoznam čísel:" VerticalAlignment="Center" Margin="0,3"/>
-                <Label Grid.Row="2" Grid.Column="1" Content="Nenačítané" x:Name="BibListApiLabel"
-                       Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Zoznam časov pretekára:" VerticalAlignment="Center" Margin="0,3"/>
-                <Label Grid.Row="3" Grid.Column="1" Content="Nenačítané" x:Name="RawSearchApiLabel"
-                       Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Zneplatnenie impulzu:" VerticalAlignment="Center" Margin="0,3"/>
-                <Label Grid.Row="4" Grid.Column="1" Content="Nenačítané" x:Name="InvalidApiLabel"
-                       Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
+
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="RaceResult nastavenia" Style="{StaticResource TitleTextStyle}" FontSize="17"/>
+
+                    <TextBlock Text="Zdroj API odkazu" Style="{StaticResource FieldLabelStyle}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="ManualModeRadio" Content="Vložiť odkaz" GroupName="apiMode"
+                                     IsChecked="True" Checked="ApiModeChanged" Margin="0,0,18,0"
+                                     VerticalAlignment="Center"/>
+                        <RadioButton x:Name="AutoModeRadio" Content="Prihlásiť sa do RaceResult" GroupName="apiMode"
+                                     Checked="ApiModeChanged" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <TextBlock Text="API link" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBox x:Name="ApiLinkText" Text=""/>
+
+                    <TextBlock Text="Načítané API" Style="{StaticResource FieldLabelStyle}" Margin="0,16,0,6"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Meracie body:" VerticalAlignment="Center" Margin="0,3"/>
+                        <Label Grid.Row="0" Grid.Column="1" Content="Nenačítané" x:Name="PointsApiLabel"
+                               Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Pridávanie impulzov:" VerticalAlignment="Center" Margin="0,3"/>
+                        <Label Grid.Row="1" Grid.Column="1" Content="Nenačítané" x:Name="RawDataApiLabel"
+                               Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Zoznam čísel:" VerticalAlignment="Center" Margin="0,3"/>
+                        <Label Grid.Row="2" Grid.Column="1" Content="Nenačítané" x:Name="BibListApiLabel"
+                               Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Zoznam časov pretekára:" VerticalAlignment="Center" Margin="0,3"/>
+                        <Label Grid.Row="3" Grid.Column="1" Content="Nenačítané" x:Name="RawSearchApiLabel"
+                               Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Zneplatnenie impulzu:" VerticalAlignment="Center" Margin="0,3"/>
+                        <Label Grid.Row="4" Grid.Column="1" Content="Nenačítané" x:Name="InvalidApiLabel"
+                               Style="{StaticResource StatusChipLabelStyle}" Margin="0,3"/>
+                    </Grid>
+                </StackPanel>
+
+                <Grid Grid.Row="1" Margin="0,20,0,0">
+                    <Button x:Name="LoadButton" Content="Načítať" Click="Load" HorizontalAlignment="Left"
+                            Style="{StaticResource SecondaryButtonStyle}" MinWidth="100"/>
+                    <Button x:Name="SaveButton" Content="Uložiť" Click="Save" HorizontalAlignment="Right"
+                            MinWidth="100" IsEnabled="False"/>
+                </Grid>
             </Grid>
 
-            <Grid Margin="0,20,0,0">
-                <Button x:Name="LoadButton" Content="Načítať" Click="Load" HorizontalAlignment="Left"
-                        Style="{StaticResource SecondaryButtonStyle}" MinWidth="100"/>
-                <Button x:Name="SaveButton" Content="Uložiť" Click="Save" HorizontalAlignment="Right"
-                        MinWidth="100" IsEnabled="False"/>
-            </Grid>
-        </StackPanel>
+            <!-- Log in, pick an event, let the app create the APIs. Hidden in manual mode.
+                 Stretched to whatever height the column beside it has, with the buttons,
+                 the progress bar and the status line sitting at the bottom of it. -->
+            <Border x:Name="AutoPanel" Grid.Column="1" Visibility="Collapsed" Width="320"
+                    Margin="18,0,0,0" Padding="16"
+                    Background="{StaticResource SurfaceMutedBrush}"
+                    BorderBrush="{StaticResource BorderSoftBrush}" BorderThickness="1"
+                    CornerRadius="10" SnapsToDevicePixels="True">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Prihlásenie do RaceResult" FontWeight="SemiBold" FontSize="14"/>
+
+                        <StackPanel x:Name="LoginPanel">
+                            <TextBlock Text="Server" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="ServerText" Text="events.raceresult.com"/>
+                            <CheckBox x:Name="HttpsCheck" Content="Použiť HTTPS" IsChecked="True" Margin="0,10,0,0"/>
+                            <TextBlock Text="Vypnite iba pri vlastnom serveri bez certifikátu."
+                                       Style="{StaticResource HintTextStyle}" Margin="26,2,0,0"/>
+
+                            <TextBlock Text="Spôsob prihlásenia" Style="{StaticResource FieldLabelStyle}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="UserLoginRadio" Content="Používateľ" GroupName="loginMethod"
+                                             IsChecked="True" Checked="LoginMethodChanged" Margin="0,0,18,0"
+                                             VerticalAlignment="Center"/>
+                                <RadioButton x:Name="ApiKeyLoginRadio" Content="API kľúč" GroupName="loginMethod"
+                                             Checked="LoginMethodChanged" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <StackPanel x:Name="UserLoginPanel">
+                                <TextBlock Text="Používateľ" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox x:Name="UserText"/>
+                                <TextBlock Text="Heslo" Style="{StaticResource FieldLabelStyle}"/>
+                                <PasswordBox x:Name="PasswordText"/>
+                            </StackPanel>
+
+                            <StackPanel x:Name="ApiKeyLoginPanel" Visibility="Collapsed">
+                                <TextBlock Text="API kľúč" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox x:Name="ApiKeyText"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel x:Name="EventPanel" Visibility="Collapsed">
+                            <TextBlock x:Name="AccountText" Style="{StaticResource HintTextStyle}" Margin="0,8,0,0"/>
+                            <TextBlock Text="Podujatie" Style="{StaticResource FieldLabelStyle}"/>
+                            <ComboBox x:Name="EventsCombo"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Margin="0,14,0,0">
+                        <Button x:Name="LoginButton" Content="Prihlásiť sa" Click="Login"
+                                HorizontalAlignment="Right" MinWidth="120"/>
+
+                        <Grid x:Name="EventActions" Visibility="Collapsed">
+                            <Button x:Name="LogoutButton" Content="Odhlásiť sa" Click="Logout"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    HorizontalAlignment="Left" MinWidth="120"/>
+                            <Button x:Name="CreateApiButton" Content="Vytvoriť API" Click="CreateApi"
+                                    HorizontalAlignment="Right" MinWidth="120"/>
+                        </Grid>
+
+                        <!-- Hidden rather than collapsed: it keeps its place, so the buttons
+                             above it do not jump every time something starts or finishes. -->
+                        <ProgressBar x:Name="AutoProgress" IsIndeterminate="True" Height="4" Margin="0,14,0,0"
+                                     Visibility="Hidden"/>
+                        <TextBlock x:Name="AutoStatusText" Style="{StaticResource HintTextStyle}"
+                                   Margin="0,10,0,0" Visibility="Collapsed"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
     </Border>
 </Window>
