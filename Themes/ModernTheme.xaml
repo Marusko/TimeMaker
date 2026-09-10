@@ -595,8 +595,42 @@
                          indicator width is never set and stays at 0. -->
                     <Border x:Name="PART_Track" CornerRadius="2" Background="{TemplateBinding Background}" ClipToBounds="True">
                         <Border x:Name="PART_Indicator" CornerRadius="2" HorizontalAlignment="Left"
-                                Background="{TemplateBinding Foreground}" />
+                                Background="{TemplateBinding Foreground}" RenderTransformOrigin="0,0">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" />
+                            </Border.RenderTransform>
+                        </Border>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- An indeterminate ProgressBar gets a full-width indicator from WPF
+                             (percent is hard-coded to 1.0), so without an animation of our own
+                             it just sits there looking like a bar stuck at 100%. Scaling it
+                             from the left edge and then off the right one is width-independent,
+                             unlike sliding a fixed-size pill by pixels. -->
+                        <Trigger Property="IsIndeterminate" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="IndeterminateStoryboard">
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_Indicator"
+                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                            <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                                            <LinearDoubleKeyFrame KeyTime="0:0:0.75" Value="1" />
+                                            <LinearDoubleKeyFrame KeyTime="0:0:1.5" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <!-- Grows from the left, then shrinks towards the right. -->
+                                        <PointAnimationUsingKeyFrames Storyboard.TargetName="PART_Indicator"
+                                                                      Storyboard.TargetProperty="RenderTransformOrigin">
+                                            <DiscretePointKeyFrame KeyTime="0:0:0" Value="0,0" />
+                                            <DiscretePointKeyFrame KeyTime="0:0:0.75" Value="1,0" />
+                                        </PointAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <StopStoryboard BeginStoryboardName="IndeterminateStoryboard" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
