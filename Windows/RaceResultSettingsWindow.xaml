@@ -98,10 +98,15 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0">
-                        <TextBlock Text="Prihlásenie do RaceResult" FontWeight="SemiBold" FontSize="14"/>
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                        <StackPanel x:Name="LoginPanel">
+                        <TextBlock Grid.Row="0" Text="Prihlásenie do RaceResult" FontWeight="SemiBold" FontSize="14"/>
+
+                        <StackPanel Grid.Row="1" x:Name="LoginPanel" VerticalAlignment="Top">
                             <TextBlock Text="Server" Style="{StaticResource FieldLabelStyle}"/>
                             <TextBox x:Name="ServerText" Text="events.raceresult.com"/>
                             <CheckBox x:Name="HttpsCheck" Content="Použiť HTTPS" IsChecked="True" Margin="0,10,0,0"/>
@@ -130,31 +135,76 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <StackPanel x:Name="EventPanel" Visibility="Collapsed">
-                            <TextBlock x:Name="AccountText" Style="{StaticResource HintTextStyle}" Margin="0,8,0,0"/>
-                            <TextBlock Text="Podujatie" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="EventsCombo"/>
-                        </StackPanel>
-                    </StackPanel>
+                        <!-- The picker. A list rather than a dropdown, and each row carries the
+                             date and the place: the name alone does not tell this year's event
+                             from last year's, or the real one from a test copy. -->
+                        <!-- Exactly as tall as the login fields it replaces (which stay Hidden
+                             rather than collapsed, so they go on reserving that height). Without
+                             this the list would ask for room for every event the account has and
+                             push the window taller as it went. -->
+                        <Grid Grid.Row="1" x:Name="EventPanel" Visibility="Collapsed"
+                              Height="{Binding ActualHeight, ElementName=LoginPanel}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" x:Name="AccountText" Style="{StaticResource HintTextStyle}"
+                                       Margin="0,8,0,0"/>
+                            <TextBlock Grid.Row="1" Text="Podujatie" Style="{StaticResource FieldLabelStyle}"/>
+
+                            <!-- Only worth the space once the list is long enough to scroll. -->
+                            <StackPanel Grid.Row="2" x:Name="EventFilterPanel" Visibility="Collapsed"
+                                        Margin="0,0,0,6">
+                                <TextBox x:Name="EventFilterText" TextChanged="EventFilterChanged"/>
+                                <TextBlock Text="Hľadať podľa názvu alebo miesta"
+                                           Style="{StaticResource HintTextStyle}" Margin="2,3,0,0"/>
+                            </StackPanel>
+
+                            <ListBox Grid.Row="3" x:Name="EventsList" MinHeight="140">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold"
+                                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding Caption}" Style="{StaticResource HintTextStyle}"
+                                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBlock Grid.Row="3" x:Name="NoEventsText" Visibility="Collapsed"
+                                       Style="{StaticResource HintTextStyle}" Margin="2,6,0,0"
+                                       VerticalAlignment="Top"/>
+                        </Grid>
+                    </Grid>
 
                     <StackPanel Grid.Row="1" Margin="0,14,0,0">
-                        <Button x:Name="LoginButton" Content="Prihlásiť sa" Click="Login"
-                                HorizontalAlignment="Right" MinWidth="120"/>
-
-                        <Grid x:Name="EventActions" Visibility="Collapsed">
-                            <Button x:Name="LogoutButton" Content="Odhlásiť sa" Click="Logout"
-                                    Style="{StaticResource SecondaryButtonStyle}"
-                                    HorizontalAlignment="Left" MinWidth="120"/>
-                            <Button x:Name="CreateApiButton" Content="Vytvoriť API" Click="CreateApi"
+                        <!-- Both button sets share one cell rather than stacking, so the footer
+                             is the same height whichever of them is showing. -->
+                        <Grid>
+                            <Button x:Name="LoginButton" Content="Prihlásiť sa" Click="Login"
                                     HorizontalAlignment="Right" MinWidth="120"/>
+
+                            <Grid x:Name="EventActions" Visibility="Collapsed">
+                                <Button x:Name="LogoutButton" Content="Odhlásiť sa" Click="Logout"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        HorizontalAlignment="Left" MinWidth="120"/>
+                                <Button x:Name="CreateApiButton" Content="Vytvoriť API" Click="CreateApi"
+                                        HorizontalAlignment="Right" MinWidth="120"/>
+                            </Grid>
                         </Grid>
 
                         <!-- Hidden rather than collapsed: it keeps its place, so the buttons
                              above it do not jump every time something starts or finishes. -->
                         <ProgressBar x:Name="AutoProgress" IsIndeterminate="True" Height="4" Margin="0,14,0,0"
                                      Visibility="Hidden"/>
+                        <!-- Always present, with room for two lines: a status line that came and
+                             went would resize the window with every step. -->
                         <TextBlock x:Name="AutoStatusText" Style="{StaticResource HintTextStyle}"
-                                   Margin="0,10,0,0" Visibility="Collapsed"/>
+                                   Margin="0,10,0,0" MinHeight="30"/>
                     </StackPanel>
                 </Grid>
             </Border>

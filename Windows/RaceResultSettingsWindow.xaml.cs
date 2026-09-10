@@ -1,9 +1,9 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using RaceResultClient;
 using TimeMaker.Models;
 using TimeMaker.Services;
+using TimeMaker.ViewModels;
 
 namespace TimeMaker.Windows
 {
@@ -31,6 +31,12 @@ namespace TimeMaker.Windows
         private string? _createdLink;
 
         private string? _createdEventName;
+
+        /// <summary>Every event the login returned; the picker shows those matching its search box.</summary>
+        private readonly List<RaceResultEventViewModel> _events = new();
+
+        /// <summary>Above this many events the picker offers a search box, as Trakster's does.</summary>
+        private const int SearchFromEvents = 5;
 
         public RaceResultSettingsWindow()
         {
@@ -175,32 +181,24 @@ namespace TimeMaker.Windows
                 var events = await _setup.LoginAndListEventsAsync(credentials);
                 PasswordText.Clear();
 
-                EventsCombo.Items.Clear();
-                foreach (var ev in events)
-                {
-                    EventsCombo.Items.Add(new ComboBoxItem
-                    {
-                        Content = string.IsNullOrWhiteSpace(ev.EventDate)
-                            ? ev.EventName
-                            : $"{ev.EventName} - {ev.EventDate}",
-                        Tag = ev,
-                    });
-                }
+                _events.Clear();
+                _events.AddRange(events.Select(ev => new RaceResultEventViewModel(
+                    ev.Id, ev.EventName, ev.EventDate, ev.EventLocation)));
+
+                EventFilterText.Clear();
+                EventFilterPanel.Visibility = _events.Count > SearchFromEvents
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+                ShowEvents();
 
                 AccountText.Text = byApiKey
                     ? $"Prihlásený na {server} cez API kľúč"
                     : $"Prihlásený na {server} ako {user}";
                 ShowLoggedIn(true);
 
-                if (EventsCombo.Items.Count == 0)
-                {
-                    ShowAutoStatus("Účet nemá žiadne nadchádzajúce podujatia.");
-                }
-                else
-                {
-                    EventsCombo.SelectedIndex = 0;
-                    ShowAutoStatus($"Načítaných podujatí: {EventsCombo.Items.Count}");
-                }
+                ShowAutoStatus(_events.Count == 0
+                    ? "Účet nemá žiadne nadchádzajúce podujatia."
+                    : $"Načítaných podujatí: {_events.Count}");
             }
             catch (Exception ex)
             {
@@ -220,7 +218,7 @@ namespace TimeMaker.Windows
         /// </summary>
         private async void CreateApi(object sender, RoutedEventArgs e)
         {
-            if (EventsCombo.SelectedItem is not ComboBoxItem { Tag: EventListItem selected })
+            if (EventsList.SelectedItem is not RaceResultEventViewModel selected)
             {
                 ThemedDialog.Show("Vytvorenie API", "Najprv vyberte podujatie.", ThemedDialogIcon.Warning);
                 return;
@@ -232,7 +230,7 @@ namespace TimeMaker.Windows
                 return;
             }
 
-            var selection = new RaceResultApiSelectWindow(selected.EventName) { Owner = this };
+            var selection = new RaceResultApiSelectWindow(selected.Name) { Owner = this };
             if (selection.ShowDialog() != true)
             {
                 return;
@@ -246,11 +244,11 @@ namespace TimeMaker.Windows
                 ApiLinkText.Text = result.ApiLink;
                 ApiLinkText.IsReadOnly = true;
                 _createdLink = result.ApiLink;
-                _createdEventName = selected.EventName;
-                ShowAutoStatus(result.Describe(selected.EventName));
+                _createdEventName = selected.Name;
+                ShowAutoStatus(result.Summary);
 
                 ThemedDialog.Show("API pripravené",
-                    $"{result.Describe(selected.EventName)}\n\n"
+                    $"{result.Describe(selected.Name)}\n\n"
                     + "Odkaz bol vložený do poľa API link, pokračujte tlačidlom Načítať.",
                     ThemedDialogIcon.Success);
             }
@@ -277,22 +275,63 @@ namespace TimeMaker.Windows
             }
             finally
             {
-                EventsCombo.Items.Clear();
+                _events.Clear();
+                EventFilterText.Clear();
+                ShowEvents();
                 ShowLoggedIn(false);
                 SetAutoBusy(false);
                 ShowAutoStatus(null);
             }
         }
 
+        private void EventFilterChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
+            ShowEvents();
+        }
+
+        /// <summary>
+        /// Fills the picker with the events matching its search box, keeping the selected one
+        /// selected if it survived the filter and selecting the first one otherwise, so
+        /// "Vytvoriť API" always has something to work on. With nothing to show, the list gives
+        /// way to a line saying which of the two reasons it is.
+        /// </summary>
+        private void ShowEvents()
+        {
+            var selected = EventsList.SelectedItem as RaceResultEventViewModel;
+            var visible = _events.Where(ev => ev.Matches(EventFilterText.Text)).ToList();
+
+            EventsList.ItemsSource = visible;
+            EventsList.SelectedItem = selected is not null && visible.Contains(selected)
+                ? selected
+                : visible.FirstOrDefault();
+
+            var empty = visible.Count == 0;
+            EventsList.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
+            NoEventsText.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
+            NoEventsText.Text = _events.Count == 0
+                ? "Účet nemá žiadne nadchádzajúce podujatia."
+                : "Hľadaniu nezodpovedá žiadne podujatie.";
+        }
+
         /// <summary>
         /// Swaps the login fields for the event picker, and the login button for the pair of
         /// buttons that goes with it. The fields and their button live in different halves of
         /// the panel - one at the top, one pinned to the bottom - so both have to be told.
+        ///
+        /// The fields go <see cref="Visibility.Hidden"/> rather than collapsed, keeping the space
+        /// they asked for: the picker sits in the same cell and inherits exactly that height, so
+        /// the window is the same size before and after logging in, whether the account has two
+        /// events or fifty. The list scrolls inside what it is given.
         /// </summary>
         private void ShowLoggedIn(bool loggedIn)
         {
-            LoginPanel.Visibility = loggedIn ? Visibility.Collapsed : Visibility.Visible;
-            LoginButton.Visibility = LoginPanel.Visibility;
+            LoginPanel.Visibility = loggedIn ? Visibility.Hidden : Visibility.Visible;
+            LoginButton.Visibility = loggedIn ? Visibility.Collapsed : Visibility.Visible;
             EventPanel.Visibility = loggedIn ? Visibility.Visible : Visibility.Collapsed;
             EventActions.Visibility = EventPanel.Visibility;
         }
@@ -319,12 +358,13 @@ namespace TimeMaker.Windows
             }
         }
 
+        /// <summary>
+        /// The line under the buttons. It keeps its space when empty - see the XAML - so saying
+        /// something and saying nothing are the same height.
+        /// </summary>
         private void ShowAutoStatus(string? message)
         {
             AutoStatusText.Text = message ?? string.Empty;
-            AutoStatusText.Visibility = string.IsNullOrEmpty(message)
-                ? Visibility.Collapsed
-                : Visibility.Visible;
         }
 
         /// <summary>

@@ -122,6 +122,15 @@ namespace TimeMaker.Models
 
         public bool NothingChanged => Created == 0 && Corrected == 0;
 
+        /// <summary>
+        /// The short form, for the status line in the settings window - which has room for two
+        /// lines, and sits right beside the event it is talking about.
+        /// </summary>
+        public string Summary =>
+            NothingChanged
+                ? $"Všetko už bolo nastavené, {Unchanged} API zostalo nezmenených."
+                : $"Vytvorených {Created}, opravených {Corrected}, nezmenených {Unchanged} API.";
+
         /// <summary>A sentence saying what happened, for the dialog shown once setup returns.</summary>
         public string Describe(string eventName)
         {
