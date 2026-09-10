@@ -1,4 +1,5 @@
-﻿using System.Windows;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using RaceResultClient;
 using TimeMaker.Models;
@@ -73,6 +74,13 @@ namespace TimeMaker.Windows
                         ThemedDialogIcon.Warning);
                 }
                 await App.RaceResult.LoadApi(ApiLinkText.Text);
+
+                // The event's name is known only when this very link came from a login, so the
+                // title says nothing for a pasted one rather than naming a stale event.
+                var loaded = string.Equals(ApiLinkText.Text.Trim(), _createdLink, StringComparison.Ordinal)
+                    ? _createdEventName
+                    : null;
+                (Owner as MainWindow)?.SetRaceResultEvent(loaded);
             }
             catch (Exception ex)
             {

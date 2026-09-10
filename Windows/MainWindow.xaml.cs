@@ -49,6 +49,16 @@ namespace TimeMaker.Windows
             window.ShowDialog();
         }
 
+        /// <summary>
+        /// Puts the loaded RaceResult event in the title bar. Called by the settings window when
+        /// an API link is loaded; the name is known only for a link the app created itself after
+        /// a login, so a pasted link passes <c>null</c> and the plain title comes back.
+        /// </summary>
+        public void SetRaceResultEvent(string? eventName)
+        {
+            Title = string.IsNullOrWhiteSpace(eventName) ? "Time Maker" : $"Time Maker - {eventName}";
+        }
+
         private void SetNotify(object sender, RoutedEventArgs e)
         {
             App.RaceResult.ShowErrorNotification = true;
