@@ -154,6 +154,12 @@
                         <Run Text="ClickWrap"/>
                     </Hyperlink>
                 </TextBlock>
+                <Border Width="1" Background="{StaticResource BorderSoftBrush}" Margin="12,1"/>
+                <TextBlock>
+                    <Hyperlink Click="OpenRaceResultClient">
+                        <Run Text="RaceResultClient.NET"/>
+                    </Hyperlink>
+                </TextBlock>
             </StackPanel>
         </Border>
     </Grid>

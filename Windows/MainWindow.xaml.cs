@@ -211,6 +211,12 @@ namespace TimeMaker.Windows
             Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
 
+        private void OpenRaceResultClient(object sender, RoutedEventArgs e)
+        {
+            const string url = "https://github.com/Marusko/RaceResultClient.NET";
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+        }
+
         private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
         {
             App.RaceResult.RaceResultApiLoaded -= OnApiLoaded;
