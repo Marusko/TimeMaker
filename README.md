@@ -1,5 +1,8 @@
 # Time Maker
 
+> [!WARNING]
+> **Podpora skončila, nahradené MSky Timing**
+
 ### Aplikácia pre vytváranie manuálnych impulzov z CSV súboru alebo sériového portu s ALGE Timy formátom z viacerých zdrojov v [RaceResult](https://www.raceresult.com/en-us/home/index) naprogramovaná v **[.NET 10](https://dotnet.microsoft.com/en-us/)**
 
 ### Aplikácia je využívaná interne spoločnosťou [ČasomieraPT](https://casomierapt.com/)
